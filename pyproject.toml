@@ -38,6 +38,12 @@ classifiers = [
 ]
 dependencies = []
 
+[project.urls]
+Homepage = "https://github.com/samarailly51-pixel/opencode-harness"
+Repository = "https://github.com/samarailly51-pixel/opencode-harness"
+Issues = "https://github.com/samarailly51-pixel/opencode-harness/issues"
+CI = "https://github.com/samarailly51-pixel/opencode-harness/actions"
+
 [project.scripts]
 och = "opencode_harness.cli:main"
 opencode-harness = "opencode_harness.cli:main"

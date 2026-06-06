@@ -4,7 +4,7 @@ Use this before publishing the repository.
 
 ## Required
 
-- [ ] Confirm repository name and description.
+- [x] Confirm repository name and description.
 - [ ] Review README positioning.
 - [ ] Confirm `LICENSE` is correct.
 - [ ] Review `CONTRIBUTING.md` clean-room rules.
@@ -15,7 +15,7 @@ Use this before publishing the repository.
 - [ ] Run DeepSeek Lab mock smoke.
 - [ ] Confirm no API keys or secrets are present.
 - [ ] Confirm `runs/` and `eval-runs/` are ignored.
-- [ ] Confirm GitHub Actions CI is enabled after push.
+- [ ] Confirm GitHub Actions CI passes after push.
 - [ ] Confirm issue and PR templates render on GitHub.
 - [ ] Review `docs/release.md`.
 

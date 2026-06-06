@@ -49,6 +49,12 @@ Suggested release title:
 OpenCode Harness v0.1.0
 ```
 
+Repository:
+
+```text
+https://github.com/samarailly51-pixel/opencode-harness
+```
+
 Suggested release notes:
 
 ```text
