@@ -7,7 +7,7 @@ name = "opencode-harness"
 version = "0.1.0"
 description = "A clean-room, model-agnostic harness for Claude Code-class coding agents."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [
   { name = "OpenCode Harness Contributors" }
@@ -29,7 +29,6 @@ classifiers = [
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Topic :: Software Development",

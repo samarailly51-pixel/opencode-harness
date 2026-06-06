@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/samarailly51-pixel/opencode-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/samarailly51-pixel/opencode-harness/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
 
 OpenCode Harness is a clean-room, model-agnostic runtime for Claude Code-class coding agents.
 
