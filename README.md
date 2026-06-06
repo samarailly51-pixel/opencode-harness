@@ -252,6 +252,7 @@ python -m opencode_harness replay runs/latest.jsonl --show-content
 
 - [Architecture](docs/architecture.md)
 - [GitHub readiness checklist](docs/github-readiness.md)
+- [Release guide](docs/release.md)
 - [Roadmap](ROADMAP.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security](SECURITY.md)

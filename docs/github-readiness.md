@@ -17,6 +17,7 @@ Use this before publishing the repository.
 - [ ] Confirm `runs/` and `eval-runs/` are ignored.
 - [ ] Confirm GitHub Actions CI is enabled after push.
 - [ ] Confirm issue and PR templates render on GitHub.
+- [ ] Review `docs/release.md`.
 
 ## Recommended
 
