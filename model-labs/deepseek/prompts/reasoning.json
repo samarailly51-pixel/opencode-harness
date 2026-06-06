@@ -1,0 +1,13 @@
+{
+  "name": "deepseek reasoning prompts",
+  "prompts": [
+    {
+      "id": "reasoning-plan",
+      "task": "Inspect the repository, create a todo plan, and explain which files are most relevant for improving eval reporting."
+    },
+    {
+      "id": "failure-diagnosis",
+      "task": "Given a failed tool call in a trace, explain the likely root cause and the next debugging step."
+    }
+  ]
+}

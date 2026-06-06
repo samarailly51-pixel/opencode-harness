@@ -1,0 +1,266 @@
+from __future__ import annotations
+
+import argparse
+from datetime import datetime
+from pathlib import Path
+import shutil
+import sys
+
+from .agent import Agent
+from .config import HarnessConfig, ModelConfig, PermissionConfig, load_config
+from .eval import run_eval_suite
+from .mcp import ExternalToolSpec
+from .mcp_client import McpServerSpec, StdioMcpClient
+from .models import MockModel, build_model
+from .providers import PRESETS, apply_preset
+from .replay import load_trace, render_summary, render_timeline, summarize_trace
+from .session import SessionState
+from .tools import ToolRegistry
+from .trace import TraceWriter
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="och", description="OpenCode Harness CLI")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    run_parser = subparsers.add_parser("run", help="Run a one-shot coding-agent task")
+    run_parser.add_argument("task")
+    _add_common_model_args(run_parser)
+
+    chat_parser = subparsers.add_parser("chat", help="Run an interactive chat loop")
+    _add_common_model_args(chat_parser)
+    chat_parser.add_argument("--mock", action="store_true", help="Use the offline mock model")
+
+    init_parser = subparsers.add_parser("init", help="Create och.config.toml from the example")
+    init_parser.add_argument("--force", action="store_true", help="Overwrite an existing config")
+
+    trace_parser = subparsers.add_parser("trace", help="Print a JSONL trace file")
+    trace_parser.add_argument("path")
+
+    replay_parser = subparsers.add_parser("replay", help="Replay a trace as a readable timeline")
+    replay_parser.add_argument("path", type=Path)
+    replay_parser.add_argument("--summary", action="store_true", help="Print only summary statistics")
+    replay_parser.add_argument("--show-content", action="store_true", help="Show full model/tool content")
+
+    eval_parser = subparsers.add_parser("eval", help="Run an eval suite")
+    eval_parser.add_argument("suite", type=Path)
+    eval_parser.add_argument("--output-dir", type=Path, default=Path("eval-runs"))
+    _add_common_model_args(eval_parser)
+
+    args = parser.parse_args(argv)
+    if args.command == "init":
+        return _init_config(args.force)
+    if args.command == "trace":
+        return _print_trace(Path(args.path))
+    if args.command == "replay":
+        return _replay_trace(args.path, args.summary, args.show_content)
+    if args.command == "run":
+        config = _config_from_args(args)
+        return _run_task(args.task, config, args.workspace, args.session, args.resume)
+    if args.command == "chat":
+        config = _config_from_args(args, force_mock=args.mock)
+        return _chat(config)
+    if args.command == "eval":
+        config = _config_from_args(args)
+        return _run_eval(args.suite, config, args.output_dir)
+    return 1
+
+
+def _add_common_model_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--config", type=Path, help="Path to och config TOML")
+    parser.add_argument("--preset", choices=sorted(PRESETS), help="Provider preset")
+    parser.add_argument("--provider", choices=["mock", "openai-compatible", "anthropic"], help="Model provider")
+    parser.add_argument("--base-url", help="OpenAI-compatible base URL")
+    parser.add_argument("--model", help="Model name")
+    parser.add_argument("--api-key-env", help="Environment variable containing API key")
+    parser.add_argument("--max-steps", type=int, help="Agent max steps")
+    parser.add_argument("--context-chars", type=int, help="Max repository context characters")
+    parser.add_argument("--allow-write", action="store_true", help="Allow file-writing tools")
+    parser.add_argument("--session", type=Path, help="Session JSON path")
+    parser.add_argument("--resume", action="store_true", help="Resume from --session if it exists")
+    parser.add_argument("--workspace", type=Path, default=Path("."), help="Workspace path")
+
+
+def _config_from_args(args: argparse.Namespace, force_mock: bool = False) -> HarnessConfig:
+    config = load_config(args.config)
+    model = config.model
+    if force_mock:
+        model = ModelConfig(provider="mock")
+    else:
+        if args.preset:
+            model = apply_preset(args.preset, model)
+        model = ModelConfig(
+            provider=args.provider or model.provider,
+            model=args.model or model.model,
+            base_url=args.base_url or model.base_url,
+            api_key_env=args.api_key_env or model.api_key_env,
+            temperature=model.temperature,
+            max_tokens=model.max_tokens,
+        )
+
+    agent = config.agent
+    if args.max_steps is not None:
+        agent = type(agent)(max_steps=args.max_steps, context_chars=agent.context_chars)
+    if args.context_chars is not None:
+        agent = type(agent)(max_steps=agent.max_steps, context_chars=args.context_chars)
+    permissions = config.permissions
+    if args.allow_write:
+        permissions = PermissionConfig(
+            allow_write=True,
+            allow_shell=permissions.allow_shell,
+            allow_network=permissions.allow_network,
+        )
+    return HarnessConfig(
+        model=model,
+        agent=agent,
+        permissions=permissions,
+        mcp_tools=config.mcp_tools,
+        mcp_servers=config.mcp_servers,
+    )
+
+
+def _run_task(
+    task: str,
+    config: HarnessConfig,
+    workspace: Path | None = None,
+    session_path: Path | None = None,
+    resume: bool = False,
+) -> int:
+    workspace = (workspace or Path(".")).resolve()
+    run_id = datetime.now().strftime("%Y%m%d-%H%M%S")
+    trace = TraceWriter(workspace / "runs" / f"{run_id}.jsonl")
+    session_path = session_path or workspace / "runs" / f"{run_id}.session.json"
+    session = SessionState.load(session_path) if resume and session_path.exists() else SessionState(task=task)
+    model = build_model(config.model)
+    external_tools, external_handlers, mcp_clients = _mcp_runtime_from_config(config)
+    tools = ToolRegistry(
+        workspace,
+        config.permissions,
+        session=session,
+        external_tools=external_tools,
+        external_handlers=external_handlers,
+    )
+    try:
+        agent = Agent(
+            model=model,
+            tools=tools,
+            trace=trace,
+            max_steps=config.agent.max_steps,
+            workspace=workspace,
+            context_chars=config.agent.context_chars,
+            session=session,
+            session_path=session_path,
+        )
+        result = agent.run(task)
+        print(result.summary)
+        print(f"\nTrace: {trace.path}")
+        print(f"Session: {session_path}")
+        return 0 if result.finished else 2
+    finally:
+        for client in mcp_clients:
+            client.close()
+
+
+def _chat(config: HarnessConfig) -> int:
+    model = build_model(config.model) if config.model.provider != "mock" else MockModel()
+    print("OpenCode Harness chat. Type /exit to quit.")
+    while True:
+        try:
+            task = input("och> ").strip()
+        except EOFError:
+            print()
+            return 0
+        if task in {"/exit", "/quit"}:
+            return 0
+        if not task:
+            continue
+        external_tools, external_handlers, mcp_clients = _mcp_runtime_from_config(config)
+        run_id = datetime.now().strftime("%Y%m%d-%H%M%S")
+        trace = TraceWriter(Path("runs") / f"{run_id}.jsonl")
+        try:
+            agent = Agent(
+                model=model,
+                tools=ToolRegistry(
+                    Path("."),
+                    config.permissions,
+                    external_tools=external_tools,
+                    external_handlers=external_handlers,
+                ),
+                trace=trace,
+                max_steps=config.agent.max_steps,
+                workspace=Path("."),
+                context_chars=config.agent.context_chars,
+            )
+            result = agent.run(task)
+            print(result.summary)
+            print(f"Trace: {trace.path}")
+        finally:
+            for client in mcp_clients:
+                client.close()
+
+
+def _init_config(force: bool) -> int:
+    target = Path("och.config.toml")
+    if target.exists() and not force:
+        print("och.config.toml already exists. Use --force to overwrite.", file=sys.stderr)
+        return 2
+    shutil.copyfile(Path("och.config.example.toml"), target)
+    print("Created och.config.toml")
+    return 0
+
+
+def _print_trace(path: Path) -> int:
+    if not path.exists():
+        print(f"Trace not found: {path}", file=sys.stderr)
+        return 2
+    print(path.read_text(encoding="utf-8"))
+    return 0
+
+
+def _run_eval(suite: Path, config: HarnessConfig, output_dir: Path) -> int:
+    report = run_eval_suite(suite, config, output_dir)
+    print(report.to_json())
+    return 0 if report.passed == report.total else 2
+
+
+def _replay_trace(path: Path, summary_only: bool, show_content: bool) -> int:
+    if not path.exists():
+        print(f"Trace not found: {path}", file=sys.stderr)
+        return 2
+    events = load_trace(path)
+    summary = summarize_trace(events)
+    if summary_only:
+        print(render_summary(summary))
+    else:
+        print(render_timeline(events, show_content=show_content))
+        print()
+        print(render_summary(summary))
+    return 0
+
+
+def _mcp_runtime_from_config(
+    config: HarnessConfig,
+) -> tuple[list[ExternalToolSpec], dict[str, object], list[StdioMcpClient]]:
+    tools = [
+        ExternalToolSpec(
+            name=tool.name,
+            description=tool.description or f"External MCP tool {tool.name}.",
+            input_schema=tool.input_schema or {"type": "object", "properties": {}},
+            server=tool.server,
+        )
+        for tool in config.mcp_tools
+    ]
+    clients: dict[str, StdioMcpClient] = {}
+    handlers = {}
+    for server in config.mcp_servers:
+        client = StdioMcpClient(
+            McpServerSpec(name=server.name, command=server.command, args=server.args)
+        )
+        clients[server.name] = client
+        for tool in client.list_tools():
+            tools.append(tool)
+            handlers[tool.name] = client.call_tool
+    for tool in tools:
+        if tool.server and tool.server in clients and tool.name not in handlers:
+            handlers[tool.name] = clients[tool.server].call_tool
+    return tools, handlers, list(clients.values())

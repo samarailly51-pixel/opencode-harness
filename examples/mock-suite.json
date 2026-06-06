@@ -1,0 +1,17 @@
+{
+  "name": "mock smoke suite",
+  "cases": [
+    {
+      "id": "inspect-repo",
+      "task": "inspect this repo",
+      "workspace": "..",
+      "expect_contains": "Mock run completed"
+    },
+    {
+      "id": "simple-finish",
+      "task": "say hello",
+      "workspace": "..",
+      "expect_contains": "Mock run completed"
+    }
+  ]
+}

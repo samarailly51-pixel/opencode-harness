@@ -1,0 +1,32 @@
+[model]
+provider = "openai-compatible"
+base_url = "https://api.deepseek.com"
+model = "deepseek-chat"
+api_key_env = "OCH_API_KEY"
+
+[agent]
+max_steps = 8
+context_chars = 6000
+
+[permissions]
+allow_write = false
+allow_shell = true
+allow_network = false
+
+[[mcp_tools]]
+name = "mcp_lookup"
+description = "Example external MCP-compatible lookup tool."
+server = "docs"
+
+[mcp_tools.input_schema]
+type = "object"
+required = ["query"]
+
+[mcp_tools.input_schema.properties.query]
+type = "string"
+description = "Lookup query."
+
+[[mcp_servers]]
+name = "docs"
+command = "python"
+args = ["path/to/mcp_server.py"]

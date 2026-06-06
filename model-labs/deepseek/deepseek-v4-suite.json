@@ -1,0 +1,29 @@
+{
+  "name": "deepseek v4 coding-agent smoke",
+  "cases": [
+    {
+      "id": "repo-map-orientation",
+      "task": "Inspect this repository and summarize the main runtime modules. Use repo_map or context_pack before answering.",
+      "workspace": "../..",
+      "expect_contains": "runtime"
+    },
+    {
+      "id": "tool-calling-stability",
+      "task": "Use todo_set to create a short plan, then inspect README.md, then finish with a concise summary.",
+      "workspace": "../..",
+      "expect_contains": "summary"
+    },
+    {
+      "id": "patch-proposal-no-write",
+      "task": "Inspect README.md and propose one small documentation improvement. Do not edit files; finish with the proposed patch idea.",
+      "workspace": "../..",
+      "expect_contains": "README"
+    },
+    {
+      "id": "chinese-coding-task",
+      "task": "请检查这个项目的结构，并用中文总结这个 harness 当前支持哪些模型、工具和评测能力。",
+      "workspace": "../..",
+      "expect_contains": "模型"
+    }
+  ]
+}

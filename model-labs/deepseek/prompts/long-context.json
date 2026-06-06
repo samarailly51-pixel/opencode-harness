@@ -1,0 +1,13 @@
+{
+  "name": "deepseek long-context prompts",
+  "prompts": [
+    {
+      "id": "repo-wide-summary",
+      "task": "Use context_pack and repo_map to summarize the whole repository in a structured way."
+    },
+    {
+      "id": "cross-module-flow",
+      "task": "Explain the flow from CLI command to model call to tool execution to trace replay."
+    }
+  ]
+}

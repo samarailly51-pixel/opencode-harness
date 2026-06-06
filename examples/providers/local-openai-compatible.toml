@@ -1,0 +1,16 @@
+[model]
+provider = "openai-compatible"
+base_url = "http://localhost:8000"
+model = "local-coder"
+api_key_env = "LOCAL_MODEL_API_KEY"
+temperature = 0.2
+max_tokens = 2048
+
+[agent]
+max_steps = 8
+context_chars = 8000
+
+[permissions]
+allow_write = false
+allow_shell = true
+allow_network = false

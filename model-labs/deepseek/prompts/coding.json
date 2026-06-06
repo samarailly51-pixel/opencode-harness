@@ -1,0 +1,13 @@
+{
+  "name": "deepseek coding prompts",
+  "prompts": [
+    {
+      "id": "readme-improvement",
+      "task": "Propose a minimal README improvement for first-time users of this harness."
+    },
+    {
+      "id": "test-targeting",
+      "task": "Identify which tests should be extended before changing model tool-call parsing."
+    }
+  ]
+}
