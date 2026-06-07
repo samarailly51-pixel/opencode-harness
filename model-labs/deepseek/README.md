@@ -34,7 +34,7 @@ Provider-specific configs can override model names, base URLs, context size, and
 
 ## Outputs
 
-Eval runs write per-case traces, sessions, `report.json`, and `report.md` under `eval-runs/`.
+Eval runs write per-case traces, sessions, `report.json`, `report.md`, and `report.html` under `eval-runs/`.
 
 Use replay to inspect individual traces:
 

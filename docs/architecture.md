@@ -132,6 +132,7 @@ The runner executes every case with the same model/config and writes:
 - per-case session JSON
 - suite-level `report.json`
 - suite-level `report.md`
+- suite-level `report.html`
 
 This is the first layer for comparing DeepSeek, Qwen, Claude, OpenAI, and local models on identical coding-agent tasks.
 

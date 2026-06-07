@@ -73,6 +73,10 @@ class EvalTests(unittest.TestCase):
             self.assertIn("# Eval Report: smoke", markdown)
             self.assertIn("| inspect | PASS |", markdown)
             self.assertIn("Mock run completed", markdown)
+            report_html = next((root / "eval-runs").glob("*/report.html"))
+            html = report_html.read_text(encoding="utf-8")
+            self.assertIn("<title>Eval Report: smoke</title>", html)
+            self.assertIn("Mock run completed", html)
 
     def test_eval_report_markdown_escapes_table_cells(self) -> None:
         report = EvalReport(
@@ -101,6 +105,35 @@ class EvalTests(unittest.TestCase):
 
         self.assertIn("case\\|one", markdown)
         self.assertIn("0/1", markdown)
+
+    def test_eval_report_html_escapes_content(self) -> None:
+        report = EvalReport(
+            suite="<demo>",
+            started_at="20260607-000000",
+            model_provider="mock",
+            model_name="mock-coder",
+            total=1,
+            passed=0,
+            results=[
+                EvalCaseResult(
+                    id="<case>",
+                    ok=False,
+                    finished=True,
+                    steps=1,
+                    seconds=0.1234,
+                    summary="<script>alert(1)</script>",
+                    trace="trace.jsonl",
+                    session="session.json",
+                    error="<bad>",
+                )
+            ],
+        )
+
+        html = report.to_html()
+
+        self.assertIn("&lt;demo&gt;", html)
+        self.assertIn("&lt;script&gt;alert(1)&lt;/script&gt;", html)
+        self.assertNotIn("<script>alert(1)</script>", html)
 
     def test_load_eval_report_from_directory(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from datetime import datetime
+from html import escape
 from pathlib import Path
 import json
 import time
@@ -96,6 +97,86 @@ class EvalReport:
             if result.error:
                 lines.extend(["Error:", "", _md_block(result.error), ""])
         return "\n".join(lines).rstrip() + "\n"
+
+    def to_html(self) -> str:
+        rate = 0 if self.total == 0 else (self.passed / self.total) * 100
+        rows = []
+        for result in self.results:
+            status = "PASS" if result.ok else "FAIL"
+            status_class = "pass" if result.ok else "fail"
+            rows.append(
+                "<tr>"
+                f"<td>{escape(result.id)}</td>"
+                f"<td><span class=\"badge {status_class}\">{status}</span></td>"
+                f"<td>{escape(str(result.finished))}</td>"
+                f"<td class=\"num\">{result.steps}</td>"
+                f"<td class=\"num\">{result.seconds:.3f}</td>"
+                f"<td><a href=\"{escape(_md_link_path(result.trace))}\">trace</a></td>"
+                f"<td><a href=\"{escape(_md_link_path(result.session))}\">session</a></td>"
+                "</tr>"
+            )
+        summaries = []
+        for result in self.results:
+            status = "PASS" if result.ok else "FAIL"
+            status_class = "pass" if result.ok else "fail"
+            error = ""
+            if result.error:
+                error = f"<h4>Error</h4><pre>{escape(result.error)}</pre>"
+            summaries.append(
+                "<section class=\"case-summary\">"
+                f"<h3><span class=\"badge {status_class}\">{status}</span> {escape(result.id)}</h3>"
+                f"<pre>{escape(result.summary or '(no summary)')}</pre>"
+                f"{error}"
+                "</section>"
+            )
+        return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eval Report: {escape(self.suite)}</title>
+  <style>
+    body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 32px; color: #202124; }}
+    main {{ max-width: 1120px; margin: 0 auto; }}
+    h1, h2, h3 {{ line-height: 1.2; }}
+    .meta {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 20px 0; }}
+    .metric {{ border: 1px solid #dadce0; border-radius: 8px; padding: 12px; background: #fafafa; }}
+    .metric strong {{ display: block; font-size: 0.8rem; color: #5f6368; text-transform: uppercase; }}
+    table {{ width: 100%; border-collapse: collapse; margin: 16px 0 28px; }}
+    th, td {{ border-bottom: 1px solid #e8eaed; padding: 10px; text-align: left; vertical-align: top; }}
+    th {{ background: #f8fafd; font-weight: 600; }}
+    .num {{ text-align: right; font-variant-numeric: tabular-nums; }}
+    .badge {{ display: inline-block; border-radius: 999px; padding: 2px 8px; font-size: 0.8rem; font-weight: 700; }}
+    .pass {{ background: #e6f4ea; color: #137333; }}
+    .fail {{ background: #fce8e6; color: #a50e0e; }}
+    pre {{ white-space: pre-wrap; background: #f8fafd; border: 1px solid #e8eaed; border-radius: 8px; padding: 12px; overflow-x: auto; }}
+    a {{ color: #0b57d0; }}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Eval Report: {escape(self.suite)}</h1>
+  <section class="meta">
+    <div class="metric"><strong>Started</strong>{escape(self.started_at)}</div>
+    <div class="metric"><strong>Provider</strong>{escape(self.model_provider)}</div>
+    <div class="metric"><strong>Model</strong>{escape(self.model_name)}</div>
+    <div class="metric"><strong>Passed</strong>{self.passed}/{self.total} ({rate:.1f}%)</div>
+  </section>
+  <h2>Results</h2>
+  <table>
+    <thead>
+      <tr><th>Case</th><th>Status</th><th>Finished</th><th>Steps</th><th>Seconds</th><th>Trace</th><th>Session</th></tr>
+    </thead>
+    <tbody>
+      {"".join(rows)}
+    </tbody>
+  </table>
+  <h2>Case Summaries</h2>
+  {"".join(summaries)}
+</main>
+</body>
+</html>
+"""
 
 
 def load_eval_suite(path: Path) -> tuple[str, list[EvalCase]]:
@@ -271,6 +352,7 @@ def run_eval_suite(
     )
     (run_dir / "report.json").write_text(report.to_json(), encoding="utf-8")
     (run_dir / "report.md").write_text(report.to_markdown(), encoding="utf-8")
+    (run_dir / "report.html").write_text(report.to_html(), encoding="utf-8")
     return report
 
 

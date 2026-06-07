@@ -31,7 +31,7 @@ OpenCode Harness is a clean-room, model-agnostic runtime for Claude Code-class c
 - [ ] Provider-specific transcript adapters for exact replay.
 - [x] Markdown eval reports.
 - [x] Model comparison tables across eval reports.
-- [ ] HTML eval reports.
+- [x] HTML eval reports.
 - [ ] First-class failure taxonomy.
 
 ## 0.3 Model Labs
