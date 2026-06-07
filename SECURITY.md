@@ -9,6 +9,7 @@ OpenCode Harness executes model-requested tools against local workspaces. Treat 
 - Shell command classification blocks compound commands, redirection, network-like commands, and write-like commands by default.
 - Network-like install/download commands are blocked by default.
 - Tool calls are traced.
+- Provider transcripts record request payloads and raw response bodies but do not record API key headers.
 - MCP tools must be explicitly configured.
 - Optional `approval_mode = "ask"` prompts before blocked writes, blocked shell commands, and MCP-compatible external tool calls.
 
@@ -19,6 +20,8 @@ Please report security issues privately to the project maintainers once a mainta
 ## Secrets
 
 Do not commit API keys, provider tokens, private endpoint URLs, or proprietary prompts.
+
+Treat trace files as sensitive if prompts, model responses, local paths, or private provider endpoints contain confidential information.
 
 Use environment variables such as:
 

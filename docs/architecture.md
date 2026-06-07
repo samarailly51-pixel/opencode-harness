@@ -31,6 +31,7 @@ task
 - `agent.py`: step-based agent loop and tool-call parsing.
 - `tools.py`: workspace tools for files, search, shell, git diff, and guarded edits.
 - `permissions.py`: conservative policy checks for shell and file operations.
+- `transcript.py`: provider-specific request/response transcript adapters.
 - `trace.py`: JSONL trace writer for replay, audit, and evaluation.
 - `replay.py`: trace reader, timeline renderer, and summary statistics.
 - `session.py`: resumable session state, messages, steps, status, and todos.
@@ -148,11 +149,12 @@ Trace replay does not call a model or execute tools. It reads JSONL trace events
 
 - task start/finish
 - model responses
+- provider-specific transcripts
 - tool calls and status
 - context packing events
 - summary statistics
 
-This supports debugging, audit trails, and later UI/report generation.
+Provider transcript adapters currently cover mock, OpenAI-compatible chat completions, and Anthropic Messages. They store the request payload and raw response body in `model.response` trace events without API key headers. This supports debugging, audit trails, exact replay tooling, and later UI/report generation.
 
 ## Provider Strategy
 
@@ -167,7 +169,7 @@ Current presets:
 ## Near-Term Roadmap
 
 1. Add MCP resource/list/read support.
-2. Add provider-specific transcript adapters for exact replay.
-3. Add MCP prompt support.
-4. Add TUI or HTML trace viewer.
-5. Add packaged CLI release.
+2. Add MCP prompt support.
+3. Add TUI or HTML trace viewer.
+4. Add packaged CLI release.
+5. Add example GitHub workflows for model evals.

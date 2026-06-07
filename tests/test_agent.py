@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import unittest
 
 from opencode_harness.agent import Agent
@@ -42,6 +43,16 @@ class AgentTests(unittest.TestCase):
             self.assertIn("Mock run completed", result.summary)
             self.assertTrue(trace.path.exists())
             self.assertTrue((workspace / "runs" / "latest.jsonl").exists())
+            model_events = [
+                json.loads(line)
+                for line in trace.path.read_text(encoding="utf-8").splitlines()
+                if '"type": "model.response"' in line
+            ]
+            self.assertEqual(model_events[0]["data"]["transcript"]["provider"], "mock")
+            self.assertEqual(
+                model_events[0]["data"]["transcript"]["request_format"],
+                "opencode-harness.mock.v1",
+            )
 
     def test_agent_consumes_native_tool_call(self) -> None:
         import tempfile

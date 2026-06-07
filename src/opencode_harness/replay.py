@@ -17,6 +17,7 @@ class TraceEvent:
 class ReplaySummary:
     events: int
     model_calls: int
+    transcripts: int
     tool_calls: int
     failed_tools: int
     steps: int
@@ -44,7 +45,9 @@ def load_trace(path: Path) -> list[TraceEvent]:
 
 
 def summarize_trace(events: list[TraceEvent]) -> ReplaySummary:
-    model_calls = sum(1 for event in events if event.type == "model.response")
+    model_events = [event for event in events if event.type == "model.response"]
+    model_calls = len(model_events)
+    transcripts = sum(1 for event in model_events if event.data.get("transcript"))
     tool_events = [event for event in events if event.type == "tool.result"]
     failed_tools = sum(1 for event in tool_events if not event.data.get("ok", False))
     finish_events = [event for event in events if event.type == "task.finish"]
@@ -59,6 +62,7 @@ def summarize_trace(events: list[TraceEvent]) -> ReplaySummary:
     return ReplaySummary(
         events=len(events),
         model_calls=model_calls,
+        transcripts=transcripts,
         tool_calls=len(tool_events),
         failed_tools=failed_tools,
         steps=steps,
@@ -79,6 +83,13 @@ def render_timeline(events: list[TraceEvent], show_content: bool = False) -> str
         elif event.type == "model.response":
             content = str(event.data.get("content", ""))
             lines.append(f"[step {event.data.get('step')}] model response: {_preview(content)}")
+            transcript = event.data.get("transcript")
+            if isinstance(transcript, dict):
+                lines.append(
+                    f"[step {event.data.get('step')}] transcript: "
+                    f"{transcript.get('provider', '?')} "
+                    f"{transcript.get('request_format', '?')}"
+                )
             if show_content:
                 lines.append(_indent(content))
         elif event.type == "tool.result":
@@ -102,6 +113,7 @@ def render_summary(summary: ReplaySummary) -> str:
             f"Events: {summary.events}",
             f"Steps: {summary.steps}",
             f"Model calls: {summary.model_calls}",
+            f"Transcripts: {summary.transcripts}",
             f"Tool calls: {summary.tool_calls}",
             f"Failed tools: {summary.failed_tools}",
             f"Finished: {summary.finished}",

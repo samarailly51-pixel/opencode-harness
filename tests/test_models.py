@@ -1,9 +1,18 @@
 import unittest
 
-from opencode_harness.models import _parse_anthropic_tool_calls, _parse_openai_tool_calls
+from opencode_harness.messages import Message
+from opencode_harness.models import MockModel, _parse_anthropic_tool_calls, _parse_openai_tool_calls
 
 
 class ModelTests(unittest.TestCase):
+    def test_mock_model_returns_provider_transcript(self) -> None:
+        response = MockModel().complete([Message("user", "inspect this repo")], tools=True)
+
+        self.assertIsNotNone(response.transcript)
+        self.assertEqual(response.transcript.provider, "mock")
+        self.assertEqual(response.transcript.request["messages"][0]["role"], "user")
+        self.assertEqual(response.transcript.response["content"], response.content)
+
     def test_parse_openai_tool_calls(self) -> None:
         calls = _parse_openai_tool_calls(
             {

@@ -10,6 +10,12 @@ from .config import ModelConfig
 from .mcp import ExternalToolSpec
 from .messages import Message
 from .tool_schemas import anthropic_tool_schemas, openai_tool_schemas
+from .transcript import (
+    ProviderTranscript,
+    anthropic_messages_transcript,
+    mock_transcript,
+    openai_chat_transcript,
+)
 
 
 @dataclass(frozen=True)
@@ -22,6 +28,7 @@ class ToolCall:
 class ModelResponse:
     content: str
     tool_calls: list[ToolCall] | None = None
+    transcript: ProviderTranscript | None = None
 
 
 class ChatModel:
@@ -42,11 +49,23 @@ class MockModel(ChatModel):
         extra_tools: list[ExternalToolSpec] | None = None,
     ) -> ModelResponse:
         if any(message.content.startswith("Observation from") for message in messages):
-            return ModelResponse('{"tool":"finish","args":{"summary":"Mock run completed. Configure a real provider for coding work."}}')
+            content = '{"tool":"finish","args":{"summary":"Mock run completed. Configure a real provider for coding work."}}'
+            return ModelResponse(
+                content,
+                transcript=mock_transcript(messages, tools, extra_tools, {"content": content}),
+            )
         user_text = "\n".join(message.content for message in messages if message.role == "user")
         if "inspect" in user_text.lower() or "repo" in user_text.lower():
-            return ModelResponse('{"tool":"list_files","args":{"path":"."}}')
-        return ModelResponse('{"tool":"finish","args":{"summary":"Mock run completed. Configure a real provider for coding work."}}')
+            content = '{"tool":"list_files","args":{"path":"."}}'
+            return ModelResponse(
+                content,
+                transcript=mock_transcript(messages, tools, extra_tools, {"content": content}),
+            )
+        content = '{"tool":"finish","args":{"summary":"Mock run completed. Configure a real provider for coding work."}}'
+        return ModelResponse(
+            content,
+            transcript=mock_transcript(messages, tools, extra_tools, {"content": content}),
+        )
 
 
 class OpenAICompatibleModel(ChatModel):
@@ -90,7 +109,11 @@ class OpenAICompatibleModel(ChatModel):
         message = data["choices"][0]["message"]
         content = message.get("content") or ""
         tool_calls = _parse_openai_tool_calls(message)
-        return ModelResponse(content=content, tool_calls=tool_calls)
+        return ModelResponse(
+            content=content,
+            tool_calls=tool_calls,
+            transcript=openai_chat_transcript(payload, data, url),
+        )
 
 
 class AnthropicModel(ChatModel):
@@ -146,6 +169,7 @@ class AnthropicModel(ChatModel):
         return ModelResponse(
             content="\n".join(text_parts),
             tool_calls=_parse_anthropic_tool_calls(data),
+            transcript=anthropic_messages_transcript(payload, data, url),
         )
 
 

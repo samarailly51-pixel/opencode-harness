@@ -21,7 +21,7 @@ This project does not contain or derive from Claude Code source code. It is an i
 - Native OpenAI-compatible and Anthropic tool schemas with JSON text fallback.
 - MCP-compatible external tool extension points.
 - Permission policy that defaults to conservative command execution.
-- JSONL trace files for replay, evaluation, and debugging.
+- JSONL trace files with provider transcripts for replay, evaluation, and debugging.
 
 ## Quick Start
 
@@ -266,12 +266,14 @@ Show full model and tool content:
 python -m opencode_harness replay runs/latest.jsonl --show-content
 ```
 
+Model response events include provider-specific transcripts for mock, OpenAI-compatible, and Anthropic adapters. These transcripts capture the provider request payload and raw response body, excluding API key headers, so eval runs can be audited and replay tooling can reconstruct exact provider calls.
+
 ## Design Principles
 
 - Clean-room implementation.
 - Model-neutral provider layer.
 - DeepSeek and Qwen are first-class targets through OpenAI-compatible APIs.
-- Trace everything that matters: prompt, tool call, command output, file edits, model parameters, and timing.
+- Trace everything that matters: prompt, provider payload, model response, tool call, command output, file edits, model parameters, and timing.
 - Prefer reproducibility and auditability over hidden automation.
 
 ## Project Docs

@@ -53,6 +53,7 @@ class Agent:
                     "step": step,
                     "content": response.content,
                     "tool_calls": response.tool_calls,
+                    "transcript": response.transcript,
                 },
             )
             tool_call = self._next_tool_call(response.tool_calls, response.content)
