@@ -6,6 +6,7 @@ OpenCode Harness executes model-requested tools against local workspaces. Treat 
 
 - File writes are disabled by default.
 - Shell commands are policy-gated.
+- Shell command classification blocks compound commands, redirection, network-like commands, and write-like commands by default.
 - Network-like install/download commands are blocked by default.
 - Tool calls are traced.
 - MCP tools must be explicitly configured.

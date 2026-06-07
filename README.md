@@ -77,6 +77,8 @@ Ask before running blocked shell commands, writes, or MCP tool calls:
 python -m opencode_harness run "fix the failing test" --preset deepseek --approval-mode ask
 ```
 
+Shell commands are classified before execution. Common read-only inspection commands such as `git status`, `git diff`, `rg`, `ls`, `dir`, `pytest`, and `python -m unittest` are allowed by default. Compound commands, redirection, network commands, and write-like commands require approval or remain blocked.
+
 Save or resume a session:
 
 ```powershell

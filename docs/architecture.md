@@ -94,7 +94,7 @@ Repository tools summarize codebase structure:
 - `repo_map`
 - `context_pack`
 
-Shell commands are also policy-gated. The default policy allows common read-only commands and blocks network-like install/download commands.
+Shell commands are also policy-gated. The classifier rejects empty commands, compound shell syntax such as `&&` and `|`, shell redirection, network-like commands, and write-like commands before checking the read-only allowlist. The default allowlist covers common inspection and test commands such as `git status`, `git diff`, `git show`, `rg`, `ls`, `dir`, `pytest`, and `python -m unittest`.
 
 ## Session State
 
