@@ -82,6 +82,8 @@ File writes are disabled by default. Use `--allow-write` or `allow_write = true`
 - `replace_text`
 - `apply_patch`
 
+Alternatively, set `approval_mode = "ask"` or pass `--approval-mode ask` to prompt before a blocked write, blocked shell command, or MCP-compatible external tool call. The default `approval_mode = "never"` keeps non-allowlisted operations blocked without prompting.
+
 Todo tools mutate session state:
 
 - `todo_set`
@@ -162,8 +164,8 @@ Current presets:
 
 ## Near-Term Roadmap
 
-1. Add richer approval prompts for commands and edits.
-2. Add MCP resource/list/read support.
-3. Add HTML/Markdown eval reports.
-4. Add model comparison tables for eval reports.
-5. Add provider-specific transcript adapters for exact replay.
+1. Add MCP resource/list/read support.
+2. Add provider-specific transcript adapters for exact replay.
+3. Add first-class failure taxonomy.
+4. Add TUI or HTML trace viewer.
+5. Add MCP prompt support.

@@ -82,6 +82,7 @@ def _add_common_model_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--max-steps", type=int, help="Agent max steps")
     parser.add_argument("--context-chars", type=int, help="Max repository context characters")
     parser.add_argument("--allow-write", action="store_true", help="Allow file-writing tools")
+    parser.add_argument("--approval-mode", choices=["never", "ask"], help="Approval mode for risky tool calls")
     parser.add_argument("--session", type=Path, help="Session JSON path")
     parser.add_argument("--resume", action="store_true", help="Resume from --session if it exists")
     parser.add_argument("--workspace", type=Path, default=Path("."), help="Workspace path")
@@ -115,6 +116,14 @@ def _config_from_args(args: argparse.Namespace, force_mock: bool = False) -> Har
             allow_write=True,
             allow_shell=permissions.allow_shell,
             allow_network=permissions.allow_network,
+            approval_mode=permissions.approval_mode,
+        )
+    if args.approval_mode is not None:
+        permissions = PermissionConfig(
+            allow_write=permissions.allow_write,
+            allow_shell=permissions.allow_shell,
+            allow_network=permissions.allow_network,
+            approval_mode=args.approval_mode,
         )
     return HarnessConfig(
         model=model,
@@ -145,6 +154,7 @@ def _run_task(
         session=session,
         external_tools=external_tools,
         external_handlers=external_handlers,
+        approval_callback=None,
     )
     try:
         agent = Agent(
@@ -191,6 +201,7 @@ def _chat(config: HarnessConfig) -> int:
                     config.permissions,
                     external_tools=external_tools,
                     external_handlers=external_handlers,
+                    approval_callback=None,
                 ),
                 trace=trace,
                 max_steps=config.agent.max_steps,

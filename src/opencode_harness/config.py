@@ -27,6 +27,7 @@ class PermissionConfig:
     allow_write: bool = False
     allow_shell: bool = True
     allow_network: bool = False
+    approval_mode: str = "never"
 
 
 @dataclass(frozen=True)

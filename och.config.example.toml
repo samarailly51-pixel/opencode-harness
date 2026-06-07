@@ -12,6 +12,7 @@ context_chars = 6000
 allow_write = false
 allow_shell = true
 allow_network = false
+approval_mode = "never"
 
 [[mcp_tools]]
 name = "mcp_lookup"

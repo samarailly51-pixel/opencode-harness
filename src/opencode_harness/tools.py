@@ -6,7 +6,7 @@ import subprocess
 
 from .config import PermissionConfig
 from .mcp import ExternalToolSpec, McpHandler
-from .permissions import check_shell_permission
+from .permissions import ApprovalCallback, ApprovalRequest, check_shell_permission, request_approval
 from .repo_map import build_repo_map, pack_context
 from .session import SessionState, TodoItem
 from .tools_types import ToolResult
@@ -20,12 +20,14 @@ class ToolRegistry:
         session: SessionState | None = None,
         external_tools: list[ExternalToolSpec] | None = None,
         external_handlers: dict[str, McpHandler] | None = None,
+        approval_callback: ApprovalCallback | None = None,
     ) -> None:
         self.workspace = workspace.resolve()
         self.permissions = permissions
         self.session = session
         self.external_tools = {tool.name: tool for tool in external_tools or []}
         self.external_handlers = external_handlers or {}
+        self.approval_callback = approval_callback
 
     def run(self, name: str, args: dict[str, object]) -> ToolResult:
         if name in self.external_tools:
@@ -67,6 +69,10 @@ class ToolRegistry:
             spec = self.external_tools[name]
             server_hint = f" from server {spec.server}" if spec.server else ""
             return ToolResult(False, f"External MCP tool {name}{server_hint} is declared but no client is attached")
+        if self.permissions.approval_mode == "ask":
+            approval = self._approve("mcp", name, f"external MCP tool call with args: {args}")
+            if not approval.ok:
+                return approval
         return handler(args)
 
     def list_files(self, path: str) -> ToolResult:
@@ -105,7 +111,9 @@ class ToolRegistry:
 
     def write_file(self, path: str, content: str) -> ToolResult:
         if not self.permissions.allow_write:
-            return ToolResult(False, "Blocked: file writes are disabled by policy")
+            approval = self._approve("write", path, "file writes are disabled by policy")
+            if not approval.ok:
+                return approval
         file_path = self._resolve(path)
         file_path.parent.mkdir(parents=True, exist_ok=True)
         file_path.write_text(content, encoding="utf-8")
@@ -113,7 +121,9 @@ class ToolRegistry:
 
     def replace_text(self, path: str, old: str, new: str) -> ToolResult:
         if not self.permissions.allow_write:
-            return ToolResult(False, "Blocked: file writes are disabled by policy")
+            approval = self._approve("write", path, "file writes are disabled by policy")
+            if not approval.ok:
+                return approval
         file_path = self._resolve(path)
         if not file_path.is_file():
             return ToolResult(False, f"Not a file: {path}")
@@ -126,7 +136,9 @@ class ToolRegistry:
 
     def apply_patch(self, patch: str) -> ToolResult:
         if not self.permissions.allow_write:
-            return ToolResult(False, "Blocked: file writes are disabled by policy")
+            approval = self._approve("write", "apply_patch", "file writes are disabled by policy")
+            if not approval.ok:
+                return approval
         try:
             changed = _apply_unified_diff(self.workspace, patch)
         except ValueError as error:
@@ -165,7 +177,9 @@ class ToolRegistry:
     def shell(self, command: str) -> ToolResult:
         decision = check_shell_permission(command, self.permissions)
         if not decision.allowed:
-            return ToolResult(False, f"Blocked: {decision.reason}")
+            approval = self._approve("shell", command, decision.reason)
+            if not approval.ok:
+                return approval
         completed = subprocess.run(
             command,
             cwd=self.workspace,
@@ -178,6 +192,16 @@ class ToolRegistry:
         if completed.stderr:
             output += "\n[stderr]\n" + completed.stderr
         return ToolResult(completed.returncode == 0, output.strip())
+
+    def _approve(self, kind: str, action: str, reason: str) -> ToolResult:
+        decision = request_approval(
+            ApprovalRequest(kind=kind, action=action, reason=reason),
+            self.permissions,
+            self.approval_callback,
+        )
+        if decision.allowed:
+            return ToolResult(True, decision.reason)
+        return ToolResult(False, f"Blocked: {decision.reason}")
 
     def _resolve(self, path: str) -> Path:
         candidate = (self.workspace / path).resolve()

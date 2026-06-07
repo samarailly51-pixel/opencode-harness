@@ -25,7 +25,7 @@ OpenCode Harness is a clean-room, model-agnostic runtime for Claude Code-class c
 
 ## 0.2 Reliability
 
-- [ ] Richer approval prompts for shell, write, and MCP tool calls.
+- [x] Richer approval prompts for shell, write, and MCP tool calls.
 - [ ] Better shell command classification.
 - [x] Stronger unified diff parser.
 - [ ] Provider-specific transcript adapters for exact replay.

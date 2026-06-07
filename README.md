@@ -71,6 +71,12 @@ Allow file edits explicitly:
 python -m opencode_harness run "update the README title" --preset deepseek --allow-write
 ```
 
+Ask before running blocked shell commands, writes, or MCP tool calls:
+
+```powershell
+python -m opencode_harness run "fix the failing test" --preset deepseek --approval-mode ask
+```
+
 Save or resume a session:
 
 ```powershell
@@ -103,6 +109,7 @@ context_chars = 6000
 allow_write = false
 allow_shell = true
 allow_network = false
+approval_mode = "never"
 
 [[mcp_tools]]
 name = "mcp_lookup"
@@ -149,7 +156,7 @@ Models can request tools with provider-neutral JSON:
 {"tool": "apply_patch", "args": {"patch": "--- a/file.txt\n+++ b/file.txt\n@@ -1,1 +1,1 @@\n-old\n+new"}}
 ```
 
-`apply_patch`, `write_file`, and `replace_text` require `--allow-write`.
+`apply_patch`, `write_file`, and `replace_text` require `--allow-write`, unless `--approval-mode ask` is enabled and the user approves the specific write.
 
 OpenAI-compatible and Anthropic providers also receive native tool schemas. If the provider returns `tool_calls` or Anthropic `tool_use` blocks, the agent uses them directly; otherwise it falls back to the JSON text protocol above.
 
@@ -165,7 +172,7 @@ server = "docs"
 type = "object"
 ```
 
-At runtime, external tools are dispatched through `ToolRegistry` handlers. If a tool is declared but no client/handler is attached, the harness returns a clear tool error instead of pretending it ran.
+At runtime, external tools are dispatched through `ToolRegistry` handlers. If `approval_mode = "ask"` is enabled, each MCP-compatible external tool call is approved before dispatch. If a tool is declared but no client/handler is attached, the harness returns a clear tool error instead of pretending it ran.
 
 Stdio MCP servers can be configured with `[[mcp_servers]]`. The harness starts the process, sends `initialize`, reads `tools/list`, and dispatches calls through `tools/call`:
 

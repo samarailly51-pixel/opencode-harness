@@ -39,6 +39,37 @@ class ToolTests(unittest.TestCase):
             self.assertFalse(result.ok)
             self.assertFalse((workspace / "note.txt").exists())
 
+    def test_write_file_can_be_approved_interactively(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            workspace = Path(temp_dir)
+            requests = []
+            tools = ToolRegistry(
+                workspace,
+                PermissionConfig(allow_write=False, approval_mode="ask"),
+                approval_callback=lambda request: requests.append(request) is None or True,
+            )
+
+            result = tools.run("write_file", {"path": "note.txt", "content": "hello"})
+
+            self.assertTrue(result.ok)
+            self.assertEqual((workspace / "note.txt").read_text(encoding="utf-8"), "hello")
+            self.assertEqual(requests[0].kind, "write")
+
+    def test_write_file_denied_by_approval_callback(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            workspace = Path(temp_dir)
+            tools = ToolRegistry(
+                workspace,
+                PermissionConfig(allow_write=False, approval_mode="ask"),
+                approval_callback=lambda request: False,
+            )
+
+            result = tools.run("write_file", {"path": "note.txt", "content": "hello"})
+
+            self.assertFalse(result.ok)
+            self.assertIn("Blocked", result.content)
+            self.assertFalse((workspace / "note.txt").exists())
+
     def test_replace_text_with_permission(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             workspace = Path(temp_dir)
@@ -244,3 +275,41 @@ class ToolTests(unittest.TestCase):
 
             self.assertTrue(result.ok)
             self.assertEqual(result.content, "found agent")
+
+    def test_external_tool_requires_approval_when_ask_mode_is_enabled(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            workspace = Path(temp_dir)
+            tools = ToolRegistry(
+                workspace,
+                PermissionConfig(approval_mode="ask"),
+                external_tools=[
+                    ExternalToolSpec(
+                        name="mcp_lookup",
+                        description="Lookup.",
+                        input_schema={"type": "object", "properties": {}},
+                    )
+                ],
+                external_handlers={
+                    "mcp_lookup": lambda args: ToolResult(True, "should not run"),
+                },
+                approval_callback=lambda request: False,
+            )
+
+            result = tools.run("mcp_lookup", {"q": "agent"})
+
+            self.assertFalse(result.ok)
+            self.assertIn("Blocked", result.content)
+
+    def test_shell_can_be_approved_interactively(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            workspace = Path(temp_dir)
+            tools = ToolRegistry(
+                workspace,
+                PermissionConfig(approval_mode="ask"),
+                approval_callback=lambda request: request.kind == "shell",
+            )
+
+            result = tools.run("shell", {"command": "echo approval-ok"})
+
+            self.assertTrue(result.ok)
+            self.assertIn("approval-ok", result.content)

@@ -9,6 +9,7 @@ OpenCode Harness executes model-requested tools against local workspaces. Treat 
 - Network-like install/download commands are blocked by default.
 - Tool calls are traced.
 - MCP tools must be explicitly configured.
+- Optional `approval_mode = "ask"` prompts before blocked writes, blocked shell commands, and MCP-compatible external tool calls.
 
 ## Reporting Issues
 
