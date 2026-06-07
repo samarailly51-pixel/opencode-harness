@@ -5,6 +5,9 @@ from datetime import datetime
 from html import escape
 from pathlib import Path
 import json
+import shutil
+import subprocess
+import sys
 import time
 
 from .agent import Agent
@@ -12,6 +15,7 @@ from .config import HarnessConfig
 from .models import build_model
 from .mcp import ExternalToolSpec
 from .mcp_client import McpServerSpec, StdioMcpClient
+from .permissions import check_shell_permission
 from .replay import load_trace, summarize_trace
 from .session import SessionState
 from .tools import ToolRegistry
@@ -24,6 +28,8 @@ class EvalCase:
     task: str
     workspace: str = "."
     expect_contains: str | None = None
+    workspace_template: str | None = None
+    verify_command: str | None = None
 
 
 @dataclass(frozen=True)
@@ -197,6 +203,8 @@ def load_eval_suite(path: Path) -> tuple[str, list[EvalCase]]:
             task=str(item["task"]),
             workspace=str(item.get("workspace", ".")),
             expect_contains=item.get("expect_contains"),
+            workspace_template=item.get("workspace_template"),
+            verify_command=item.get("verify_command"),
         )
         for item in data.get("cases", [])
     ]
@@ -292,7 +300,7 @@ def run_eval_suite(
     try:
         for case in cases:
             start = time.perf_counter()
-            workspace = (suite_path.parent / case.workspace).resolve()
+            workspace = _case_workspace(suite_path, run_dir, case)
             trace_path = run_dir / f"{case.id}.jsonl"
             session_path = run_dir / f"{case.id}.session.json"
             trace = TraceWriter(trace_path)
@@ -340,6 +348,12 @@ def run_eval_suite(
                 ok = agent_result.finished
                 if case.expect_contains:
                     ok = ok and case.expect_contains in agent_result.summary
+                verify_error = None
+                if ok and case.verify_command:
+                    verify_error = _run_verify_command(case.verify_command, workspace, config)
+                    ok = verify_error is None
+                    if verify_error:
+                        error = verify_error
                 failure_type = _classify_failure(agent_result, error, case.expect_contains, trace_path)
                 result = EvalCaseResult(
                     id=case.id,
@@ -401,6 +415,44 @@ def _mcp_runtime_from_config(
     return tools, handlers, list(clients.values())
 
 
+def _case_workspace(suite_path: Path, run_dir: Path, case: EvalCase) -> Path:
+    if case.workspace_template is None:
+        return (suite_path.parent / case.workspace).resolve()
+    source = (suite_path.parent / case.workspace_template).resolve()
+    target = run_dir / "workspaces" / _slug(case.id)
+    if target.exists():
+        shutil.rmtree(target)
+    shutil.copytree(source, target)
+    return target.resolve()
+
+
+def _run_verify_command(command: str, workspace: Path, config: HarnessConfig) -> str | None:
+    decision = check_shell_permission(command, config.permissions)
+    if not decision.allowed:
+        return f"verify_command blocked by policy: {decision.reason}"
+    completed = subprocess.run(
+        _runtime_command(command),
+        cwd=workspace,
+        shell=True,
+        text=True,
+        capture_output=True,
+        timeout=120,
+    )
+    if completed.returncode == 0:
+        return None
+    output = completed.stdout
+    if completed.stderr:
+        output += "\n[stderr]\n" + completed.stderr
+    detail = output.strip() or f"exit code {completed.returncode}"
+    return f"verify_command failed: {detail}"
+
+
+def _runtime_command(command: str) -> str:
+    if command.startswith("python -m "):
+        return f'"{sys.executable}" {command[len("python "):]}'
+    return command
+
+
 def _md_escape(text: str) -> str:
     return text.replace("|", "\\|").replace("\n", " ")
 
@@ -459,6 +511,8 @@ def _classify_failure(
     trace_path: Path,
 ) -> str | None:
     if error:
+        if error.startswith("verify_command"):
+            return "verification_failure"
         return "exception"
     trace_summary = None
     if trace_path.exists():

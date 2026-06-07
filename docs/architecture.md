@@ -137,7 +137,9 @@ The runner executes every case with the same model/config and writes:
 - suite-level `report.md`
 - suite-level `report.html`
 
-Failed cases are assigned a first-class failure type such as `exception`, `tool_failure`, `max_steps`, `expectation_mismatch`, or `recovered_tool_failure`. This keeps provider comparisons diagnostic instead of only binary.
+Failed cases are assigned a first-class failure type such as `exception`, `tool_failure`, `max_steps`, `expectation_mismatch`, `verification_failure`, or `recovered_tool_failure`. This keeps provider comparisons diagnostic instead of only binary.
+
+Eval cases can also use `workspace_template` to copy a fixture into the run directory and `verify_command` to validate model edits against the copied workspace.
 
 This is the first layer for comparing DeepSeek, Qwen, Claude, OpenAI, and local models on identical coding-agent tasks.
 

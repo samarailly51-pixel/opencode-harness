@@ -25,6 +25,8 @@ Use this matrix to compare observable behavior across providers.
 - Context truncation symptoms.
 - Long-context marker adherence.
 - Cross-file recall and synthesis quality.
+- Repair verification pass rate.
+- Minimality and correctness of applied patches.
 
 ## Workflow
 
@@ -36,3 +38,5 @@ Use this matrix to compare observable behavior across providers.
 6. Record observations in Notes.
 
 For long-context checks, run `deepseek-v4-long-context-suite.json` with `--context-chars 24000` or higher and compare marker adherence plus failure taxonomy across providers.
+
+For repair checks, run `deepseek-v4-repair-suite.json` with `--allow-write`. Fixtures are copied into each eval run before execution, and `verify_command` checks whether tests pass after the model edits the copied workspace.

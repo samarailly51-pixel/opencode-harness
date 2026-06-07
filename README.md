@@ -227,7 +227,7 @@ python -m opencode_harness eval examples/mock-suite.json --preset mock --max-ste
 
 Each case writes its own trace and session under `eval-runs/`. The runner also writes `report.json`, `report.md`, and `report.html` with pass/fail status, failure type, timing, steps, summaries, and artifact paths.
 
-Failure types include `exception`, `tool_failure`, `max_steps`, `expectation_mismatch`, and `recovered_tool_failure`.
+Failure types include `exception`, `tool_failure`, `max_steps`, `expectation_mismatch`, `verification_failure`, and `recovered_tool_failure`.
 
 Compare multiple eval reports:
 
@@ -257,6 +257,16 @@ python -m opencode_harness lab-compare `
   --presets deepseek qwen openai claude `
   --context-chars 24000 `
   --comparison-output model-labs/deepseek/reports/long-context-comparison.md
+```
+
+Repair suites can copy fixture workspaces into an eval run, allow the agent to edit the copy, and verify the result with a command:
+
+```powershell
+python -m opencode_harness lab-compare `
+  model-labs/deepseek/deepseek-v4-repair-suite.json `
+  --presets deepseek qwen openai claude `
+  --allow-write `
+  --comparison-output model-labs/deepseek/reports/repair-comparison.md
 ```
 
 ## Model Labs

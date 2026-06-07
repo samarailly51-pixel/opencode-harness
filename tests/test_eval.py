@@ -22,7 +22,15 @@ class EvalTests(unittest.TestCase):
                 json.dumps(
                     {
                         "name": "smoke",
-                        "cases": [{"id": "one", "task": "inspect", "expect_contains": "done"}],
+                        "cases": [
+                            {
+                                "id": "one",
+                                "task": "inspect",
+                                "expect_contains": "done",
+                                "workspace_template": "fixture",
+                                "verify_command": "python -m unittest",
+                            }
+                        ],
                     }
                 ),
                 encoding="utf-8",
@@ -33,6 +41,8 @@ class EvalTests(unittest.TestCase):
             self.assertEqual(name, "smoke")
             self.assertEqual(cases[0].id, "one")
             self.assertEqual(cases[0].expect_contains, "done")
+            self.assertEqual(cases[0].workspace_template, "fixture")
+            self.assertEqual(cases[0].verify_command, "python -m unittest")
 
     def test_run_eval_suite_with_mock(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -138,6 +148,93 @@ class EvalTests(unittest.TestCase):
 
             self.assertEqual(report.passed, 0)
             self.assertEqual(report.results[0].failure_type, "max_steps")
+
+    def test_run_eval_suite_copies_workspace_template_and_verifies(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            template = root / "fixture"
+            (template / "tests").mkdir(parents=True)
+            (template / "tests" / "__init__.py").write_text("", encoding="utf-8")
+            (template / "mathy.py").write_text("def add(a, b):\n    return a + b\n", encoding="utf-8")
+            (template / "tests" / "test_mathy.py").write_text(
+                "import unittest\nfrom mathy import add\n\n"
+                "class MathyTests(unittest.TestCase):\n"
+                "    def test_add(self):\n"
+                "        self.assertEqual(add(2, 3), 5)\n",
+                encoding="utf-8",
+            )
+            suite = root / "suite.json"
+            suite.write_text(
+                json.dumps(
+                    {
+                        "name": "repair",
+                        "cases": [
+                            {
+                                "id": "already-fixed",
+                                "task": "finish",
+                                "workspace_template": "fixture",
+                                "expect_contains": "Mock run completed",
+                                "verify_command": "python -m unittest discover -s tests -t .",
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            config = HarnessConfig(
+                model=ModelConfig(provider="mock"),
+                agent=AgentConfig(max_steps=1, context_chars=0),
+                permissions=PermissionConfig(),
+            )
+
+            report = run_eval_suite(suite, config, root / "eval-runs")
+
+            self.assertEqual(report.passed, 1)
+            copied = next((root / "eval-runs").glob("*/workspaces/already-fixed/mathy.py"))
+            self.assertTrue(copied.exists())
+
+    def test_run_eval_suite_classifies_verification_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            template = root / "fixture"
+            (template / "tests").mkdir(parents=True)
+            (template / "tests" / "__init__.py").write_text("", encoding="utf-8")
+            (template / "broken.py").write_text("def value():\n    return 1\n", encoding="utf-8")
+            (template / "tests" / "test_broken.py").write_text(
+                "import unittest\nfrom broken import value\n\n"
+                "class BrokenTests(unittest.TestCase):\n"
+                "    def test_value(self):\n"
+                "        self.assertEqual(value(), 2)\n",
+                encoding="utf-8",
+            )
+            suite = root / "suite.json"
+            suite.write_text(
+                json.dumps(
+                    {
+                        "name": "repair",
+                        "cases": [
+                            {
+                                "id": "still-broken",
+                                "task": "finish",
+                                "workspace_template": "fixture",
+                                "expect_contains": "Mock run completed",
+                                "verify_command": "python -m unittest discover -s tests -t .",
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            config = HarnessConfig(
+                model=ModelConfig(provider="mock"),
+                agent=AgentConfig(max_steps=1, context_chars=0),
+                permissions=PermissionConfig(),
+            )
+
+            report = run_eval_suite(suite, config, root / "eval-runs")
+
+            self.assertEqual(report.passed, 0)
+            self.assertEqual(report.results[0].failure_type, "verification_failure")
 
     def test_eval_report_markdown_escapes_table_cells(self) -> None:
         report = EvalReport(

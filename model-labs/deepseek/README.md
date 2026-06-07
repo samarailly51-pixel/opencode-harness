@@ -41,6 +41,18 @@ python -m opencode_harness eval `
   --context-chars 24000
 ```
 
+Run the coding-agent repair suite with isolated fixture copies and write permission:
+
+```powershell
+$env:DEEPSEEK_API_KEY = "..."
+python -m opencode_harness eval `
+  model-labs/deepseek/deepseek-v4-repair-suite.json `
+  --preset deepseek `
+  --max-steps 12 `
+  --context-chars 8000 `
+  --allow-write
+```
+
 Provider-specific configs can override model names, base URLs, context size, and permissions.
 
 ## Outputs
@@ -85,6 +97,18 @@ python -m opencode_harness lab-compare `
   --max-steps 10 `
   --context-chars 24000 `
   --comparison-output model-labs/deepseek/reports/long-context-comparison.md
+```
+
+For repair comparison, use the repair suite and enable writes. Each case copies its fixture into the eval run directory before the agent starts, so model edits do not modify the checked-in fixtures. The suite verifies repairs with `python -m unittest discover -s tests -t .` inside each copied workspace.
+
+```powershell
+python -m opencode_harness lab-compare `
+  model-labs/deepseek/deepseek-v4-repair-suite.json `
+  --presets deepseek qwen openai claude `
+  --max-steps 12 `
+  --context-chars 8000 `
+  --allow-write `
+  --comparison-output model-labs/deepseek/reports/repair-comparison.md
 ```
 
 ## Clean-Room Boundary

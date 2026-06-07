@@ -8,6 +8,16 @@
     {
       "id": "test-targeting",
       "task": "Identify which tests should be extended before changing model tool-call parsing."
+    },
+    {
+      "id": "repair-calculator",
+      "task": "Inspect failing calculator tests, fix the implementation, rerun tests, and finish with REPAIR_CALCULATOR_PASS.",
+      "suite_case": "repair-calculator"
+    },
+    {
+      "id": "repair-text-utils",
+      "task": "Inspect failing text utility tests, fix the implementation, rerun tests, and finish with REPAIR_TEXT_UTILS_PASS.",
+      "suite_case": "repair-text-utils"
     }
   ]
 }

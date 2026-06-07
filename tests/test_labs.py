@@ -35,6 +35,27 @@ class LabTests(unittest.TestCase):
 
         self.assertEqual(linked_cases, case_ids)
 
+    def test_deepseek_repair_suite_uses_workspace_templates_and_verify_commands(self) -> None:
+        name, cases = load_eval_suite(Path("model-labs/deepseek/deepseek-v4-repair-suite.json"))
+
+        self.assertEqual(name, "deepseek v4 coding-agent repair suite")
+        self.assertEqual({case.id for case in cases}, {"repair-calculator", "repair-text-utils"})
+        self.assertTrue(all(case.workspace_template for case in cases))
+        self.assertTrue(all(case.verify_command == "python -m unittest discover -s tests -t ." for case in cases))
+        self.assertEqual(cases[0].expect_contains, "REPAIR_CALCULATOR_PASS")
+
+    def test_deepseek_coding_prompt_manifest_links_repair_cases(self) -> None:
+        _, cases = load_eval_suite(Path("model-labs/deepseek/deepseek-v4-repair-suite.json"))
+        case_ids = {case.id for case in cases}
+        prompts = json.loads(Path("model-labs/deepseek/prompts/coding.json").read_text(encoding="utf-8"))
+        linked_cases = {
+            prompt["suite_case"]
+            for prompt in prompts["prompts"]
+            if "suite_case" in prompt
+        }
+
+        self.assertTrue(case_ids.issubset(linked_cases))
+
     def test_run_provider_comparison_writes_comparison_and_manifest(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
