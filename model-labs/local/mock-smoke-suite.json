@@ -1,0 +1,11 @@
+{
+  "name": "local lab mock smoke",
+  "cases": [
+    {
+      "id": "lab-loads",
+      "task": "inspect this repo",
+      "workspace": "../..",
+      "expect_contains": "Mock run completed"
+    }
+  ]
+}

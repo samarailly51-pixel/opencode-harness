@@ -1,7 +1,9 @@
 from pathlib import Path
+from datetime import datetime
 import json
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from opencode_harness.config import AgentConfig, HarnessConfig, ModelConfig, PermissionConfig
 from opencode_harness.eval import (
@@ -88,6 +90,53 @@ class EvalTests(unittest.TestCase):
             html = report_html.read_text(encoding="utf-8")
             self.assertIn("<title>Eval Report: smoke</title>", html)
             self.assertIn("Mock run completed", html)
+
+    def test_run_eval_suite_uses_unique_dirs_within_same_second(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "repo").mkdir()
+            suite = root / "suite.json"
+            suite.write_text(
+                json.dumps(
+                    {
+                        "name": "smoke",
+                        "cases": [
+                            {
+                                "id": "inspect",
+                                "task": "inspect this repo",
+                                "workspace": "repo",
+                                "expect_contains": "Mock run completed",
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            config = HarnessConfig(
+                model=ModelConfig(provider="mock"),
+                agent=AgentConfig(max_steps=2, context_chars=1000),
+                permissions=PermissionConfig(),
+            )
+
+            class FakeDatetime:
+                calls = [
+                    datetime(2026, 6, 7, 1, 2, 3, 100),
+                    datetime(2026, 6, 7, 1, 2, 3, 100),
+                ]
+
+                @classmethod
+                def now(cls) -> datetime:
+                    return cls.calls.pop(0)
+
+            with patch("opencode_harness.eval.datetime", FakeDatetime):
+                first = run_eval_suite(suite, config, root / "eval-runs")
+                second = run_eval_suite(suite, config, root / "eval-runs")
+
+            self.assertEqual(first.started_at, "20260607-010203")
+            self.assertEqual(second.started_at, "20260607-010203")
+            run_dirs = sorted((root / "eval-runs").iterdir())
+            self.assertEqual(len(run_dirs), 2)
+            self.assertNotEqual(run_dirs[0].name, run_dirs[1].name)
 
     def test_run_eval_suite_classifies_expectation_mismatch(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 import time
+from uuid import uuid4
 
 from .agent import Agent
 from .config import HarnessConfig
@@ -289,9 +290,11 @@ def run_eval_suite(
     run_label: str | None = None,
 ) -> EvalReport:
     suite_name, cases = load_eval_suite(suite_path)
-    started_at = datetime.now().strftime("%Y%m%d-%H%M%S")
+    now = datetime.now()
+    started_at = now.strftime("%Y%m%d-%H%M%S")
+    run_id = f"{now.strftime('%Y%m%d-%H%M%S-%f')}-{uuid4().hex[:8]}"
     label = f"-{_slug(run_label)}" if run_label else ""
-    run_dir = output_dir / f"{suite_path.stem}{label}-{started_at}"
+    run_dir = output_dir / f"{suite_path.stem}{label}-{run_id}"
     run_dir.mkdir(parents=True, exist_ok=True)
     model = build_model(config.model)
     external_tools, external_handlers, mcp_clients = _mcp_runtime_from_config(config)

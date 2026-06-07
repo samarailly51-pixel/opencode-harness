@@ -31,6 +31,30 @@ PRESETS: dict[str, ModelConfig] = {
         model="claude-sonnet-4-5",
         api_key_env="ANTHROPIC_API_KEY",
     ),
+    "local-openai": ModelConfig(
+        provider="openai-compatible",
+        base_url="http://localhost:8000",
+        model="local-coder",
+        api_key_env="LOCAL_MODEL_API_KEY",
+    ),
+    "vllm": ModelConfig(
+        provider="openai-compatible",
+        base_url="http://localhost:8000",
+        model="local-coder",
+        api_key_env="VLLM_API_KEY",
+    ),
+    "sglang": ModelConfig(
+        provider="openai-compatible",
+        base_url="http://localhost:30000",
+        model="local-coder",
+        api_key_env="SGLANG_API_KEY",
+    ),
+    "ollama": ModelConfig(
+        provider="openai-compatible",
+        base_url="http://localhost:11434",
+        model="qwen2.5-coder:7b",
+        api_key_env="OLLAMA_API_KEY",
+    ),
 }
 
 

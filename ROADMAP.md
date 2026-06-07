@@ -42,7 +42,7 @@ OpenCode Harness is a clean-room, model-agnostic runtime for Claude Code-class c
 - [x] Qwen Lab.
 - [x] Claude Lab.
 - [x] OpenAI Lab.
-- [ ] Local model lab for vLLM/SGLang/Ollama-compatible endpoints.
+- [x] Local model lab for vLLM/SGLang/Ollama-compatible endpoints.
 
 ## 0.4 MCP
 

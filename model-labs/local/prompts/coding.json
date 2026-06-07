@@ -1,0 +1,25 @@
+{
+  "name": "local coding prompts",
+  "prompts": [
+    {
+      "id": "local-openai-tool-calls",
+      "task": "Use todo_set, inspect README.md, and finish with a marked summary.",
+      "suite_case": "local-openai-tool-calls"
+    },
+    {
+      "id": "local-endpoint-routing",
+      "task": "Explain how local OpenAI-compatible presets route to vLLM, SGLang, Ollama, and custom gateways.",
+      "suite_case": "local-endpoint-routing"
+    },
+    {
+      "id": "local-transcript-audit",
+      "task": "Explain provider transcript capture for local OpenAI-compatible endpoints.",
+      "suite_case": "local-transcript-audit"
+    },
+    {
+      "id": "local-chinese-coding-summary",
+      "task": "璇风敤涓枃鎬荤粨 harness 瀵?vLLM銆丼GLang銆丱llama 鍜屾湰鍦?OpenAI-compatible 閮ㄧ讲鐨勬敮鎸併€?",
+      "suite_case": "local-chinese-coding-summary"
+    }
+  ]
+}

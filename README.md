@@ -55,6 +55,9 @@ python -m opencode_harness run "inspect this repository" --preset openai
 
 $env:ANTHROPIC_API_KEY = "..."
 python -m opencode_harness run "inspect this repository" --preset claude
+
+$env:LOCAL_MODEL_API_KEY = "dummy"
+python -m opencode_harness run "inspect this repository" --preset local-openai --model "your-local-model"
 ```
 
 Or use provider config examples:
@@ -144,6 +147,10 @@ Provider presets:
 - `qwen`: OpenAI-compatible DashScope mode, `DASHSCOPE_API_KEY`
 - `openai`: OpenAI API, `OPENAI_API_KEY`
 - `claude`: Anthropic Messages API, `ANTHROPIC_API_KEY`
+- `local-openai`: local OpenAI-compatible endpoint, `LOCAL_MODEL_API_KEY`
+- `vllm`: local vLLM OpenAI-compatible endpoint, `VLLM_API_KEY`
+- `sglang`: local SGLang OpenAI-compatible endpoint, `SGLANG_API_KEY`
+- `ollama`: local Ollama OpenAI-compatible endpoint, `OLLAMA_API_KEY`
 - `mock`: offline model for harness tests
 
 ## Tool Protocol
@@ -277,6 +284,7 @@ Model Labs are focused tracks for evaluating model families inside the same harn
 - [Qwen Lab](model-labs/qwen/README.md): Qwen provider behavior, Chinese coding tasks, tool-calling stability, JSON fallback discipline, and provider comparison.
 - [Claude Lab](model-labs/claude/README.md): Anthropic native tool use, Claude provider behavior, repair readiness, context synthesis, and provider comparison.
 - [OpenAI Lab](model-labs/openai/README.md): OpenAI-compatible baseline behavior, native tool calls, transcript auditability, context synthesis, and provider comparison.
+- [Local Model Lab](model-labs/local/README.md): vLLM, SGLang, Ollama, and local OpenAI-compatible endpoint behavior, transcript auditability, and provider comparison.
 
 ## Trace Replay
 

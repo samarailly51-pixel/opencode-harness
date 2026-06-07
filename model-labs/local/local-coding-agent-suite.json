@@ -1,0 +1,29 @@
+{
+  "name": "local coding-agent suite",
+  "cases": [
+    {
+      "id": "local-openai-tool-calls",
+      "task": "Use todo_set to create a short plan, inspect README.md, then finish with a concise summary that includes the exact marker LOCAL_NATIVE_TOOL_CALLS.",
+      "workspace": "../..",
+      "expect_contains": "LOCAL_NATIVE_TOOL_CALLS"
+    },
+    {
+      "id": "local-endpoint-routing",
+      "task": "Inspect the provider presets and local provider config examples. Explain how local-openai, vllm, sglang, and ollama endpoints are routed through the OpenAI-compatible adapter. Finish with the exact marker LOCAL_ENDPOINT_ROUTING.",
+      "workspace": "../..",
+      "expect_contains": "LOCAL_ENDPOINT_ROUTING"
+    },
+    {
+      "id": "local-transcript-audit",
+      "task": "Inspect the provider transcript documentation and summarize how local OpenAI-compatible request payloads and raw responses are recorded without API key headers. Finish with the exact marker LOCAL_TRANSCRIPT_AUDIT.",
+      "workspace": "../..",
+      "expect_contains": "LOCAL_TRANSCRIPT_AUDIT"
+    },
+    {
+      "id": "local-chinese-coding-summary",
+      "task": "璇锋鏌ヨ繖涓?harness 鐨勯」鐩粨鏋勶紝骞剁敤涓枃鎬荤粨瀹冨浣曟敮鎸?vLLM銆丼GLang銆丱llama 鍜屾湰鍦?OpenAI-compatible 閫傞厤銆傛渶鍚庡繀椤诲寘鍚簿纭爣璁?LOCAL_ZH_SUMMARY銆?",
+      "workspace": "../..",
+      "expect_contains": "LOCAL_ZH_SUMMARY"
+    }
+  ]
+}

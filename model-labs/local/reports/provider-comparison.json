@@ -1,0 +1,25 @@
+{
+  "suite": "model-labs\\local\\mock-smoke-suite.json",
+  "reports": [
+    "eval-runs\\mock-smoke-suite-mock-20260607-171838-065851-9c5634da\\report.json"
+  ],
+  "comparison": "model-labs\\local\\reports\\provider-comparison.md",
+  "skipped": [
+    {
+      "preset": "local-openai",
+      "reason": "missing LOCAL_MODEL_API_KEY"
+    },
+    {
+      "preset": "vllm",
+      "reason": "missing VLLM_API_KEY"
+    },
+    {
+      "preset": "sglang",
+      "reason": "missing SGLANG_API_KEY"
+    },
+    {
+      "preset": "ollama",
+      "reason": "missing OLLAMA_API_KEY"
+    }
+  ]
+}
