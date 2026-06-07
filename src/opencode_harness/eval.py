@@ -113,6 +113,75 @@ def load_eval_suite(path: Path) -> tuple[str, list[EvalCase]]:
     return suite_name, cases
 
 
+def load_eval_report(path: Path) -> EvalReport:
+    report_path = path / "report.json" if path.is_dir() else path
+    data = json.loads(report_path.read_text(encoding="utf-8"))
+    return EvalReport(
+        suite=str(data["suite"]),
+        started_at=str(data["started_at"]),
+        model_provider=str(data["model_provider"]),
+        model_name=str(data["model_name"]),
+        total=int(data["total"]),
+        passed=int(data["passed"]),
+        results=[
+            EvalCaseResult(
+                id=str(item["id"]),
+                ok=bool(item["ok"]),
+                finished=bool(item["finished"]),
+                steps=int(item["steps"]),
+                seconds=float(item["seconds"]),
+                summary=str(item.get("summary", "")),
+                trace=str(item["trace"]),
+                session=str(item["session"]),
+                error=item.get("error"),
+            )
+            for item in data.get("results", [])
+        ],
+    )
+
+
+def compare_eval_reports(reports: list[EvalReport]) -> str:
+    lines = [
+        "# Eval Report Comparison",
+        "",
+        "| Suite | Provider | Model | Passed | Pass Rate | Avg Steps | Total Seconds |",
+        "| --- | --- | --- | ---: | ---: | ---: | ---: |",
+    ]
+    for report in reports:
+        pass_rate = 0 if report.total == 0 else (report.passed / report.total) * 100
+        avg_steps = _average(result.steps for result in report.results)
+        total_seconds = sum(result.seconds for result in report.results)
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    _md_escape(report.suite),
+                    _md_escape(report.model_provider),
+                    _md_escape(report.model_name),
+                    f"{report.passed}/{report.total}",
+                    f"{pass_rate:.1f}%",
+                    f"{avg_steps:.2f}",
+                    f"{total_seconds:.3f}",
+                ]
+            )
+            + " |"
+        )
+
+    case_ids = sorted({result.id for report in reports for result in report.results})
+    if case_ids:
+        lines.extend(["", "## Case Matrix", ""])
+        header = ["Case", *[_md_escape(_report_label(report)) for report in reports]]
+        lines.append("| " + " | ".join(header) + " |")
+        lines.append("| " + " | ".join(["---", *["---" for _ in reports]]) + " |")
+        for case_id in case_ids:
+            row = [_md_escape(case_id)]
+            for report in reports:
+                result = next((item for item in report.results if item.id == case_id), None)
+                row.append(_case_cell(result))
+            lines.append("| " + " | ".join(row) + " |")
+    return "\n".join(lines).rstrip() + "\n"
+
+
 def run_eval_suite(
     suite_path: Path,
     config: HarnessConfig,
@@ -243,3 +312,21 @@ def _md_link_path(path: str) -> str:
 
 def _md_block(text: str) -> str:
     return "```text\n" + text.replace("```", "'''") + "\n```"
+
+
+def _average(values: object) -> float:
+    items = list(values)
+    if not items:
+        return 0.0
+    return sum(items) / len(items)
+
+
+def _report_label(report: EvalReport) -> str:
+    return f"{report.model_provider}/{report.model_name}"
+
+
+def _case_cell(result: EvalCaseResult | None) -> str:
+    if result is None:
+        return "-"
+    status = "PASS" if result.ok else "FAIL"
+    return f"{status} ({result.steps} steps, {result.seconds:.2f}s)"

@@ -135,6 +135,8 @@ The runner executes every case with the same model/config and writes:
 
 This is the first layer for comparing DeepSeek, Qwen, Claude, OpenAI, and local models on identical coding-agent tasks.
 
+`compare` loads multiple `report.json` files or eval run directories and renders a Markdown comparison table with pass rate, average steps, total seconds, and per-case status.
+
 ## Trace Replay
 
 Trace replay does not call a model or execute tools. It reads JSONL trace events and renders:

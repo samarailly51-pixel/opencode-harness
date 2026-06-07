@@ -42,6 +42,16 @@ Use replay to inspect individual traces:
 python -m opencode_harness replay eval-runs/<run>/<case>.jsonl --show-content
 ```
 
+Compare provider runs:
+
+```powershell
+python -m opencode_harness compare `
+  eval-runs/deepseek-official/report.json `
+  eval-runs/local-vllm/report.json `
+  eval-runs/siliconflow/report.json `
+  --output model-labs/deepseek/reports/provider-comparison.md
+```
+
 ## Clean-Room Boundary
 
 This lab only uses public model APIs, public model metadata, local deployments with authorized weights, and observable runtime behavior. It does not use leaked, proprietary, or unauthorized source code.

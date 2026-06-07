@@ -218,6 +218,15 @@ python -m opencode_harness eval examples/mock-suite.json --preset mock --max-ste
 
 Each case writes its own trace and session under `eval-runs/`. The runner also writes `report.json` and `report.md` with pass/fail status, timing, steps, summaries, and artifact paths.
 
+Compare multiple eval reports:
+
+```powershell
+python -m opencode_harness compare `
+  eval-runs/deepseek-run/report.json `
+  eval-runs/qwen-run/report.json `
+  --output eval-runs/model-comparison.md
+```
+
 ## Model Labs
 
 Model Labs are focused tracks for evaluating model families inside the same harness.

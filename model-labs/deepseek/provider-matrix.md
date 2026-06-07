@@ -30,4 +30,5 @@ Use this matrix to compare observable behavior across providers.
 2. Run `deepseek-v4-suite.json`.
 3. Save `report.json` path in this matrix.
 4. Replay failures with `opencode_harness replay`.
-5. Record observations in Notes.
+5. Compare reports with `opencode_harness compare`.
+6. Record observations in Notes.

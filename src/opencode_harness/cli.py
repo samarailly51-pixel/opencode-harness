@@ -8,7 +8,7 @@ import sys
 
 from .agent import Agent
 from .config import HarnessConfig, ModelConfig, PermissionConfig, load_config
-from .eval import run_eval_suite
+from .eval import compare_eval_reports, load_eval_report, run_eval_suite
 from .mcp import ExternalToolSpec
 from .mcp_client import McpServerSpec, StdioMcpClient
 from .models import MockModel, build_model
@@ -47,6 +47,10 @@ def main(argv: list[str] | None = None) -> int:
     eval_parser.add_argument("--output-dir", type=Path, default=Path("eval-runs"))
     _add_common_model_args(eval_parser)
 
+    compare_parser = subparsers.add_parser("compare", help="Compare eval report.json files")
+    compare_parser.add_argument("reports", nargs="+", type=Path, help="report.json files or eval run directories")
+    compare_parser.add_argument("--output", type=Path, help="Write Markdown comparison to this path")
+
     args = parser.parse_args(argv)
     if args.command == "init":
         return _init_config(args.force)
@@ -63,6 +67,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "eval":
         config = _config_from_args(args)
         return _run_eval(args.suite, config, args.output_dir)
+    if args.command == "compare":
+        return _compare_reports(args.reports, args.output)
     return 1
 
 
@@ -235,6 +241,18 @@ def _replay_trace(path: Path, summary_only: bool, show_content: bool) -> int:
         print(render_timeline(events, show_content=show_content))
         print()
         print(render_summary(summary))
+    return 0
+
+
+def _compare_reports(paths: list[Path], output: Path | None) -> int:
+    reports = [load_eval_report(path) for path in paths]
+    markdown = compare_eval_reports(reports)
+    if output is not None:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(markdown, encoding="utf-8")
+        print(f"Wrote {output}")
+    else:
+        print(markdown)
     return 0
 
 

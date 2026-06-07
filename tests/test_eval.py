@@ -4,7 +4,14 @@ import tempfile
 import unittest
 
 from opencode_harness.config import AgentConfig, HarnessConfig, ModelConfig, PermissionConfig
-from opencode_harness.eval import EvalCaseResult, EvalReport, load_eval_suite, run_eval_suite
+from opencode_harness.eval import (
+    EvalCaseResult,
+    EvalReport,
+    compare_eval_reports,
+    load_eval_report,
+    load_eval_suite,
+    run_eval_suite,
+)
 
 
 class EvalTests(unittest.TestCase):
@@ -94,3 +101,68 @@ class EvalTests(unittest.TestCase):
 
         self.assertIn("case\\|one", markdown)
         self.assertIn("0/1", markdown)
+
+    def test_load_eval_report_from_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            run_dir = Path(temp_dir) / "run"
+            run_dir.mkdir()
+            report = EvalReport(
+                suite="demo",
+                started_at="20260607-000000",
+                model_provider="mock",
+                model_name="mock-coder",
+                total=1,
+                passed=1,
+                results=[
+                    EvalCaseResult(
+                        id="one",
+                        ok=True,
+                        finished=True,
+                        steps=2,
+                        seconds=0.5,
+                        summary="ok",
+                        trace="trace.jsonl",
+                        session="session.json",
+                    )
+                ],
+            )
+            (run_dir / "report.json").write_text(report.to_json(), encoding="utf-8")
+
+            loaded = load_eval_report(run_dir)
+
+            self.assertEqual(loaded.suite, "demo")
+            self.assertEqual(loaded.results[0].id, "one")
+
+    def test_compare_eval_reports(self) -> None:
+        reports = [
+            EvalReport(
+                suite="suite",
+                started_at="t1",
+                model_provider="deepseek",
+                model_name="deepseek-chat",
+                total=1,
+                passed=1,
+                results=[
+                    EvalCaseResult("case-a", True, True, 2, 1.0, "ok", "a.jsonl", "a.json")
+                ],
+            ),
+            EvalReport(
+                suite="suite",
+                started_at="t2",
+                model_provider="qwen",
+                model_name="qwen-plus",
+                total=1,
+                passed=0,
+                results=[
+                    EvalCaseResult("case-a", False, True, 3, 2.0, "bad", "b.jsonl", "b.json")
+                ],
+            ),
+        ]
+
+        markdown = compare_eval_reports(reports)
+
+        self.assertIn("# Eval Report Comparison", markdown)
+        self.assertIn("deepseek-chat", markdown)
+        self.assertIn("qwen-plus", markdown)
+        self.assertIn("PASS (2 steps", markdown)
+        self.assertIn("FAIL (3 steps", markdown)
