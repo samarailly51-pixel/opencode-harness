@@ -4,7 +4,7 @@ import tempfile
 import unittest
 
 from opencode_harness.config import AgentConfig, HarnessConfig, ModelConfig, PermissionConfig
-from opencode_harness.eval import load_eval_suite, run_eval_suite
+from opencode_harness.eval import EvalCaseResult, EvalReport, load_eval_suite, run_eval_suite
 
 
 class EvalTests(unittest.TestCase):
@@ -61,3 +61,36 @@ class EvalTests(unittest.TestCase):
             self.assertEqual(report.passed, 1)
             self.assertTrue(Path(report.results[0].trace).exists())
             self.assertTrue(Path(report.results[0].session).exists())
+            report_md = next((root / "eval-runs").glob("*/report.md"))
+            markdown = report_md.read_text(encoding="utf-8")
+            self.assertIn("# Eval Report: smoke", markdown)
+            self.assertIn("| inspect | PASS |", markdown)
+            self.assertIn("Mock run completed", markdown)
+
+    def test_eval_report_markdown_escapes_table_cells(self) -> None:
+        report = EvalReport(
+            suite="demo",
+            started_at="20260607-000000",
+            model_provider="mock",
+            model_name="mock-coder",
+            total=1,
+            passed=0,
+            results=[
+                EvalCaseResult(
+                    id="case|one",
+                    ok=False,
+                    finished=True,
+                    steps=1,
+                    seconds=0.1234,
+                    summary="failed",
+                    trace="eval-runs/demo/trace.jsonl",
+                    session="eval-runs/demo/session.json",
+                    error=None,
+                )
+            ],
+        )
+
+        markdown = report.to_markdown()
+
+        self.assertIn("case\\|one", markdown)
+        self.assertIn("0/1", markdown)

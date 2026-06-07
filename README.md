@@ -216,7 +216,7 @@ Run a suite:
 python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2
 ```
 
-Each case writes its own trace and session under `eval-runs/`. The runner also writes a `report.json` with pass/fail status, timing, steps, summary, and artifact paths.
+Each case writes its own trace and session under `eval-runs/`. The runner also writes `report.json` and `report.md` with pass/fail status, timing, steps, summaries, and artifact paths.
 
 ## Model Labs
 

@@ -50,6 +50,53 @@ class EvalReport:
     def to_json(self) -> str:
         return json.dumps(asdict(self), indent=2, ensure_ascii=False)
 
+    def to_markdown(self) -> str:
+        rate = 0 if self.total == 0 else (self.passed / self.total) * 100
+        lines = [
+            f"# Eval Report: {self.suite}",
+            "",
+            f"- Started: `{self.started_at}`",
+            f"- Model provider: `{self.model_provider}`",
+            f"- Model name: `{self.model_name}`",
+            f"- Passed: `{self.passed}/{self.total}` ({rate:.1f}%)",
+            "",
+            "## Results",
+            "",
+            "| Case | Status | Finished | Steps | Seconds | Trace | Session |",
+            "| --- | --- | --- | ---: | ---: | --- | --- |",
+        ]
+        for result in self.results:
+            status = "PASS" if result.ok else "FAIL"
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        _md_escape(result.id),
+                        status,
+                        str(result.finished),
+                        str(result.steps),
+                        f"{result.seconds:.3f}",
+                        f"[trace]({_md_link_path(result.trace)})",
+                        f"[session]({_md_link_path(result.session)})",
+                    ]
+                )
+                + " |"
+            )
+        lines.extend(["", "## Case Summaries", ""])
+        for result in self.results:
+            status = "PASS" if result.ok else "FAIL"
+            lines.extend(
+                [
+                    f"### {status}: `{result.id}`",
+                    "",
+                    _md_block(result.summary or "(no summary)"),
+                    "",
+                ]
+            )
+            if result.error:
+                lines.extend(["Error:", "", _md_block(result.error), ""])
+        return "\n".join(lines).rstrip() + "\n"
+
 
 def load_eval_suite(path: Path) -> tuple[str, list[EvalCase]]:
     data = json.loads(path.read_text(encoding="utf-8"))
@@ -154,6 +201,7 @@ def run_eval_suite(
         results=results,
     )
     (run_dir / "report.json").write_text(report.to_json(), encoding="utf-8")
+    (run_dir / "report.md").write_text(report.to_markdown(), encoding="utf-8")
     return report
 
 
@@ -183,3 +231,15 @@ def _mcp_runtime_from_config(
         if tool.server and tool.server in clients and tool.name not in handlers:
             handlers[tool.name] = clients[tool.server].call_tool
     return tools, handlers, list(clients.values())
+
+
+def _md_escape(text: str) -> str:
+    return text.replace("|", "\\|").replace("\n", " ")
+
+
+def _md_link_path(path: str) -> str:
+    return Path(path).as_posix().replace(" ", "%20")
+
+
+def _md_block(text: str) -> str:
+    return "```text\n" + text.replace("```", "'''") + "\n```"

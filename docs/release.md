@@ -66,7 +66,7 @@ Highlights:
 - Native OpenAI-compatible and Anthropic tool use.
 - JSON fallback tool protocol.
 - Permission-gated file, shell, patch, repo map, context, todo, and MCP tools.
-- JSONL traces, session state, replay, and eval runner.
+- JSONL traces, session state, replay, and JSON/Markdown eval reports.
 - DeepSeek Lab for provider and behavior evaluation.
 ```
 
