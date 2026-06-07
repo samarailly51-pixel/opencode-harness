@@ -225,7 +225,9 @@ Run a suite:
 python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2
 ```
 
-Each case writes its own trace and session under `eval-runs/`. The runner also writes `report.json`, `report.md`, and `report.html` with pass/fail status, timing, steps, summaries, and artifact paths.
+Each case writes its own trace and session under `eval-runs/`. The runner also writes `report.json`, `report.md`, and `report.html` with pass/fail status, failure type, timing, steps, summaries, and artifact paths.
+
+Failure types include `exception`, `tool_failure`, `max_steps`, `expectation_mismatch`, and `recovered_tool_failure`.
 
 Compare multiple eval reports:
 
@@ -235,6 +237,8 @@ python -m opencode_harness compare `
   eval-runs/qwen-run/report.json `
   --output eval-runs/model-comparison.md
 ```
+
+Comparisons include pass rate, failure breakdown, average steps, total seconds, and a per-case matrix.
 
 ## Model Labs
 

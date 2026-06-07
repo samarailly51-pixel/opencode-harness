@@ -12,6 +12,7 @@ from .config import HarnessConfig
 from .models import build_model
 from .mcp import ExternalToolSpec
 from .mcp_client import McpServerSpec, StdioMcpClient
+from .replay import load_trace, summarize_trace
 from .session import SessionState
 from .tools import ToolRegistry
 from .trace import TraceWriter
@@ -36,6 +37,7 @@ class EvalCaseResult:
     trace: str
     session: str
     error: str | None = None
+    failure_type: str | None = None
 
 
 @dataclass(frozen=True)
@@ -63,8 +65,8 @@ class EvalReport:
             "",
             "## Results",
             "",
-            "| Case | Status | Finished | Steps | Seconds | Trace | Session |",
-            "| --- | --- | --- | ---: | ---: | --- | --- |",
+            "| Case | Status | Failure | Finished | Steps | Seconds | Trace | Session |",
+            "| --- | --- | --- | --- | ---: | ---: | --- | --- |",
         ]
         for result in self.results:
             status = "PASS" if result.ok else "FAIL"
@@ -74,6 +76,7 @@ class EvalReport:
                     [
                         _md_escape(result.id),
                         status,
+                        _failure_label(result),
                         str(result.finished),
                         str(result.steps),
                         f"{result.seconds:.3f}",
@@ -90,10 +93,11 @@ class EvalReport:
                 [
                     f"### {status}: `{result.id}`",
                     "",
-                    _md_block(result.summary or "(no summary)"),
-                    "",
                 ]
             )
+            if result.failure_type:
+                lines.extend([f"- Failure type: `{result.failure_type}`", ""])
+            lines.extend([_md_block(result.summary or "(no summary)"), ""])
             if result.error:
                 lines.extend(["Error:", "", _md_block(result.error), ""])
         return "\n".join(lines).rstrip() + "\n"
@@ -108,6 +112,7 @@ class EvalReport:
                 "<tr>"
                 f"<td>{escape(result.id)}</td>"
                 f"<td><span class=\"badge {status_class}\">{status}</span></td>"
+                f"<td>{escape(_failure_label(result))}</td>"
                 f"<td>{escape(str(result.finished))}</td>"
                 f"<td class=\"num\">{result.steps}</td>"
                 f"<td class=\"num\">{result.seconds:.3f}</td>"
@@ -122,9 +127,13 @@ class EvalReport:
             error = ""
             if result.error:
                 error = f"<h4>Error</h4><pre>{escape(result.error)}</pre>"
+            failure = ""
+            if result.failure_type:
+                failure = f"<p><strong>Failure type:</strong> <code>{escape(result.failure_type)}</code></p>"
             summaries.append(
                 "<section class=\"case-summary\">"
                 f"<h3><span class=\"badge {status_class}\">{status}</span> {escape(result.id)}</h3>"
+                f"{failure}"
                 f"<pre>{escape(result.summary or '(no summary)')}</pre>"
                 f"{error}"
                 "</section>"
@@ -165,7 +174,7 @@ class EvalReport:
   <h2>Results</h2>
   <table>
     <thead>
-      <tr><th>Case</th><th>Status</th><th>Finished</th><th>Steps</th><th>Seconds</th><th>Trace</th><th>Session</th></tr>
+      <tr><th>Case</th><th>Status</th><th>Failure</th><th>Finished</th><th>Steps</th><th>Seconds</th><th>Trace</th><th>Session</th></tr>
     </thead>
     <tbody>
       {"".join(rows)}
@@ -215,6 +224,7 @@ def load_eval_report(path: Path) -> EvalReport:
                 trace=str(item["trace"]),
                 session=str(item["session"]),
                 error=item.get("error"),
+                failure_type=item.get("failure_type"),
             )
             for item in data.get("results", [])
         ],
@@ -225,8 +235,8 @@ def compare_eval_reports(reports: list[EvalReport]) -> str:
     lines = [
         "# Eval Report Comparison",
         "",
-        "| Suite | Provider | Model | Passed | Pass Rate | Avg Steps | Total Seconds |",
-        "| --- | --- | --- | ---: | ---: | ---: | ---: |",
+        "| Suite | Provider | Model | Passed | Pass Rate | Failures | Avg Steps | Total Seconds |",
+        "| --- | --- | --- | ---: | ---: | --- | ---: | ---: |",
     ]
     for report in reports:
         pass_rate = 0 if report.total == 0 else (report.passed / report.total) * 100
@@ -241,6 +251,7 @@ def compare_eval_reports(reports: list[EvalReport]) -> str:
                     _md_escape(report.model_name),
                     f"{report.passed}/{report.total}",
                     f"{pass_rate:.1f}%",
+                    _failure_breakdown(report.results),
                     f"{avg_steps:.2f}",
                     f"{total_seconds:.3f}",
                 ]
@@ -310,6 +321,7 @@ def run_eval_suite(
             seconds = time.perf_counter() - start
 
             if agent_result is None:
+                failure_type = _classify_failure(None, error, case.expect_contains, trace_path)
                 result = EvalCaseResult(
                     id=case.id,
                     ok=False,
@@ -320,11 +332,13 @@ def run_eval_suite(
                     trace=str(trace_path),
                     session=str(session_path),
                     error=error,
+                    failure_type=failure_type,
                 )
             else:
                 ok = agent_result.finished
                 if case.expect_contains:
                     ok = ok and case.expect_contains in agent_result.summary
+                failure_type = _classify_failure(agent_result, error, case.expect_contains, trace_path)
                 result = EvalCaseResult(
                     id=case.id,
                     ok=ok,
@@ -335,6 +349,7 @@ def run_eval_suite(
                     trace=str(trace_path),
                     session=str(session_path),
                     error=error,
+                    failure_type=failure_type if not ok else None,
                 )
             results.append(result)
     finally:
@@ -411,4 +426,46 @@ def _case_cell(result: EvalCaseResult | None) -> str:
     if result is None:
         return "-"
     status = "PASS" if result.ok else "FAIL"
-    return f"{status} ({result.steps} steps, {result.seconds:.2f}s)"
+    failure = f":{result.failure_type}" if result.failure_type else ""
+    return f"{status}{failure} ({result.steps} steps, {result.seconds:.2f}s)"
+
+
+def _failure_label(result: EvalCaseResult) -> str:
+    return "-" if result.ok or not result.failure_type else _md_escape(result.failure_type)
+
+
+def _failure_breakdown(results: list[EvalCaseResult]) -> str:
+    counts: dict[str, int] = {}
+    for result in results:
+        if result.ok:
+            continue
+        failure_type = result.failure_type or "unknown"
+        counts[failure_type] = counts.get(failure_type, 0) + 1
+    if not counts:
+        return "-"
+    return ", ".join(f"{_md_escape(name)}={count}" for name, count in sorted(counts.items()))
+
+
+def _classify_failure(
+    agent_result: object,
+    error: str | None,
+    expect_contains: str | None,
+    trace_path: Path,
+) -> str | None:
+    if error:
+        return "exception"
+    trace_summary = None
+    if trace_path.exists():
+        trace_summary = summarize_trace(load_trace(trace_path))
+    failed_tools = trace_summary.failed_tools if trace_summary is not None else 0
+    finished = bool(getattr(agent_result, "finished", False)) if agent_result is not None else False
+    summary = str(getattr(agent_result, "summary", "")) if agent_result is not None else ""
+    if failed_tools and not finished:
+        return "tool_failure"
+    if not finished:
+        return "max_steps"
+    if expect_contains and expect_contains not in summary:
+        return "expectation_mismatch"
+    if failed_tools:
+        return "recovered_tool_failure"
+    return None

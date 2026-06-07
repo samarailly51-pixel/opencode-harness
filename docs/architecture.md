@@ -136,9 +136,11 @@ The runner executes every case with the same model/config and writes:
 - suite-level `report.md`
 - suite-level `report.html`
 
+Failed cases are assigned a first-class failure type such as `exception`, `tool_failure`, `max_steps`, `expectation_mismatch`, or `recovered_tool_failure`. This keeps provider comparisons diagnostic instead of only binary.
+
 This is the first layer for comparing DeepSeek, Qwen, Claude, OpenAI, and local models on identical coding-agent tasks.
 
-`compare` loads multiple `report.json` files or eval run directories and renders a Markdown comparison table with pass rate, average steps, total seconds, and per-case status.
+`compare` loads multiple `report.json` files or eval run directories and renders a Markdown comparison table with pass rate, failure breakdown, average steps, total seconds, and per-case status.
 
 ## Trace Replay
 
@@ -166,6 +168,6 @@ Current presets:
 
 1. Add MCP resource/list/read support.
 2. Add provider-specific transcript adapters for exact replay.
-3. Add first-class failure taxonomy.
+3. Add MCP prompt support.
 4. Add TUI or HTML trace viewer.
-5. Add MCP prompt support.
+5. Add packaged CLI release.
