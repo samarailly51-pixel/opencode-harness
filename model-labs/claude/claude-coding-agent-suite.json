@@ -1,0 +1,29 @@
+{
+  "name": "claude coding-agent suite",
+  "cases": [
+    {
+      "id": "claude-native-tool-use",
+      "task": "Use todo_set to create a short plan, inspect README.md, then finish with a concise summary that includes the exact marker CLAUDE_NATIVE_TOOL_USE.",
+      "workspace": "../..",
+      "expect_contains": "CLAUDE_NATIVE_TOOL_USE"
+    },
+    {
+      "id": "claude-repo-context-synthesis",
+      "task": "Use repo_map or context_pack to explain how the CLI, Anthropic provider adapter, tool schemas, traces, eval reports, and model labs fit together. Finish with the exact marker CLAUDE_CONTEXT_SYNTHESIS.",
+      "workspace": "../..",
+      "expect_contains": "CLAUDE_CONTEXT_SYNTHESIS"
+    },
+    {
+      "id": "claude-repair-readiness",
+      "task": "Inspect the repair-suite documentation and explain how workspace_template, --allow-write, and verify_command support coding-agent repair evals. Finish with the exact marker CLAUDE_REPAIR_READINESS.",
+      "workspace": "../..",
+      "expect_contains": "CLAUDE_REPAIR_READINESS"
+    },
+    {
+      "id": "claude-chinese-coding-summary",
+      "task": "请检查这个 harness 的项目结构，并用中文总结它当前支持的 Anthropic/Claude 适配、工具调用、权限边界和评测能力。最后必须包含精确标记 CLAUDE_ZH_SUMMARY。",
+      "workspace": "../..",
+      "expect_contains": "CLAUDE_ZH_SUMMARY"
+    }
+  ]
+}

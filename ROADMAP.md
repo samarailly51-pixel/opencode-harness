@@ -40,7 +40,7 @@ OpenCode Harness is a clean-room, model-agnostic runtime for Claude Code-class c
 - [x] DeepSeek V4 long-context suite.
 - [x] DeepSeek V4 coding-agent repair suite.
 - [x] Qwen Lab.
-- [ ] Claude Lab.
+- [x] Claude Lab.
 - [ ] OpenAI Lab.
 - [ ] Local model lab for vLLM/SGLang/Ollama-compatible endpoints.
 

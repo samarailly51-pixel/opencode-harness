@@ -1,0 +1,13 @@
+{
+  "suite": "model-labs\\claude\\mock-smoke-suite.json",
+  "reports": [
+    "eval-runs\\mock-smoke-suite-mock-20260607-165327\\report.json"
+  ],
+  "comparison": "model-labs\\claude\\reports\\provider-comparison.md",
+  "skipped": [
+    {
+      "preset": "claude",
+      "reason": "missing ANTHROPIC_API_KEY"
+    }
+  ]
+}

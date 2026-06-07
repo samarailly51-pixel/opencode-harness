@@ -1,0 +1,25 @@
+{
+  "name": "claude coding prompts",
+  "prompts": [
+    {
+      "id": "native-tool-use",
+      "task": "Use todo_set, inspect README.md, and finish with a marked summary.",
+      "suite_case": "claude-native-tool-use"
+    },
+    {
+      "id": "repo-context-synthesis",
+      "task": "Use repo_map or context_pack to synthesize the repository architecture and Claude provider path.",
+      "suite_case": "claude-repo-context-synthesis"
+    },
+    {
+      "id": "repair-readiness",
+      "task": "Explain how repair evals use workspace_template, write permission, and verify_command.",
+      "suite_case": "claude-repair-readiness"
+    },
+    {
+      "id": "chinese-coding-summary",
+      "task": "请用中文总结 Claude/Anthropic 适配、工具调用、权限边界和评测能力。",
+      "suite_case": "claude-chinese-coding-summary"
+    }
+  ]
+}
