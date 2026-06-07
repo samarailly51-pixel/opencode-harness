@@ -8,6 +8,7 @@ import sys
 
 from .agent import Agent
 from .config import HarnessConfig, ModelConfig, PermissionConfig, load_config
+from .dashboard import discover_eval_reports, write_eval_dashboard
 from .eval import compare_eval_reports, load_eval_report, run_eval_suite
 from .labs import run_provider_comparison
 from .mcp_runtime import build_mcp_runtime
@@ -17,6 +18,7 @@ from .replay import load_trace, render_summary, render_timeline, summarize_trace
 from .session import SessionState
 from .tools import ToolRegistry
 from .trace import TraceWriter
+from .viewer import render_tui, write_trace_html
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -42,6 +44,15 @@ def main(argv: list[str] | None = None) -> int:
     replay_parser.add_argument("--summary", action="store_true", help="Print only summary statistics")
     replay_parser.add_argument("--show-content", action="store_true", help="Show full model/tool content")
 
+    tui_parser = subparsers.add_parser("tui", help="Render a terminal timeline viewer for a trace")
+    tui_parser.add_argument("path", type=Path)
+    tui_parser.add_argument("--show-content", action="store_true", help="Show full event JSON content")
+    tui_parser.add_argument("--width", type=int, default=100, help="Viewer width")
+
+    trace_html_parser = subparsers.add_parser("trace-html", help="Render a trace JSONL file as HTML")
+    trace_html_parser.add_argument("path", type=Path)
+    trace_html_parser.add_argument("--output", type=Path, required=True)
+
     eval_parser = subparsers.add_parser("eval", help="Run an eval suite")
     eval_parser.add_argument("suite", type=Path)
     eval_parser.add_argument("--output-dir", type=Path, default=Path("eval-runs"))
@@ -50,6 +61,10 @@ def main(argv: list[str] | None = None) -> int:
     compare_parser = subparsers.add_parser("compare", help="Compare eval report.json files")
     compare_parser.add_argument("reports", nargs="+", type=Path, help="report.json files or eval run directories")
     compare_parser.add_argument("--output", type=Path, help="Write Markdown comparison to this path")
+
+    dashboard_parser = subparsers.add_parser("dashboard", help="Render an HTML eval dashboard")
+    dashboard_parser.add_argument("paths", nargs="*", type=Path, default=[Path("eval-runs")])
+    dashboard_parser.add_argument("--output", type=Path, default=Path("eval-runs/dashboard.html"))
 
     lab_compare_parser = subparsers.add_parser("lab-compare", help="Run one eval suite across provider presets")
     lab_compare_parser.add_argument("suite", type=Path)
@@ -70,6 +85,10 @@ def main(argv: list[str] | None = None) -> int:
         return _print_trace(Path(args.path))
     if args.command == "replay":
         return _replay_trace(args.path, args.summary, args.show_content)
+    if args.command == "tui":
+        return _tui_trace(args.path, args.show_content, args.width)
+    if args.command == "trace-html":
+        return _trace_html(args.path, args.output)
     if args.command == "run":
         config = _config_from_args(args)
         return _run_task(args.task, config, args.workspace, args.session, args.resume)
@@ -81,6 +100,8 @@ def main(argv: list[str] | None = None) -> int:
         return _run_eval(args.suite, config, args.output_dir)
     if args.command == "compare":
         return _compare_reports(args.reports, args.output)
+    if args.command == "dashboard":
+        return _dashboard(args.paths, args.output)
     if args.command == "lab-compare":
         config = _lab_config_from_args(args)
         return _run_lab_compare(
@@ -308,6 +329,23 @@ def _replay_trace(path: Path, summary_only: bool, show_content: bool) -> int:
     return 0
 
 
+def _tui_trace(path: Path, show_content: bool, width: int) -> int:
+    if not path.exists():
+        print(f"Trace not found: {path}", file=sys.stderr)
+        return 2
+    print(render_tui(load_trace(path), width=width, show_content=show_content))
+    return 0
+
+
+def _trace_html(path: Path, output: Path) -> int:
+    if not path.exists():
+        print(f"Trace not found: {path}", file=sys.stderr)
+        return 2
+    write_trace_html(path, output, load_trace(path))
+    print(f"Wrote {output}")
+    return 0
+
+
 def _compare_reports(paths: list[Path], output: Path | None) -> int:
     reports = [load_eval_report(path) for path in paths]
     markdown = compare_eval_reports(reports)
@@ -317,6 +355,13 @@ def _compare_reports(paths: list[Path], output: Path | None) -> int:
         print(f"Wrote {output}")
     else:
         print(markdown)
+    return 0
+
+
+def _dashboard(paths: list[Path], output: Path) -> int:
+    items = discover_eval_reports(paths or [Path("eval-runs")])
+    write_eval_dashboard(items, output)
+    print(f"Wrote {output} ({len(items)} reports)")
     return 0
 
 

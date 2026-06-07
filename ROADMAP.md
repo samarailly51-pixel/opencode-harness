@@ -54,11 +54,11 @@ OpenCode Harness is a clean-room, model-agnostic runtime for Claude Code-class c
 
 ## 0.5 Product Surface
 
-- [ ] TUI timeline viewer.
-- [ ] HTML trace viewer.
-- [ ] Eval dashboard.
-- [ ] Packaged CLI release.
-- [ ] Example GitHub workflows for model evals.
+- [x] TUI timeline viewer.
+- [x] HTML trace viewer.
+- [x] Eval dashboard.
+- [x] Packaged CLI release.
+- [x] Example GitHub workflows for model evals.
 
 ## Principles
 

@@ -138,8 +138,11 @@ python -m opencode_harness run "fix the failing test"
 python -m opencode_harness chat --mock
 python -m opencode_harness trace runs/latest.jsonl
 python -m opencode_harness replay runs/latest.jsonl
+python -m opencode_harness tui runs/latest.jsonl
+python -m opencode_harness trace-html runs/latest.jsonl --output runs/latest.html
 python -m opencode_harness init
 python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2
+python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html
 ```
 
 Provider presets:
@@ -250,6 +253,12 @@ Each case writes its own trace and session under `eval-runs/`. The runner also w
 
 Failure types include `exception`, `tool_failure`, `max_steps`, `expectation_mismatch`, `verification_failure`, and `recovered_tool_failure`.
 
+Render an eval dashboard:
+
+```powershell
+python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html
+```
+
 Compare multiple eval reports:
 
 ```powershell
@@ -314,6 +323,18 @@ Print only summary stats:
 python -m opencode_harness replay runs/latest.jsonl --summary
 ```
 
+Render a terminal timeline viewer:
+
+```powershell
+python -m opencode_harness tui runs/latest.jsonl
+```
+
+Render a standalone HTML trace viewer:
+
+```powershell
+python -m opencode_harness trace-html runs/latest.jsonl --output runs/latest.html
+```
+
 Show full model and tool content:
 
 ```powershell
@@ -321,6 +342,24 @@ python -m opencode_harness replay runs/latest.jsonl --show-content
 ```
 
 Model response events include provider-specific transcripts for mock, OpenAI-compatible, and Anthropic adapters. These transcripts capture the provider request payload and raw response body, excluding API key headers, so eval runs can be audited and replay tooling can reconstruct exact provider calls.
+
+## Packaging
+
+The package exposes `och` and `opencode-harness` console scripts:
+
+```powershell
+python -m pip install .
+och --help
+```
+
+Build release artifacts locally:
+
+```powershell
+python -m pip install build
+python -m build
+```
+
+The repository includes a tag/manual release workflow that builds wheel and source distributions, plus a manual model-evals workflow example that uploads eval artifacts.
 
 ## Design Principles
 

@@ -1,0 +1,54 @@
+name: Model Evals Example
+
+on:
+  workflow_dispatch:
+    inputs:
+      preset:
+        description: "Provider preset to evaluate"
+        required: true
+        default: "mock"
+      suite:
+        description: "Eval suite path"
+        required: true
+        default: "examples/mock-suite.json"
+
+jobs:
+  eval:
+    name: Run model eval
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run eval suite
+        env:
+          PYTHONPATH: src
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: >-
+          python -m opencode_harness eval
+          "${{ inputs.suite }}"
+          --preset "${{ inputs.preset }}"
+          --max-steps 8
+          --context-chars 8000
+
+      - name: Build eval dashboard
+        if: always()
+        env:
+          PYTHONPATH: src
+        run: python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html
+
+      - name: Upload eval artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: opencode-harness-eval-runs
+          path: eval-runs
