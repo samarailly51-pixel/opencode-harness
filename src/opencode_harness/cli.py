@@ -10,8 +10,7 @@ from .agent import Agent
 from .config import HarnessConfig, ModelConfig, PermissionConfig, load_config
 from .eval import compare_eval_reports, load_eval_report, run_eval_suite
 from .labs import run_provider_comparison
-from .mcp import ExternalToolSpec
-from .mcp_client import McpServerSpec, StdioMcpClient
+from .mcp_runtime import build_mcp_runtime
 from .models import MockModel, build_model
 from .providers import PRESETS, apply_preset
 from .replay import load_trace, render_summary, render_timeline, summarize_trace
@@ -201,13 +200,14 @@ def _run_task(
     session_path = session_path or workspace / "runs" / f"{run_id}.session.json"
     session = SessionState.load(session_path) if resume and session_path.exists() else SessionState(task=task)
     model = build_model(config.model)
-    external_tools, external_handlers, mcp_clients = _mcp_runtime_from_config(config)
+    mcp_runtime = build_mcp_runtime(config)
     tools = ToolRegistry(
         workspace,
         config.permissions,
         session=session,
-        external_tools=external_tools,
-        external_handlers=external_handlers,
+        external_tools=mcp_runtime.tools,
+        external_handlers=mcp_runtime.handlers,
+        external_approval_modes=mcp_runtime.approval_modes,
         approval_callback=None,
     )
     try:
@@ -227,8 +227,7 @@ def _run_task(
         print(f"Session: {session_path}")
         return 0 if result.finished else 2
     finally:
-        for client in mcp_clients:
-            client.close()
+        mcp_runtime.close()
 
 
 def _chat(config: HarnessConfig) -> int:
@@ -244,7 +243,7 @@ def _chat(config: HarnessConfig) -> int:
             return 0
         if not task:
             continue
-        external_tools, external_handlers, mcp_clients = _mcp_runtime_from_config(config)
+        mcp_runtime = build_mcp_runtime(config)
         run_id = datetime.now().strftime("%Y%m%d-%H%M%S")
         trace = TraceWriter(Path("runs") / f"{run_id}.jsonl")
         try:
@@ -253,8 +252,9 @@ def _chat(config: HarnessConfig) -> int:
                 tools=ToolRegistry(
                     Path("."),
                     config.permissions,
-                    external_tools=external_tools,
-                    external_handlers=external_handlers,
+                    external_tools=mcp_runtime.tools,
+                    external_handlers=mcp_runtime.handlers,
+                    external_approval_modes=mcp_runtime.approval_modes,
                     approval_callback=None,
                 ),
                 trace=trace,
@@ -266,8 +266,7 @@ def _chat(config: HarnessConfig) -> int:
             print(result.summary)
             print(f"Trace: {trace.path}")
         finally:
-            for client in mcp_clients:
-                client.close()
+            mcp_runtime.close()
 
 
 def _init_config(force: bool) -> int:
@@ -339,31 +338,3 @@ def _run_lab_compare(
     )
     print(result.to_json())
     return 0
-
-
-def _mcp_runtime_from_config(
-    config: HarnessConfig,
-) -> tuple[list[ExternalToolSpec], dict[str, object], list[StdioMcpClient]]:
-    tools = [
-        ExternalToolSpec(
-            name=tool.name,
-            description=tool.description or f"External MCP tool {tool.name}.",
-            input_schema=tool.input_schema or {"type": "object", "properties": {}},
-            server=tool.server,
-        )
-        for tool in config.mcp_tools
-    ]
-    clients: dict[str, StdioMcpClient] = {}
-    handlers = {}
-    for server in config.mcp_servers:
-        client = StdioMcpClient(
-            McpServerSpec(name=server.name, command=server.command, args=server.args)
-        )
-        clients[server.name] = client
-        for tool in client.list_tools():
-            tools.append(tool)
-            handlers[tool.name] = client.call_tool
-    for tool in tools:
-        if tool.server and tool.server in clients and tool.name not in handlers:
-            handlers[tool.name] = clients[tool.server].call_tool
-    return tools, handlers, list(clients.values())

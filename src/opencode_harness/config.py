@@ -43,6 +43,7 @@ class McpServerConfig:
     name: str
     command: str
     args: tuple[str, ...] = ()
+    approval_mode: str | None = None
 
 
 @dataclass(frozen=True)
@@ -79,6 +80,11 @@ def load_config(path: Path | None) -> HarnessConfig:
                 name=str(item["name"]),
                 command=str(item["command"]),
                 args=tuple(str(arg) for arg in item.get("args", ())),
+                approval_mode=(
+                    str(item["approval_mode"])
+                    if item.get("approval_mode") is not None
+                    else None
+                ),
             )
             for item in mcp_server_data
         ),

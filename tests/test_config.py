@@ -23,6 +23,7 @@ type = "object"
 name = "docs"
 command = "python"
 args = ["server.py"]
+approval_mode = "ask"
 """.strip(),
                 encoding="utf-8",
             )
@@ -34,3 +35,4 @@ args = ["server.py"]
             self.assertEqual(config.mcp_tools[0].input_schema, {"type": "object"})
             self.assertEqual(config.mcp_servers[0].name, "docs")
             self.assertEqual(config.mcp_servers[0].args, ("server.py",))
+            self.assertEqual(config.mcp_servers[0].approval_mode, "ask")

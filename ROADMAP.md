@@ -46,11 +46,11 @@ OpenCode Harness is a clean-room, model-agnostic runtime for Claude Code-class c
 
 ## 0.4 MCP
 
-- [ ] MCP resource list/read support.
-- [ ] MCP prompt support.
-- [ ] Per-server permissions.
-- [ ] Server lifecycle diagnostics.
-- [ ] Tool namespace collision handling.
+- [x] MCP resource list/read support.
+- [x] MCP prompt support.
+- [x] Per-server permissions.
+- [x] Server lifecycle diagnostics.
+- [x] Tool namespace collision handling.
 
 ## 0.5 Product Surface
 

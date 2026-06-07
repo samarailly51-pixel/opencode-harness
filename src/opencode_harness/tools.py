@@ -20,6 +20,7 @@ class ToolRegistry:
         session: SessionState | None = None,
         external_tools: list[ExternalToolSpec] | None = None,
         external_handlers: dict[str, McpHandler] | None = None,
+        external_approval_modes: dict[str, str] | None = None,
         approval_callback: ApprovalCallback | None = None,
     ) -> None:
         self.workspace = workspace.resolve()
@@ -27,6 +28,7 @@ class ToolRegistry:
         self.session = session
         self.external_tools = {tool.name: tool for tool in external_tools or []}
         self.external_handlers = external_handlers or {}
+        self.external_approval_modes = external_approval_modes or {}
         self.approval_callback = approval_callback
 
     def run(self, name: str, args: dict[str, object]) -> ToolResult:
@@ -69,7 +71,10 @@ class ToolRegistry:
             spec = self.external_tools[name]
             server_hint = f" from server {spec.server}" if spec.server else ""
             return ToolResult(False, f"External MCP tool {name}{server_hint} is declared but no client is attached")
-        if self.permissions.approval_mode == "ask":
+        approval_mode = self.external_approval_modes.get(name, "inherit")
+        if approval_mode == "inherit":
+            approval_mode = self.permissions.approval_mode
+        if approval_mode == "ask":
             approval = self._approve("mcp", name, f"external MCP tool call with args: {args}")
             if not approval.ok:
                 return approval

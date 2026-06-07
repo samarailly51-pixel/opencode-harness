@@ -31,3 +31,4 @@ description = "Lookup query."
 name = "docs"
 command = "python"
 args = ["path/to/mcp_server.py"]
+approval_mode = "inherit"

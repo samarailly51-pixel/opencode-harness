@@ -14,8 +14,7 @@ from uuid import uuid4
 from .agent import Agent
 from .config import HarnessConfig
 from .models import build_model
-from .mcp import ExternalToolSpec
-from .mcp_client import McpServerSpec, StdioMcpClient
+from .mcp_runtime import build_mcp_runtime
 from .permissions import check_shell_permission
 from .replay import load_trace, summarize_trace
 from .session import SessionState
@@ -297,7 +296,7 @@ def run_eval_suite(
     run_dir = output_dir / f"{suite_path.stem}{label}-{run_id}"
     run_dir.mkdir(parents=True, exist_ok=True)
     model = build_model(config.model)
-    external_tools, external_handlers, mcp_clients = _mcp_runtime_from_config(config)
+    mcp_runtime = build_mcp_runtime(config)
     results: list[EvalCaseResult] = []
 
     try:
@@ -312,8 +311,9 @@ def run_eval_suite(
                 workspace,
                 config.permissions,
                 session=session,
-                external_tools=external_tools,
-                external_handlers=external_handlers,
+                external_tools=mcp_runtime.tools,
+                external_handlers=mcp_runtime.handlers,
+                external_approval_modes=mcp_runtime.approval_modes,
             )
             agent = Agent(
                 model=model,
@@ -372,8 +372,7 @@ def run_eval_suite(
                 )
             results.append(result)
     finally:
-        for client in mcp_clients:
-            client.close()
+        mcp_runtime.close()
 
     report = EvalReport(
         suite=suite_name,
@@ -388,34 +387,6 @@ def run_eval_suite(
     (run_dir / "report.md").write_text(report.to_markdown(), encoding="utf-8")
     (run_dir / "report.html").write_text(report.to_html(), encoding="utf-8")
     return report
-
-
-def _mcp_runtime_from_config(
-    config: HarnessConfig,
-) -> tuple[list[ExternalToolSpec], dict[str, object], list[StdioMcpClient]]:
-    tools = [
-        ExternalToolSpec(
-            name=tool.name,
-            description=tool.description or f"External MCP tool {tool.name}.",
-            input_schema=tool.input_schema or {"type": "object", "properties": {}},
-            server=tool.server,
-        )
-        for tool in config.mcp_tools
-    ]
-    clients: dict[str, StdioMcpClient] = {}
-    handlers = {}
-    for server in config.mcp_servers:
-        client = StdioMcpClient(
-            McpServerSpec(name=server.name, command=server.command, args=server.args)
-        )
-        clients[server.name] = client
-        for tool in client.list_tools():
-            tools.append(tool)
-            handlers[tool.name] = client.call_tool
-    for tool in tools:
-        if tool.server and tool.server in clients and tool.name not in handlers:
-            handlers[tool.name] = clients[tool.server].call_tool
-    return tools, handlers, list(clients.values())
 
 
 def _case_workspace(suite_path: Path, run_dir: Path, case: EvalCase) -> Path:

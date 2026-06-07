@@ -128,6 +128,7 @@ type = "object"
 name = "docs"
 command = "python"
 args = ["path/to/mcp_server.py"]
+approval_mode = "inherit"
 ```
 
 ## Commands
@@ -190,7 +191,20 @@ Stdio MCP servers can be configured with `[[mcp_servers]]`. The harness starts t
 name = "docs"
 command = "python"
 args = ["path/to/mcp_server.py"]
+approval_mode = "inherit"
 ```
+
+Discovered MCP tools are exposed to the model as native OpenAI-compatible or Anthropic tool schemas. If two servers expose the same tool name, later collisions are safely namespaced as `mcp_<server>_<tool>`.
+
+Each MCP server also receives utility tools:
+
+- `mcp_<server>_list_resources`
+- `mcp_<server>_read_resource`
+- `mcp_<server>_list_prompts`
+- `mcp_<server>_get_prompt`
+- `mcp_<server>_status`
+
+Set per-server `approval_mode` to `inherit`, `ask`, or `never`. `inherit` follows the global approval mode; `ask` requires approval for that server's MCP calls even if global approval is `never`.
 
 Repository context tools:
 
