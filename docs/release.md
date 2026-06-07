@@ -9,9 +9,11 @@ Run:
 ```powershell
 $env:PYTHONPATH='src'
 python -m unittest discover -s tests
+python -m opencode_harness version
 python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2 --context-chars 1000
 python -m opencode_harness eval model-labs/deepseek/mock-smoke-suite.json --preset mock --max-steps 2 --context-chars 1000
 python -m opencode_harness replay runs/latest.jsonl --summary
+python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html
 ```
 
 Review:
@@ -21,6 +23,9 @@ Review:
 - `CONTRIBUTING.md`
 - `SECURITY.md`
 - `docs/github-readiness.md`
+- `docs/provider-benchmarks.md`
+- `CHANGELOG.md`
+- `examples/release-demo/README.md`
 - `model-labs/deepseek/README.md`
 
 Check:
@@ -28,7 +33,10 @@ Check:
 ```powershell
 git status --short
 git log -1 --oneline
+python -m pip wheel . --no-deps -w dist-check
 ```
+
+Remove `dist-check/` after local wheel verification.
 
 ## GitHub Release
 
@@ -58,16 +66,20 @@ https://github.com/samarailly51-pixel/opencode-harness
 Suggested release notes:
 
 ```text
-Initial clean-room OpenCode Harness release.
+OpenCode Harness v0.1.0
+
+Initial clean-room release for model-agnostic coding-agent evaluation.
 
 Highlights:
 - Claude Code-class coding-agent runtime.
-- DeepSeek/Qwen/OpenAI/Claude provider support.
+- DeepSeek/Qwen/OpenAI/Claude/local provider support.
 - Native OpenAI-compatible and Anthropic tool use.
 - JSON fallback tool protocol.
 - Permission-gated file, shell, patch, repo map, context, todo, and MCP tools.
-- JSONL traces, session state, replay, and JSON/Markdown/HTML eval reports.
-- DeepSeek Lab for provider and behavior evaluation.
+- MCP resources, prompts, diagnostics, per-server approvals, and namespace collision handling.
+- JSONL traces, provider transcripts, session state, replay, TUI/HTML viewers, and eval dashboard.
+- DeepSeek, Qwen, Claude, OpenAI, and Local Model Labs.
+- GitHub Actions CI, release package build workflow, and model-eval workflow example.
 ```
 
 ## PyPI

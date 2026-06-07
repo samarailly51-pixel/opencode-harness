@@ -23,17 +23,20 @@ task
 ## Modules
 
 - `config.py`: typed harness configuration.
-- `providers.py`: provider presets for DeepSeek, Qwen, OpenAI, Claude, and mock mode.
+- `providers.py`: provider presets for DeepSeek, Qwen, OpenAI, Claude, local OpenAI-compatible endpoints, vLLM, SGLang, Ollama, and mock mode.
 - `models.py`: model adapters. OpenAI-compatible endpoints cover DeepSeek, Qwen, OpenAI, vLLM, SGLang, Ollama bridges, and similar servers.
 - `repo_map.py`: repository discovery, lightweight symbol extraction, and context packing.
 - `tool_schemas.py`: provider-neutral tool definitions rendered as OpenAI-compatible and Anthropic tool schemas.
 - `mcp.py`: MCP-compatible external tool metadata and handler extension types.
+- `mcp_runtime.py`: shared MCP runtime assembly, resource/prompt/status utility tools, per-server approvals, and namespace collision handling.
 - `agent.py`: step-based agent loop and tool-call parsing.
 - `tools.py`: workspace tools for files, search, shell, git diff, and guarded edits.
 - `permissions.py`: conservative policy checks for shell and file operations.
 - `transcript.py`: provider-specific request/response transcript adapters.
 - `trace.py`: JSONL trace writer for replay, audit, and evaluation.
 - `replay.py`: trace reader, timeline renderer, and summary statistics.
+- `viewer.py`: terminal and HTML trace viewers.
+- `dashboard.py`: eval report discovery and HTML dashboard rendering.
 - `session.py`: resumable session state, messages, steps, status, and todos.
 - `eval.py`: JSON eval suite runner with per-case traces, sessions, and reports.
 - `cli.py`: command-line entrypoint.
@@ -72,8 +75,14 @@ The stdio MCP client layer supports:
 - `notifications/initialized`
 - `tools/list`
 - `tools/call`
+- `resources/list`
+- `resources/read`
+- `prompts/list`
+- `prompts/get`
 
 Discovered MCP tools are added to the same external tool registry and provider-native schemas as statically declared tools.
+
+MCP servers also receive generated utility tools named `mcp_<server>_list_resources`, `mcp_<server>_read_resource`, `mcp_<server>_list_prompts`, `mcp_<server>_get_prompt`, and `mcp_<server>_status`. Tool-name collisions are namespaced with the server name.
 
 ## Safety Boundary
 
@@ -166,12 +175,12 @@ Current presets:
 - `qwen`: DashScope OpenAI-compatible mode with `DASHSCOPE_API_KEY`.
 - `openai`: OpenAI API with `OPENAI_API_KEY`.
 - `claude`: Anthropic Messages API with `ANTHROPIC_API_KEY`.
+- `local-openai`: local OpenAI-compatible endpoint with `LOCAL_MODEL_API_KEY`.
+- `vllm`: local vLLM endpoint with `VLLM_API_KEY`.
+- `sglang`: local SGLang endpoint with `SGLANG_API_KEY`.
+- `ollama`: local Ollama OpenAI-compatible endpoint with `OLLAMA_API_KEY`.
 - `mock`: offline model for tests and demos.
 
-## Near-Term Roadmap
+## Release Surface
 
-1. Add MCP resource/list/read support.
-2. Add MCP prompt support.
-3. Add TUI or HTML trace viewer.
-4. Add packaged CLI release.
-5. Add example GitHub workflows for model evals.
+The v0.1 surface includes the `och` console script, `python -m opencode_harness`, release package workflow, model-eval workflow example, trace TUI/HTML viewers, eval dashboard, and `och version` for install verification.

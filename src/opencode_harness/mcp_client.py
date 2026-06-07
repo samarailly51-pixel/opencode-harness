@@ -6,6 +6,7 @@ import subprocess
 import threading
 from typing import Any
 
+from . import __version__
 from .mcp import ExternalToolSpec
 from .tools_types import ToolResult
 
@@ -58,7 +59,7 @@ class StdioMcpClient:
             {
                 "protocolVersion": "2024-11-05",
                 "capabilities": {},
-                "clientInfo": {"name": "opencode-harness", "version": "0.1.0"},
+                "clientInfo": {"name": "opencode-harness", "version": __version__},
             },
         )
         self.capabilities = result.get("capabilities", {}) if isinstance(result.get("capabilities"), dict) else {}

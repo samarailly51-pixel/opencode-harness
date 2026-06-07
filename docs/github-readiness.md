@@ -5,19 +5,19 @@ Use this before publishing the repository.
 ## Required
 
 - [x] Confirm repository name and description.
-- [ ] Review README positioning.
-- [ ] Confirm `LICENSE` is correct.
-- [ ] Review `CONTRIBUTING.md` clean-room rules.
-- [ ] Review `SECURITY.md`.
-- [ ] Run the full test suite.
-- [ ] Run mock CLI smoke.
-- [ ] Run mock eval smoke.
-- [ ] Run DeepSeek Lab mock smoke.
-- [ ] Confirm no API keys or secrets are present.
-- [ ] Confirm `runs/` and `eval-runs/` are ignored.
-- [ ] Confirm GitHub Actions CI passes after push.
-- [ ] Confirm issue and PR templates render on GitHub.
-- [ ] Review `docs/release.md`.
+- [x] Review README positioning.
+- [x] Confirm `LICENSE` is correct.
+- [x] Review `CONTRIBUTING.md` clean-room rules.
+- [x] Review `SECURITY.md`.
+- [x] Run the full test suite.
+- [x] Run mock CLI smoke.
+- [x] Run mock eval smoke.
+- [x] Run DeepSeek Lab mock smoke.
+- [x] Confirm no API keys or secrets are present.
+- [x] Confirm `runs/` and `eval-runs/` are ignored.
+- [x] Confirm GitHub Actions CI passes after push.
+- [x] Confirm issue and PR templates render on GitHub.
+- [x] Review `docs/release.md`.
 
 ## Recommended
 
@@ -33,9 +33,11 @@ Use this before publishing the repository.
 ```powershell
 $env:PYTHONPATH='src'
 python -m unittest discover -s tests
+python -m opencode_harness version
 python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2 --context-chars 1000
 python -m opencode_harness eval model-labs/deepseek/mock-smoke-suite.json --preset mock --max-steps 2 --context-chars 1000
 python -m opencode_harness replay runs/latest.jsonl --summary
+python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html
 ```
 
 ## Positioning

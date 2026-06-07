@@ -60,6 +60,15 @@ OpenCode Harness is a clean-room, model-agnostic runtime for Claude Code-class c
 - [x] Packaged CLI release.
 - [x] Example GitHub workflows for model evals.
 
+## 0.6 v0.1 Release Hardening
+
+- [x] CLI version command.
+- [x] Release notes and changelog.
+- [x] Provider benchmark runbook.
+- [x] Reproducible demo artifact manifest.
+- [x] Release workflow install smoke.
+- [ ] First release tag.
+
 ## Principles
 
 - Clean-room implementation.

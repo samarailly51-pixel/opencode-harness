@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 import sys
 
+from . import __version__
 from .agent import Agent
 from .config import HarnessConfig, ModelConfig, PermissionConfig, load_config
 from .dashboard import discover_eval_reports, write_eval_dashboard
@@ -35,6 +36,8 @@ def main(argv: list[str] | None = None) -> int:
 
     init_parser = subparsers.add_parser("init", help="Create och.config.toml from the example")
     init_parser.add_argument("--force", action="store_true", help="Overwrite an existing config")
+
+    subparsers.add_parser("version", help="Print the OpenCode Harness version")
 
     trace_parser = subparsers.add_parser("trace", help="Print a JSONL trace file")
     trace_parser.add_argument("path")
@@ -81,6 +84,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.command == "init":
         return _init_config(args.force)
+    if args.command == "version":
+        print(f"opencode-harness {__version__}")
+        return 0
     if args.command == "trace":
         return _print_trace(Path(args.path))
     if args.command == "replay":

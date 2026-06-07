@@ -135,6 +135,7 @@ approval_mode = "inherit"
 
 ```powershell
 python -m opencode_harness run "fix the failing test"
+python -m opencode_harness version
 python -m opencode_harness chat --mock
 python -m opencode_harness trace runs/latest.jsonl
 python -m opencode_harness replay runs/latest.jsonl
@@ -349,6 +350,7 @@ The package exposes `och` and `opencode-harness` console scripts:
 
 ```powershell
 python -m pip install .
+och version
 och --help
 ```
 
@@ -361,6 +363,8 @@ python -m build
 
 The repository includes a tag/manual release workflow that builds wheel and source distributions, plus a manual model-evals workflow example that uploads eval artifacts.
 
+Use the reproducible v0.1 demo flow in [examples/release-demo](examples/release-demo/README.md) to generate trace, report, and dashboard artifacts locally.
+
 ## Design Principles
 
 - Clean-room implementation.
@@ -372,8 +376,10 @@ The repository includes a tag/manual release workflow that builds wheel and sour
 ## Project Docs
 
 - [Architecture](docs/architecture.md)
+- [Provider benchmark guide](docs/provider-benchmarks.md)
 - [GitHub readiness checklist](docs/github-readiness.md)
 - [Release guide](docs/release.md)
+- [Changelog](CHANGELOG.md)
 - [Roadmap](ROADMAP.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security](SECURITY.md)

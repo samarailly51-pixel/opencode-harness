@@ -1,0 +1,19 @@
+{
+  "name": "opencode-harness v0.1 release demo",
+  "commands": [
+    "python -m opencode_harness version",
+    "python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2 --context-chars 1000",
+    "python -m opencode_harness tui <latest inspect-repo trace> --width 80",
+    "python -m opencode_harness trace-html <latest inspect-repo trace> --output eval-runs/latest-trace.html",
+    "python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html"
+  ],
+  "artifacts": [
+    "eval-runs/**/report.json",
+    "eval-runs/**/report.md",
+    "eval-runs/**/report.html",
+    "eval-runs/**/*.jsonl",
+    "eval-runs/latest-trace.html",
+    "eval-runs/dashboard.html"
+  ],
+  "notes": "Generated artifacts live under eval-runs and are ignored by git."
+}
