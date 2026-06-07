@@ -1,0 +1,25 @@
+{
+  "name": "openai coding prompts",
+  "prompts": [
+    {
+      "id": "native-tool-calls",
+      "task": "Use todo_set, inspect README.md, and finish with a marked summary.",
+      "suite_case": "openai-native-tool-calls"
+    },
+    {
+      "id": "repo-context-synthesis",
+      "task": "Use repo_map or context_pack to synthesize OpenAI-compatible provider flow and repository architecture.",
+      "suite_case": "openai-repo-context-synthesis"
+    },
+    {
+      "id": "transcript-audit",
+      "task": "Explain provider transcript auditability and API key header exclusion.",
+      "suite_case": "openai-transcript-audit"
+    },
+    {
+      "id": "chinese-coding-summary",
+      "task": "请用中文总结 OpenAI-compatible 适配、工具调用、权限边界和评测能力。",
+      "suite_case": "openai-chinese-coding-summary"
+    }
+  ]
+}

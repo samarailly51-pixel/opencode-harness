@@ -276,6 +276,7 @@ Model Labs are focused tracks for evaluating model families inside the same harn
 - [DeepSeek Lab](model-labs/deepseek/README.md): DeepSeek V4-class behavior, provider comparison, tool-calling stability, coding-agent evals, and Chinese coding tasks.
 - [Qwen Lab](model-labs/qwen/README.md): Qwen provider behavior, Chinese coding tasks, tool-calling stability, JSON fallback discipline, and provider comparison.
 - [Claude Lab](model-labs/claude/README.md): Anthropic native tool use, Claude provider behavior, repair readiness, context synthesis, and provider comparison.
+- [OpenAI Lab](model-labs/openai/README.md): OpenAI-compatible baseline behavior, native tool calls, transcript auditability, context synthesis, and provider comparison.
 
 ## Trace Replay
 

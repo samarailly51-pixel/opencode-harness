@@ -102,6 +102,29 @@ class LabTests(unittest.TestCase):
 
         self.assertIn("model-labs/claude/README.md", readme)
 
+    def test_openai_coding_suite_is_valid_utf8_json(self) -> None:
+        name, cases = load_eval_suite(Path("model-labs/openai/openai-coding-agent-suite.json"))
+
+        self.assertEqual(name, "openai coding-agent suite")
+        self.assertEqual(len(cases), 4)
+        self.assertEqual(cases[0].expect_contains, "OPENAI_NATIVE_TOOL_CALLS")
+        self.assertIn("中文总结", cases[-1].task)
+        self.assertEqual(cases[-1].expect_contains, "OPENAI_ZH_SUMMARY")
+
+    def test_openai_prompt_manifest_matches_suite(self) -> None:
+        _, cases = load_eval_suite(Path("model-labs/openai/openai-coding-agent-suite.json"))
+        case_ids = {case.id for case in cases}
+        prompts = json.loads(Path("model-labs/openai/prompts/coding.json").read_text(encoding="utf-8"))
+
+        linked_cases = {prompt["suite_case"] for prompt in prompts["prompts"]}
+
+        self.assertEqual(linked_cases, case_ids)
+
+    def test_openai_lab_is_listed_in_readme(self) -> None:
+        readme = Path("README.md").read_text(encoding="utf-8")
+
+        self.assertIn("model-labs/openai/README.md", readme)
+
     def test_run_provider_comparison_writes_comparison_and_manifest(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

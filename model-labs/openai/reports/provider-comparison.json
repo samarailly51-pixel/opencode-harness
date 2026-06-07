@@ -1,0 +1,13 @@
+{
+  "suite": "model-labs\\openai\\mock-smoke-suite.json",
+  "reports": [
+    "eval-runs\\mock-smoke-suite-mock-20260607-170318\\report.json"
+  ],
+  "comparison": "model-labs\\openai\\reports\\provider-comparison.md",
+  "skipped": [
+    {
+      "preset": "openai",
+      "reason": "missing OPENAI_API_KEY"
+    }
+  ]
+}

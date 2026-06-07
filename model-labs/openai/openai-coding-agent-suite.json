@@ -1,0 +1,29 @@
+{
+  "name": "openai coding-agent suite",
+  "cases": [
+    {
+      "id": "openai-native-tool-calls",
+      "task": "Use todo_set to create a short plan, inspect README.md, then finish with a concise summary that includes the exact marker OPENAI_NATIVE_TOOL_CALLS.",
+      "workspace": "../..",
+      "expect_contains": "OPENAI_NATIVE_TOOL_CALLS"
+    },
+    {
+      "id": "openai-repo-context-synthesis",
+      "task": "Use repo_map or context_pack to explain how CLI, OpenAI-compatible provider payloads, tool schemas, traces, eval reports, and model labs fit together. Finish with the exact marker OPENAI_CONTEXT_SYNTHESIS.",
+      "workspace": "../..",
+      "expect_contains": "OPENAI_CONTEXT_SYNTHESIS"
+    },
+    {
+      "id": "openai-transcript-audit",
+      "task": "Inspect the provider transcript documentation and summarize how request payloads and raw responses are recorded without API key headers. Finish with the exact marker OPENAI_TRANSCRIPT_AUDIT.",
+      "workspace": "../..",
+      "expect_contains": "OPENAI_TRANSCRIPT_AUDIT"
+    },
+    {
+      "id": "openai-chinese-coding-summary",
+      "task": "请检查这个 harness 的项目结构，并用中文总结它当前支持的 OpenAI-compatible 适配、工具调用、权限边界和评测能力。最后必须包含精确标记 OPENAI_ZH_SUMMARY。",
+      "workspace": "../..",
+      "expect_contains": "OPENAI_ZH_SUMMARY"
+    }
+  ]
+}
