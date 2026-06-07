@@ -1,0 +1,29 @@
+{
+  "name": "deepseek v4 long-context suite",
+  "cases": [
+    {
+      "id": "repo-wide-module-map",
+      "task": "Use repo_map and context_pack to build a repository-wide module map. Explain how CLI, model providers, tools, permissions, trace replay, eval reports, and model labs connect. Finish with the exact marker LONG_CONTEXT_SUMMARY.",
+      "workspace": "../..",
+      "expect_contains": "LONG_CONTEXT_SUMMARY"
+    },
+    {
+      "id": "cross-file-eval-flow",
+      "task": "Inspect the eval, replay, transcript, and lab comparison code paths across the repository. Summarize the flow from eval suite JSON to agent run to report.json/report.md/report.html to comparison output. Finish with the exact marker LONG_CONTEXT_EVAL_FLOW.",
+      "workspace": "../..",
+      "expect_contains": "LONG_CONTEXT_EVAL_FLOW"
+    },
+    {
+      "id": "security-and-permissions-context",
+      "task": "Use repository context to explain the safety boundary: shell classification, approval mode, write permissions, MCP tool handling, provider transcripts, and trace sensitivity. Finish with the exact marker LONG_CONTEXT_SECURITY.",
+      "workspace": "../..",
+      "expect_contains": "LONG_CONTEXT_SECURITY"
+    },
+    {
+      "id": "chinese-long-context-summary",
+      "task": "请使用 repo_map 或 context_pack 检查整个项目，并用中文说明这个 harness 的长上下文能力、工具调用链路、评测报告和 DeepSeek Lab 如何配合。最后必须包含精确标记 LONG_CONTEXT_ZH。",
+      "workspace": "../..",
+      "expect_contains": "LONG_CONTEXT_ZH"
+    }
+  ]
+}

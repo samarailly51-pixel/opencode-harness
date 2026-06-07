@@ -17,6 +17,24 @@ class LabTests(unittest.TestCase):
         self.assertIn("中文总结", cases[-1].task)
         self.assertEqual(cases[-1].expect_contains, "模型")
 
+    def test_deepseek_long_context_suite_is_valid(self) -> None:
+        name, cases = load_eval_suite(Path("model-labs/deepseek/deepseek-v4-long-context-suite.json"))
+
+        self.assertEqual(name, "deepseek v4 long-context suite")
+        self.assertEqual(len(cases), 4)
+        self.assertIn("LONG_CONTEXT_SUMMARY", cases[0].expect_contains or "")
+        self.assertIn("LONG_CONTEXT_ZH", cases[-1].task)
+        self.assertEqual(cases[-1].expect_contains, "LONG_CONTEXT_ZH")
+
+    def test_deepseek_long_context_prompt_manifest_matches_suite(self) -> None:
+        _, cases = load_eval_suite(Path("model-labs/deepseek/deepseek-v4-long-context-suite.json"))
+        case_ids = {case.id for case in cases}
+        prompts = json.loads(Path("model-labs/deepseek/prompts/long-context.json").read_text(encoding="utf-8"))
+
+        linked_cases = {prompt["suite_case"] for prompt in prompts["prompts"]}
+
+        self.assertEqual(linked_cases, case_ids)
+
     def test_run_provider_comparison_writes_comparison_and_manifest(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

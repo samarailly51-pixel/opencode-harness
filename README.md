@@ -249,6 +249,16 @@ python -m opencode_harness lab-compare `
   --comparison-output model-labs/deepseek/reports/provider-comparison.md
 ```
 
+DeepSeek Lab also includes a long-context suite:
+
+```powershell
+python -m opencode_harness lab-compare `
+  model-labs/deepseek/deepseek-v4-long-context-suite.json `
+  --presets deepseek qwen openai claude `
+  --context-chars 24000 `
+  --comparison-output model-labs/deepseek/reports/long-context-comparison.md
+```
+
 ## Model Labs
 
 Model Labs are focused tracks for evaluating model families inside the same harness.

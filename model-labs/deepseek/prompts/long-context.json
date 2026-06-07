@@ -3,11 +3,23 @@
   "prompts": [
     {
       "id": "repo-wide-summary",
-      "task": "Use context_pack and repo_map to summarize the whole repository in a structured way."
+      "task": "Use context_pack and repo_map to summarize the whole repository in a structured way.",
+      "suite_case": "repo-wide-module-map"
     },
     {
       "id": "cross-module-flow",
-      "task": "Explain the flow from CLI command to model call to tool execution to trace replay."
+      "task": "Explain the flow from CLI command to model call to tool execution to trace replay.",
+      "suite_case": "cross-file-eval-flow"
+    },
+    {
+      "id": "safety-boundary-context",
+      "task": "Explain shell classification, approval mode, write permissions, MCP handling, provider transcripts, and trace sensitivity.",
+      "suite_case": "security-and-permissions-context"
+    },
+    {
+      "id": "chinese-long-context",
+      "task": "请用中文总结这个 harness 的长上下文能力、工具调用链路、评测报告和 DeepSeek Lab 如何配合。",
+      "suite_case": "chinese-long-context-summary"
     }
   ]
 }

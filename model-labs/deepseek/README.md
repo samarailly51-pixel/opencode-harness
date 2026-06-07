@@ -30,6 +30,17 @@ $env:DEEPSEEK_API_KEY = "..."
 python -m opencode_harness eval model-labs/deepseek/deepseek-v4-suite.json --preset deepseek --max-steps 8
 ```
 
+Run the long-context suite with a larger repository context budget:
+
+```powershell
+$env:DEEPSEEK_API_KEY = "..."
+python -m opencode_harness eval `
+  model-labs/deepseek/deepseek-v4-long-context-suite.json `
+  --preset deepseek `
+  --max-steps 10 `
+  --context-chars 24000
+```
+
 Provider-specific configs can override model names, base URLs, context size, and permissions.
 
 ## Outputs
@@ -64,6 +75,17 @@ python -m opencode_harness lab-compare `
 ```
 
 By default, providers with missing API key environment variables are skipped and listed in the generated comparison. Add `--include-missing-keys` when you want missing credentials to fail loudly.
+
+For long-context provider comparison, point `lab-compare` at `deepseek-v4-long-context-suite.json` and use a larger `--context-chars` value:
+
+```powershell
+python -m opencode_harness lab-compare `
+  model-labs/deepseek/deepseek-v4-long-context-suite.json `
+  --presets deepseek qwen openai claude `
+  --max-steps 10 `
+  --context-chars 24000 `
+  --comparison-output model-labs/deepseek/reports/long-context-comparison.md
+```
 
 ## Clean-Room Boundary
 

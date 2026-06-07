@@ -23,6 +23,8 @@ Use this matrix to compare observable behavior across providers.
 - JSON fallback success.
 - Final answer language and format adherence.
 - Context truncation symptoms.
+- Long-context marker adherence.
+- Cross-file recall and synthesis quality.
 
 ## Workflow
 
@@ -32,3 +34,5 @@ Use this matrix to compare observable behavior across providers.
 4. Replay failures with `opencode_harness replay`.
 5. Compare reports with `opencode_harness compare` or the generated provider comparison.
 6. Record observations in Notes.
+
+For long-context checks, run `deepseek-v4-long-context-suite.json` with `--context-chars 24000` or higher and compare marker adherence plus failure taxonomy across providers.
