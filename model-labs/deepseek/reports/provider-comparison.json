@@ -1,0 +1,13 @@
+{
+  "suite": "model-labs\\deepseek\\mock-smoke-suite.json",
+  "reports": [
+    "eval-runs\\mock-smoke-suite-mock-20260607-121804\\report.json"
+  ],
+  "comparison": "model-labs\\deepseek\\reports\\provider-comparison.md",
+  "skipped": [
+    {
+      "preset": "deepseek",
+      "reason": "missing DEEPSEEK_API_KEY"
+    }
+  ]
+}

@@ -240,6 +240,15 @@ python -m opencode_harness compare `
 
 Comparisons include pass rate, failure breakdown, average steps, total seconds, and a per-case matrix.
 
+Run one eval suite across provider presets:
+
+```powershell
+python -m opencode_harness lab-compare `
+  model-labs/deepseek/deepseek-v4-suite.json `
+  --presets deepseek qwen openai claude `
+  --comparison-output model-labs/deepseek/reports/provider-comparison.md
+```
+
 ## Model Labs
 
 Model Labs are focused tracks for evaluating model families inside the same harness.

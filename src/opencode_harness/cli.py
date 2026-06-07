@@ -9,6 +9,7 @@ import sys
 from .agent import Agent
 from .config import HarnessConfig, ModelConfig, PermissionConfig, load_config
 from .eval import compare_eval_reports, load_eval_report, run_eval_suite
+from .labs import run_provider_comparison
 from .mcp import ExternalToolSpec
 from .mcp_client import McpServerSpec, StdioMcpClient
 from .models import MockModel, build_model
@@ -51,6 +52,18 @@ def main(argv: list[str] | None = None) -> int:
     compare_parser.add_argument("reports", nargs="+", type=Path, help="report.json files or eval run directories")
     compare_parser.add_argument("--output", type=Path, help="Write Markdown comparison to this path")
 
+    lab_compare_parser = subparsers.add_parser("lab-compare", help="Run one eval suite across provider presets")
+    lab_compare_parser.add_argument("suite", type=Path)
+    lab_compare_parser.add_argument("--presets", nargs="+", choices=sorted(PRESETS), default=["deepseek", "qwen", "openai", "claude"])
+    lab_compare_parser.add_argument("--output-dir", type=Path, default=Path("eval-runs"))
+    lab_compare_parser.add_argument("--comparison-output", type=Path, required=True)
+    lab_compare_parser.add_argument("--include-missing-keys", action="store_true", help="Run providers even when their API key env var is missing")
+    lab_compare_parser.add_argument("--config", type=Path, help="Path to och config TOML")
+    lab_compare_parser.add_argument("--max-steps", type=int, help="Agent max steps")
+    lab_compare_parser.add_argument("--context-chars", type=int, help="Max repository context characters")
+    lab_compare_parser.add_argument("--allow-write", action="store_true", help="Allow file-writing tools")
+    lab_compare_parser.add_argument("--approval-mode", choices=["never", "ask"], help="Approval mode for risky tool calls")
+
     args = parser.parse_args(argv)
     if args.command == "init":
         return _init_config(args.force)
@@ -69,6 +82,16 @@ def main(argv: list[str] | None = None) -> int:
         return _run_eval(args.suite, config, args.output_dir)
     if args.command == "compare":
         return _compare_reports(args.reports, args.output)
+    if args.command == "lab-compare":
+        config = _lab_config_from_args(args)
+        return _run_lab_compare(
+            args.suite,
+            args.presets,
+            config,
+            args.output_dir,
+            args.comparison_output,
+            skip_missing_keys=not args.include_missing_keys,
+        )
     return 1
 
 
@@ -127,6 +150,37 @@ def _config_from_args(args: argparse.Namespace, force_mock: bool = False) -> Har
         )
     return HarnessConfig(
         model=model,
+        agent=agent,
+        permissions=permissions,
+        mcp_tools=config.mcp_tools,
+        mcp_servers=config.mcp_servers,
+    )
+
+
+def _lab_config_from_args(args: argparse.Namespace) -> HarnessConfig:
+    config = load_config(args.config)
+    agent = config.agent
+    if args.max_steps is not None:
+        agent = type(agent)(max_steps=args.max_steps, context_chars=agent.context_chars)
+    if args.context_chars is not None:
+        agent = type(agent)(max_steps=agent.max_steps, context_chars=args.context_chars)
+    permissions = config.permissions
+    if args.allow_write:
+        permissions = PermissionConfig(
+            allow_write=True,
+            allow_shell=permissions.allow_shell,
+            allow_network=permissions.allow_network,
+            approval_mode=permissions.approval_mode,
+        )
+    if args.approval_mode is not None:
+        permissions = PermissionConfig(
+            allow_write=permissions.allow_write,
+            allow_shell=permissions.allow_shell,
+            allow_network=permissions.allow_network,
+            approval_mode=args.approval_mode,
+        )
+    return HarnessConfig(
+        model=config.model,
         agent=agent,
         permissions=permissions,
         mcp_tools=config.mcp_tools,
@@ -264,6 +318,26 @@ def _compare_reports(paths: list[Path], output: Path | None) -> int:
         print(f"Wrote {output}")
     else:
         print(markdown)
+    return 0
+
+
+def _run_lab_compare(
+    suite: Path,
+    presets: list[str],
+    config: HarnessConfig,
+    output_dir: Path,
+    comparison_output: Path,
+    skip_missing_keys: bool,
+) -> int:
+    result = run_provider_comparison(
+        suite,
+        presets,
+        config,
+        output_dir,
+        comparison_output,
+        skip_missing_keys=skip_missing_keys,
+    )
+    print(result.to_json())
     return 0
 
 

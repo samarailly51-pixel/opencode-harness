@@ -52,6 +52,19 @@ python -m opencode_harness compare `
   --output model-labs/deepseek/reports/provider-comparison.md
 ```
 
+Or run the same suite across provider presets and produce the comparison report in one command:
+
+```powershell
+python -m opencode_harness lab-compare `
+  model-labs/deepseek/deepseek-v4-suite.json `
+  --presets deepseek qwen openai claude `
+  --max-steps 8 `
+  --context-chars 8000 `
+  --comparison-output model-labs/deepseek/reports/provider-comparison.md
+```
+
+By default, providers with missing API key environment variables are skipped and listed in the generated comparison. Add `--include-missing-keys` when you want missing credentials to fail loudly.
+
 ## Clean-Room Boundary
 
 This lab only uses public model APIs, public model metadata, local deployments with authorized weights, and observable runtime behavior. It does not use leaked, proprietary, or unauthorized source code.

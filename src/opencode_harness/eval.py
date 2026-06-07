@@ -278,10 +278,12 @@ def run_eval_suite(
     suite_path: Path,
     config: HarnessConfig,
     output_dir: Path,
+    run_label: str | None = None,
 ) -> EvalReport:
     suite_name, cases = load_eval_suite(suite_path)
     started_at = datetime.now().strftime("%Y%m%d-%H%M%S")
-    run_dir = output_dir / f"{suite_path.stem}-{started_at}"
+    label = f"-{_slug(run_label)}" if run_label else ""
+    run_dir = output_dir / f"{suite_path.stem}{label}-{started_at}"
     run_dir.mkdir(parents=True, exist_ok=True)
     model = build_model(config.model)
     external_tools, external_handlers, mcp_clients = _mcp_runtime_from_config(config)
@@ -409,6 +411,10 @@ def _md_link_path(path: str) -> str:
 
 def _md_block(text: str) -> str:
     return "```text\n" + text.replace("```", "'''") + "\n```"
+
+
+def _slug(text: str) -> str:
+    return "".join(char if char.isalnum() or char in {"-", "_"} else "-" for char in text).strip("-") or "run"
 
 
 def _average(values: object) -> float:

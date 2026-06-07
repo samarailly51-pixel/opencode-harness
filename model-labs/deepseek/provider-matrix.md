@@ -27,8 +27,8 @@ Use this matrix to compare observable behavior across providers.
 ## Workflow
 
 1. Create or update a config for the provider.
-2. Run `deepseek-v4-suite.json`.
-3. Save `report.json` path in this matrix.
+2. Run `deepseek-v4-suite.json` directly, or use `opencode_harness lab-compare`.
+3. Save `report.json` paths and generated comparison output under `model-labs/deepseek/reports/`.
 4. Replay failures with `opencode_harness replay`.
-5. Compare reports with `opencode_harness compare`.
+5. Compare reports with `opencode_harness compare` or the generated provider comparison.
 6. Record observations in Notes.

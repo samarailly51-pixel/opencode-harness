@@ -1,0 +1,65 @@
+from pathlib import Path
+import json
+import tempfile
+import unittest
+from unittest.mock import patch
+
+from opencode_harness.config import AgentConfig, HarnessConfig, ModelConfig, PermissionConfig
+from opencode_harness.eval import load_eval_suite
+from opencode_harness.labs import run_provider_comparison
+
+
+class LabTests(unittest.TestCase):
+    def test_deepseek_v4_suite_is_valid_utf8_json(self) -> None:
+        name, cases = load_eval_suite(Path("model-labs/deepseek/deepseek-v4-suite.json"))
+
+        self.assertEqual(name, "deepseek v4 coding-agent smoke")
+        self.assertIn("中文总结", cases[-1].task)
+        self.assertEqual(cases[-1].expect_contains, "模型")
+
+    def test_run_provider_comparison_writes_comparison_and_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "repo").mkdir()
+            suite = root / "suite.json"
+            suite.write_text(
+                json.dumps(
+                    {
+                        "name": "lab smoke",
+                        "cases": [
+                            {
+                                "id": "inspect",
+                                "task": "inspect this repo",
+                                "workspace": "repo",
+                                "expect_contains": "Mock run completed",
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            config = HarnessConfig(
+                model=ModelConfig(provider="mock"),
+                agent=AgentConfig(max_steps=2, context_chars=1000),
+                permissions=PermissionConfig(),
+            )
+            comparison = root / "reports" / "provider-comparison.md"
+
+            with patch.dict("os.environ", {}, clear=True):
+                result = run_provider_comparison(
+                    suite,
+                    ["mock", "deepseek"],
+                    config,
+                    root / "eval-runs",
+                    comparison,
+                )
+
+            self.assertTrue(comparison.exists())
+            self.assertTrue(comparison.with_suffix(".json").exists())
+            self.assertEqual(len(result.reports), 1)
+            self.assertEqual(result.skipped[0].preset, "deepseek")
+            markdown = comparison.read_text(encoding="utf-8")
+            self.assertIn("lab smoke", markdown)
+            self.assertIn("Skipped Providers", markdown)
+            manifest = json.loads(comparison.with_suffix(".json").read_text(encoding="utf-8"))
+            self.assertEqual(manifest["skipped"][0]["reason"], "missing DEEPSEEK_API_KEY")
