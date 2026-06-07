@@ -1,0 +1,13 @@
+{
+  "suite": "model-labs\\qwen\\mock-smoke-suite.json",
+  "reports": [
+    "eval-runs\\mock-smoke-suite-mock-20260607-164635\\report.json"
+  ],
+  "comparison": "model-labs\\qwen\\reports\\provider-comparison.md",
+  "skipped": [
+    {
+      "preset": "qwen",
+      "reason": "missing DASHSCOPE_API_KEY"
+    }
+  ]
+}

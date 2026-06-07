@@ -1,0 +1,29 @@
+{
+  "name": "qwen coding-agent suite",
+  "cases": [
+    {
+      "id": "qwen-tool-calling-stability",
+      "task": "Use todo_set to create a short plan, inspect README.md, then finish with a concise summary that includes the exact marker QWEN_TOOL_STABILITY.",
+      "workspace": "../..",
+      "expect_contains": "QWEN_TOOL_STABILITY"
+    },
+    {
+      "id": "qwen-repo-context-synthesis",
+      "task": "Use repo_map or context_pack to explain how CLI, provider presets, tools, eval reports, and model labs fit together. Finish with the exact marker QWEN_CONTEXT_SYNTHESIS.",
+      "workspace": "../..",
+      "expect_contains": "QWEN_CONTEXT_SYNTHESIS"
+    },
+    {
+      "id": "qwen-json-fallback-discipline",
+      "task": "Inspect the tool protocol documentation in README.md and summarize how JSON fallback differs from native tool calls. Finish with the exact marker QWEN_JSON_FALLBACK.",
+      "workspace": "../..",
+      "expect_contains": "QWEN_JSON_FALLBACK"
+    },
+    {
+      "id": "qwen-chinese-coding-summary",
+      "task": "请检查这个 harness 的项目结构，并用中文总结它当前支持的模型、工具、权限边界和评测能力。最后必须包含精确标记 QWEN_ZH_SUMMARY。",
+      "workspace": "../..",
+      "expect_contains": "QWEN_ZH_SUMMARY"
+    }
+  ]
+}

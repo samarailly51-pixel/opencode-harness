@@ -274,6 +274,7 @@ python -m opencode_harness lab-compare `
 Model Labs are focused tracks for evaluating model families inside the same harness.
 
 - [DeepSeek Lab](model-labs/deepseek/README.md): DeepSeek V4-class behavior, provider comparison, tool-calling stability, coding-agent evals, and Chinese coding tasks.
+- [Qwen Lab](model-labs/qwen/README.md): Qwen provider behavior, Chinese coding tasks, tool-calling stability, JSON fallback discipline, and provider comparison.
 
 ## Trace Replay
 

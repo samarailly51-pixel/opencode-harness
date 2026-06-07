@@ -1,0 +1,25 @@
+{
+  "name": "qwen coding prompts",
+  "prompts": [
+    {
+      "id": "tool-calling-stability",
+      "task": "Use todo_set, inspect README.md, and finish with a marked summary.",
+      "suite_case": "qwen-tool-calling-stability"
+    },
+    {
+      "id": "repo-context-synthesis",
+      "task": "Use repo_map or context_pack to synthesize the repository architecture.",
+      "suite_case": "qwen-repo-context-synthesis"
+    },
+    {
+      "id": "json-fallback-discipline",
+      "task": "Explain JSON fallback versus native tool calls.",
+      "suite_case": "qwen-json-fallback-discipline"
+    },
+    {
+      "id": "chinese-coding-summary",
+      "task": "请用中文总结 harness 支持的模型、工具、权限边界和评测能力。",
+      "suite_case": "qwen-chinese-coding-summary"
+    }
+  ]
+}
