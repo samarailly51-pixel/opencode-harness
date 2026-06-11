@@ -1,16 +1,29 @@
 # OpenCode Harness
 
 [![CI](https://github.com/samarailly51-pixel/opencode-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/samarailly51-pixel/opencode-harness/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/samarailly51-pixel/opencode-harness?display_name=tag)](https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
 
-OpenCode Harness is a clean-room, model-agnostic runtime for Claude Code-class coding agents.
+OpenCode Harness is a clean-room, model-agnostic runtime and evaluation harness for Claude Code-class coding agents.
 
-It is designed to run coding workflows with DeepSeek, Qwen, Claude, OpenAI, local OpenAI-compatible servers, and future providers through a shared agent loop, tool layer, permission model, and trace format.
+It runs coding workflows with DeepSeek, Qwen, Claude, OpenAI, local OpenAI-compatible servers, and future providers through a shared agent loop, tool layer, permission model, trace format, and eval surface.
 
 This project does not contain or derive from Claude Code source code. It is an independent implementation of a coding-agent harness.
 
-## MVP Scope
+## Why It Exists
+
+Most coding-agent demos are tied to one model, one provider, or one UI. OpenCode Harness focuses on the infrastructure layer: run the same coding-agent loop across multiple providers, preserve auditable traces, gate risky tools, and compare model behavior with reproducible evals.
+
+## v0.1 Status
+
+- Released: [v0.1.0](https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0)
+- Package artifacts: wheel and source distribution attached to the release.
+- CI: Python 3.11/3.12 tests and mock eval smoke.
+- Model Labs: DeepSeek, Qwen, Claude, OpenAI, and Local Model Labs.
+- Product surface: CLI, trace replay, terminal trace viewer, HTML trace viewer, eval dashboard, release workflow, and model-eval workflow example.
+
+## Core Capabilities
 
 - CLI for running a coding-agent task against a workspace.
 - Pluggable model interface.
@@ -22,6 +35,16 @@ This project does not contain or derive from Claude Code source code. It is an i
 - MCP-compatible external tool extension points.
 - Permission policy that defaults to conservative command execution.
 - JSONL trace files with provider transcripts for replay, evaluation, and debugging.
+
+## Showcase
+
+| Surface | Command |
+| --- | --- |
+| Run offline demo | `python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2` |
+| Terminal trace viewer | `python -m opencode_harness tui runs/latest.jsonl` |
+| HTML trace viewer | `python -m opencode_harness trace-html runs/latest.jsonl --output runs/latest.html` |
+| Eval dashboard | `python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html` |
+| Version check | `python -m opencode_harness version` |
 
 ## Quick Start
 
@@ -376,6 +399,7 @@ Use the reproducible v0.1 demo flow in [examples/release-demo](examples/release-
 ## Project Docs
 
 - [Architecture](docs/architecture.md)
+- [Resume positioning](docs/resume-positioning.md)
 - [Provider benchmark guide](docs/provider-benchmarks.md)
 - [GitHub readiness checklist](docs/github-readiness.md)
 - [Release guide](docs/release.md)

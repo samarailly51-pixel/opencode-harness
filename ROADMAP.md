@@ -67,7 +67,7 @@ OpenCode Harness is a clean-room, model-agnostic runtime for Claude Code-class c
 - [x] Provider benchmark runbook.
 - [x] Reproducible demo artifact manifest.
 - [x] Release workflow install smoke.
-- [ ] First release tag.
+- [x] First release tag.
 
 ## Principles
 
