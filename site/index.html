@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenCode Harness - Evaluation Harness for Coding Agents</title>
+  <meta name="description" content="Open-source, clean-room evaluation harness for coding agents across DeepSeek, Qwen, Claude, OpenAI, and local models.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="OpenCode Harness home">
+      <span class="brand-mark">OH</span>
+      <span>OpenCode Harness</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="#why">Why</a>
+      <a href="#features">Features</a>
+      <a href="#demo">Demo</a>
+      <a href="#launch">Launch</a>
+      <a class="nav-cta" href="https://github.com/samarailly51-pixel/opencode-harness">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-label="OpenCode Harness overview">
+      <div class="hero-backdrop" role="img" aria-label="OpenCode Harness eval dashboard preview"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <p class="eyebrow">Clean-room coding-agent infrastructure</p>
+        <h1>Compare coding agents across DeepSeek, Qwen, Claude, OpenAI, and local models.</h1>
+        <p class="hero-copy">
+          OpenCode Harness runs the same coding-agent workflow through a shared agent loop,
+          permissioned tools, MCP extension points, JSONL traces, and reproducible eval suites.
+        </p>
+        <div class="hero-actions" aria-label="Primary actions">
+          <a class="button primary" href="https://github.com/samarailly51-pixel/opencode-harness">View on GitHub</a>
+          <a class="button secondary" href="https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0">v0.1.0 Release</a>
+        </div>
+      </div>
+      <a class="scroll-cue" href="#why">Explore</a>
+    </section>
+
+    <section id="why" class="band intro-band">
+      <div class="content two-column">
+        <div>
+          <p class="eyebrow">Why it exists</p>
+          <h2>Agent demos are easy. Comparing agents is hard.</h2>
+        </div>
+        <p>
+          Coding agents often ship as model-specific demos with hidden prompts, inconsistent tools,
+          and weak audit trails. OpenCode Harness focuses on the runtime and evaluation layer:
+          one task surface, many providers, reproducible traces, and reports you can inspect.
+        </p>
+      </div>
+    </section>
+
+    <section id="features" class="band">
+      <div class="content">
+        <p class="eyebrow">What is inside</p>
+        <h2>Built like agent infrastructure, not a toy prompt wrapper.</h2>
+        <div class="feature-grid">
+          <article>
+            <h3>Model-neutral runtime</h3>
+            <p>Provider presets for DeepSeek, Qwen, Claude, OpenAI, local OpenAI-compatible endpoints, vLLM, SGLang, Ollama, and mock mode.</p>
+          </article>
+          <article>
+            <h3>Permissioned tools</h3>
+            <p>File reads/writes, search, patches, shell, git diff, repo maps, context packs, todos, and finish events with conservative policy gates.</p>
+          </article>
+          <article>
+            <h3>MCP-compatible extensions</h3>
+            <p>Stdio MCP tools, resources, prompts, per-server approvals, lifecycle diagnostics, and namespace collision handling.</p>
+          </article>
+          <article>
+            <h3>Traceable evals</h3>
+            <p>JSONL traces, provider transcripts, replay summaries, Markdown/HTML reports, terminal trace viewer, and eval dashboard.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="demo" class="band demo-band">
+      <div class="content">
+        <p class="eyebrow">Product surface</p>
+        <h2>Run an eval, inspect the trace, publish the dashboard.</h2>
+        <div class="media-grid">
+          <figure>
+            <img src="assets/dashboard-preview.png" alt="OpenCode Harness eval dashboard showing model pass rates and reports">
+            <figcaption>Eval dashboard for comparing runs and failure types.</figcaption>
+          </figure>
+          <figure>
+            <img src="assets/trace-preview.png" alt="OpenCode Harness trace viewer showing model responses and tool calls">
+            <figcaption>Trace viewer for auditing model responses, tool calls, and transcripts.</figcaption>
+          </figure>
+        </div>
+        <pre class="command-block"><code>python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2
+python -m opencode_harness tui runs/latest.jsonl
+python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html</code></pre>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="content">
+        <p class="eyebrow">Model Labs</p>
+        <h2>One harness, multiple model families.</h2>
+        <div class="lab-row" aria-label="Supported model labs">
+          <span>DeepSeek</span>
+          <span>Qwen</span>
+          <span>Claude</span>
+          <span>OpenAI</span>
+          <span>Local Models</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="launch" class="band launch-band">
+      <div class="content two-column">
+        <div>
+          <p class="eyebrow">v0.1.0 released</p>
+          <h2>Open-source, packaged, and ready for benchmark runs.</h2>
+        </div>
+        <div class="launch-copy">
+          <p>
+            The v0.1.0 release includes wheel and source artifacts, GitHub Actions CI,
+            a release workflow, a model-eval workflow example, provider benchmark guide,
+            changelog, and a reproducible local demo flow.
+          </p>
+          <a class="button primary" href="https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0">Download v0.1.0</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="content footer-content">
+      <span>OpenCode Harness</span>
+      <span>Clean-room implementation. No leaked or proprietary source-code dependency.</span>
+    </div>
+  </footer>
+</body>
+</html>

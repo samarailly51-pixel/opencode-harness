@@ -388,6 +388,8 @@ The repository includes a tag/manual release workflow that builds wheel and sour
 
 Use the reproducible v0.1 demo flow in [examples/release-demo](examples/release-demo/README.md) to generate trace, report, and dashboard artifacts locally.
 
+The static landing page lives in [site](site/README.md), and the first promo video script lives in [docs/promo-video-script.md](docs/promo-video-script.md).
+
 ## Design Principles
 
 - Clean-room implementation.
@@ -400,6 +402,7 @@ Use the reproducible v0.1 demo flow in [examples/release-demo](examples/release-
 
 - [Architecture](docs/architecture.md)
 - [Resume positioning](docs/resume-positioning.md)
+- [Promo video script](docs/promo-video-script.md)
 - [Provider benchmark guide](docs/provider-benchmarks.md)
 - [GitHub readiness checklist](docs/github-readiness.md)
 - [Release guide](docs/release.md)
