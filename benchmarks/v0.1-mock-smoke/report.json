@@ -1,0 +1,61 @@
+{
+  "name": "opencode-harness-v0.1-mock-smoke",
+  "date": "2026-06-11",
+  "project_version": "0.1.0",
+  "suite": "examples/mock-suite.json",
+  "provider_preset": "mock",
+  "model_provider": "mock",
+  "model_name": "mock-coder",
+  "claim_scope": "harness smoke benchmark, not model-quality benchmark",
+  "summary": {
+    "total_cases": 2,
+    "passed": 2,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "total_steps": 4,
+    "failed_tool_calls": 0,
+    "provider_transcripts": 4
+  },
+  "cases": [
+    {
+      "id": "inspect-repo",
+      "task": "inspect this repo",
+      "status": "pass",
+      "finished": true,
+      "steps": 2,
+      "failure_type": null,
+      "expected_signal": "Mock run completed",
+      "traceability": [
+        "context.pack",
+        "task.start",
+        "model.response",
+        "provider transcript",
+        "tool.result",
+        "task.finish"
+      ]
+    },
+    {
+      "id": "simple-finish",
+      "task": "say hello",
+      "status": "pass",
+      "finished": true,
+      "steps": 2,
+      "failure_type": null,
+      "expected_signal": "Mock run completed",
+      "traceability": [
+        "context.pack",
+        "task.start",
+        "model.response",
+        "provider transcript",
+        "tool.result",
+        "task.finish"
+      ]
+    }
+  ],
+  "reproduce": [
+    "$env:PYTHONPATH='src'",
+    "python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2 --context-chars 1000",
+    "python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html"
+  ],
+  "next_step": "Run the DeepSeek Lab suite across real provider presets when API keys are available."
+}

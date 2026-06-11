@@ -34,6 +34,7 @@ Primary links:
 Website: https://samarailly51-pixel.github.io/opencode-harness/
 GitHub: https://github.com/samarailly51-pixel/opencode-harness
 Release: https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0
+Demo report: https://github.com/samarailly51-pixel/opencode-harness/tree/master/benchmarks/v0.1-mock-smoke
 ```
 
 ## Maker Comment
@@ -141,6 +142,7 @@ Pre-launch:
 - Confirm v0.1.0 release assets are downloadable.
 - Confirm CI is green on `master`.
 - Deploy `site/` to a public URL.
+- Confirm the public demo report is linked from README.
 - Record the 75-second demo video.
 - Upload at least two Product Hunt gallery images.
 - Prepare maker comment and launch-day posts.

@@ -4,6 +4,8 @@ This guide defines the v0.1 provider benchmark flow for OpenCode Harness.
 
 The benchmark is intentionally reproducible: every provider uses the same agent loop, tools, permissions, trace format, eval runner, and report/dashboard surface.
 
+For a public no-key smoke benchmark, see [v0.1 mock smoke benchmark](../benchmarks/v0.1-mock-smoke/README.md). That report validates the harness and artifact surfaces, but it is not a model-quality ranking.
+
 ## Presets
 
 | Preset | Required Env |

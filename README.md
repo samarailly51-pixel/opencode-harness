@@ -14,6 +14,7 @@ This project does not contain or derive from Claude Code source code. It is an i
 
 - **Website:** [samarailly51-pixel.github.io/opencode-harness](https://samarailly51-pixel.github.io/opencode-harness/)
 - **Release:** [v0.1.0](https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0)
+- **Demo report:** [v0.1 mock smoke benchmark](benchmarks/v0.1-mock-smoke/README.md)
 - **Launch assets:** [Product Hunt kit](docs/launch-kit.md), [video production kit](docs/video-production-kit.md)
 
 ![OpenCode Harness dashboard preview](site/assets/dashboard-preview.png)
@@ -82,6 +83,7 @@ Most coding-agent demos are tied to one model, one provider, or one UI. OpenCode
 | --- | --- |
 | Website | <https://samarailly51-pixel.github.io/opencode-harness/> |
 | Release | <https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0> |
+| Public demo report | [benchmarks/v0.1-mock-smoke](benchmarks/v0.1-mock-smoke/README.md) |
 | Run offline demo | `python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2` |
 | Terminal trace viewer | `python -m opencode_harness tui runs/latest.jsonl` |
 | HTML trace viewer | `python -m opencode_harness trace-html runs/latest.jsonl --output runs/latest.html` |
@@ -443,6 +445,7 @@ The static landing page lives in [site](site/README.md). Launch materials live i
 ## Project Docs
 
 - [Architecture](docs/architecture.md)
+- [v0.1 mock smoke benchmark](benchmarks/v0.1-mock-smoke/README.md)
 - [Resume positioning](docs/resume-positioning.md)
 - [Launch kit](docs/launch-kit.md)
 - [Promo video script](docs/promo-video-script.md)
