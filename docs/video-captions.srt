@@ -1,0 +1,23 @@
+1
+00:00:00,000 --> 00:00:08,000
+Coding agents are everywhere, but comparing them is messy. Each demo uses different tools, prompts, and traces.
+
+2
+00:00:08,000 --> 00:00:18,000
+OpenCode Harness gives coding agents a shared runtime: one agent loop, one tool layer, one trace format, and one eval surface.
+
+3
+00:00:18,000 --> 00:00:34,000
+Run the same workflow across DeepSeek, Qwen, Claude, OpenAI, vLLM, SGLang, Ollama, and local endpoints.
+
+4
+00:00:34,000 --> 00:00:50,000
+The harness includes permissioned tools and MCP-compatible extension points for tools, resources, prompts, diagnostics, and approvals.
+
+5
+00:00:50,000 --> 00:01:04,000
+Every run produces JSONL traces, provider transcripts, replay summaries, HTML reports, a terminal trace viewer, and an eval dashboard.
+
+6
+00:01:04,000 --> 00:01:15,000
+OpenCode Harness v0.1.0 is open source now. Use it to test, compare, and debug coding agents across model providers.

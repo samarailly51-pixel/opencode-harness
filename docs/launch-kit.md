@@ -84,7 +84,7 @@ Suggested ordering:
 
 ## Video Assets
 
-Use [promo-video-script.md](promo-video-script.md) as the main 75-second script.
+Use [promo-video-script.md](promo-video-script.md) as the main 75-second script, and [video-production-kit.md](video-production-kit.md) for the recording workflow, captions, and shot list.
 
 Minimum recording sequence:
 

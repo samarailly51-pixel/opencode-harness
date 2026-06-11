@@ -101,3 +101,5 @@ OpenCode Harness is a clean-room eval harness for coding agents. Run the same wo
 - HTML trace viewer.
 - Eval dashboard.
 - GitHub release page.
+
+For a repeatable recording workflow, use [video-production-kit.md](video-production-kit.md).
