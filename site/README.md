@@ -10,11 +10,17 @@ Start-Process site/index.html
 
 Deploy options:
 
+- GitHub Pages through `.github/workflows/pages.yml`.
 - Vercel static project with `site/` as the project root.
-- GitHub Pages from the `site/` directory.
 - Any static hosting service that can serve `index.html`, `styles.css`, and `assets/`.
 
 The page is intentionally dependency-free.
+
+Expected GitHub Pages URL:
+
+```text
+https://samarailly51-pixel.github.io/opencode-harness/
+```
 
 Launch assets:
 

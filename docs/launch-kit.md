@@ -31,7 +31,7 @@ Developer Tools, Artificial Intelligence, Open Source
 Primary links:
 
 ```text
-Website: https://github.com/samarailly51-pixel/opencode-harness
+Website: https://samarailly51-pixel.github.io/opencode-harness/
 GitHub: https://github.com/samarailly51-pixel/opencode-harness
 Release: https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0
 ```
@@ -106,6 +106,7 @@ It is an open-source, clean-room eval harness for coding agents across DeepSeek,
 
 Run the same workflow, inspect traces/tool calls/transcripts, and compare results.
 
+Website: https://samarailly51-pixel.github.io/opencode-harness/
 GitHub: https://github.com/samarailly51-pixel/opencode-harness
 ```
 
@@ -118,6 +119,7 @@ The project focuses on the infrastructure layer: a shared agent loop, permission
 
 The goal is to make coding-agent behavior easier to test, compare, and debug across DeepSeek, Qwen, Claude, OpenAI, and local model providers.
 
+Website: https://samarailly51-pixel.github.io/opencode-harness/
 Repo: https://github.com/samarailly51-pixel/opencode-harness
 ```
 

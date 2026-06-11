@@ -404,6 +404,7 @@ The static landing page lives in [site](site/README.md). Launch materials live i
 - [Resume positioning](docs/resume-positioning.md)
 - [Launch kit](docs/launch-kit.md)
 - [Promo video script](docs/promo-video-script.md)
+- [Website deployment](docs/website-deployment.md)
 - [Provider benchmark guide](docs/provider-benchmarks.md)
 - [GitHub readiness checklist](docs/github-readiness.md)
 - [Release guide](docs/release.md)
