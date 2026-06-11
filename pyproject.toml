@@ -38,7 +38,7 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/samarailly51-pixel/opencode-harness"
+Homepage = "https://samarailly51-pixel.github.io/opencode-harness/"
 Repository = "https://github.com/samarailly51-pixel/opencode-harness"
 Issues = "https://github.com/samarailly51-pixel/opencode-harness/issues"
 CI = "https://github.com/samarailly51-pixel/opencode-harness/actions"

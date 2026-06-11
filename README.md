@@ -1,15 +1,54 @@
 # OpenCode Harness
 
 [![CI](https://github.com/samarailly51-pixel/opencode-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/samarailly51-pixel/opencode-harness/actions/workflows/ci.yml)
+[![Pages](https://github.com/samarailly51-pixel/opencode-harness/actions/workflows/pages.yml/badge.svg)](https://github.com/samarailly51-pixel/opencode-harness/actions/workflows/pages.yml)
 [![Release](https://img.shields.io/github/v/release/samarailly51-pixel/opencode-harness?display_name=tag)](https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
 
-OpenCode Harness is a clean-room, model-agnostic runtime and evaluation harness for Claude Code-class coding agents.
+OpenCode Harness is a clean-room, model-neutral runtime and evaluation harness for coding agents.
 
-It runs coding workflows with DeepSeek, Qwen, Claude, OpenAI, local OpenAI-compatible servers, and future providers through a shared agent loop, tool layer, permission model, trace format, and eval surface.
+It runs the same coding-agent workflow across DeepSeek, Qwen, Claude, OpenAI, local OpenAI-compatible servers, vLLM, SGLang, Ollama, and future providers through one shared agent loop, tool layer, permission model, trace format, and eval surface.
 
 This project does not contain or derive from Claude Code source code. It is an independent implementation of a coding-agent harness.
+
+- **Website:** [samarailly51-pixel.github.io/opencode-harness](https://samarailly51-pixel.github.io/opencode-harness/)
+- **Release:** [v0.1.0](https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0)
+- **Launch assets:** [Product Hunt kit](docs/launch-kit.md), [video production kit](docs/video-production-kit.md)
+
+![OpenCode Harness dashboard preview](site/assets/dashboard-preview.png)
+
+## Quick Demo
+
+Run the offline mock eval with no API key:
+
+```powershell
+$env:PYTHONPATH='src'
+python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2 --context-chars 1000
+```
+
+Inspect the run:
+
+```powershell
+$trace = Get-ChildItem eval-runs -Recurse -Filter inspect-repo.jsonl | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+python -m opencode_harness tui $trace.FullName --width 88
+python -m opencode_harness trace-html $trace.FullName --output eval-runs/latest-trace.html
+python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html
+```
+
+Or generate all recording/demo artifacts:
+
+```powershell
+.\scripts\recording-demo.ps1
+```
+
+## What You Get
+
+- Model-neutral provider presets for DeepSeek, Qwen, Claude, OpenAI, vLLM, SGLang, Ollama, local OpenAI-compatible endpoints, and mock mode.
+- Permissioned file, patch, shell, search, repo-map, context-pack, todo, and finish tools.
+- MCP-compatible extension points for stdio tools, resources, prompts, diagnostics, and per-server approvals.
+- JSONL traces, provider transcripts, terminal replay, HTML trace viewer, eval reports, comparison reports, and dashboards.
+- Model Labs for DeepSeek, Qwen, Claude, OpenAI, and local providers.
 
 ## Why It Exists
 
@@ -18,6 +57,7 @@ Most coding-agent demos are tied to one model, one provider, or one UI. OpenCode
 ## v0.1 Status
 
 - Released: [v0.1.0](https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0)
+- Website: [OpenCode Harness](https://samarailly51-pixel.github.io/opencode-harness/)
 - Package artifacts: wheel and source distribution attached to the release.
 - CI: Python 3.11/3.12 tests and mock eval smoke.
 - Model Labs: DeepSeek, Qwen, Claude, OpenAI, and Local Model Labs.
@@ -38,13 +78,15 @@ Most coding-agent demos are tied to one model, one provider, or one UI. OpenCode
 
 ## Showcase
 
-| Surface | Command |
+| Surface | Output |
 | --- | --- |
+| Website | <https://samarailly51-pixel.github.io/opencode-harness/> |
+| Release | <https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0> |
 | Run offline demo | `python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2` |
 | Terminal trace viewer | `python -m opencode_harness tui runs/latest.jsonl` |
 | HTML trace viewer | `python -m opencode_harness trace-html runs/latest.jsonl --output runs/latest.html` |
 | Eval dashboard | `python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html` |
-| Version check | `python -m opencode_harness version` |
+| Launch kit | [docs/launch-kit.md](docs/launch-kit.md) |
 
 ## Quick Start
 
