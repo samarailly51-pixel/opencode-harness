@@ -2,6 +2,8 @@
 
 This kit turns OpenCode Harness from "a solid GitHub project" into a launchable product story.
 
+For the current go/no-go state, see [launch-readiness.md](launch-readiness.md).
+
 ## Product Hunt Listing
 
 Product name:
