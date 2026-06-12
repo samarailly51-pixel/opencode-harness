@@ -18,7 +18,7 @@
     },
     {
       "id": "local-chinese-coding-summary",
-      "task": "璇风敤涓枃鎬荤粨 harness 瀵?vLLM銆丼GLang銆丱llama 鍜屾湰鍦?OpenAI-compatible 閮ㄧ讲鐨勬敮鎸併€?",
+      "task": "\u8bf7\u7528\u4e2d\u6587\u603b\u7ed3 harness \u5bf9 vLLM\u3001SGLang\u3001Ollama \u548c\u672c\u5730 OpenAI-compatible \u7aef\u70b9\u7684\u652f\u6301\u3002",
       "suite_case": "local-chinese-coding-summary"
     }
   ]

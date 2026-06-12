@@ -49,6 +49,14 @@ python -m opencode_harness lab-compare `
   --comparison-output model-labs/deepseek/reports/provider-comparison.md
 ```
 
+Or use the reproducible helper script:
+
+```powershell
+.\scripts\run-real-provider-benchmark.ps1
+```
+
+The helper writes public-facing comparison files under `benchmarks/real-provider-comparison/` and eval artifacts under `eval-runs/real-provider-benchmark/`.
+
 ## Local Provider Comparison
 
 Start your local OpenAI-compatible server, then run:

@@ -21,7 +21,7 @@
     },
     {
       "id": "local-chinese-coding-summary",
-      "task": "璇锋鏌ヨ繖涓?harness 鐨勯」鐩粨鏋勶紝骞剁敤涓枃鎬荤粨瀹冨浣曟敮鎸?vLLM銆丼GLang銆丱llama 鍜屾湰鍦?OpenAI-compatible 閫傞厤銆傛渶鍚庡繀椤诲寘鍚簿纭爣璁?LOCAL_ZH_SUMMARY銆?",
+      "task": "\u8bf7\u68c0\u67e5\u8fd9\u4e2a harness \u7684\u9879\u76ee\u7ed3\u6784\uff0c\u5e76\u7528\u4e2d\u6587\u603b\u7ed3\u5b83\u5f53\u524d\u652f\u6301\u7684 vLLM\u3001SGLang\u3001Ollama\u3001\u672c\u5730 OpenAI-compatible \u7aef\u70b9\u3001\u5de5\u5177\u548c\u8bc4\u6d4b\u80fd\u529b\u3002\u6700\u540e\u5fc5\u987b\u5305\u542b\u7cbe\u786e\u6807\u8bb0 LOCAL_ZH_SUMMARY\u3002",
       "workspace": "../..",
       "expect_contains": "LOCAL_ZH_SUMMARY"
     }
