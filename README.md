@@ -16,6 +16,7 @@ This project does not contain or derive from Claude Code source code. It is an i
 - **Release:** [v0.1.0](https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0)
 - **Demo report:** [v0.1 mock smoke benchmark](benchmarks/v0.1-mock-smoke/README.md)
 - **Real benchmark:** [provider comparison package](benchmarks/real-provider-comparison/README.md)
+- **DeepSeek case study:** [failure-mode diagnosis](docs/deepseek-failure-mode-diagnosis.md), [website case page](https://samarailly51-pixel.github.io/opencode-harness/deepseek-case-study.html)
 - **Demo video:** [media/demo-video](media/demo-video/README.md)
 - **Launch status:** [readiness dashboard](docs/launch-readiness.md)
 - **Launch assets:** [Product Hunt final package](docs/product-hunt-final-package.md), [video production kit](docs/video-production-kit.md)
@@ -88,6 +89,7 @@ Most coding-agent demos are tied to one model, one provider, or one UI. OpenCode
 | Release | <https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0> |
 | Public demo report | [benchmarks/v0.1-mock-smoke](benchmarks/v0.1-mock-smoke/README.md) |
 | Real provider benchmark package | [benchmarks/real-provider-comparison](benchmarks/real-provider-comparison/README.md) |
+| DeepSeek failure-mode case study | [docs/deepseek-failure-mode-diagnosis.md](docs/deepseek-failure-mode-diagnosis.md) |
 | Demo video | [media/demo-video](media/demo-video/README.md) |
 | Launch readiness | [docs/launch-readiness.md](docs/launch-readiness.md) |
 | Product Hunt final package | [docs/product-hunt-final-package.md](docs/product-hunt-final-package.md) |
@@ -462,6 +464,7 @@ The static landing page lives in [site](site/README.md). Launch materials live i
 - [Architecture](docs/architecture.md)
 - [v0.1 mock smoke benchmark](benchmarks/v0.1-mock-smoke/README.md)
 - [Real provider comparison package](benchmarks/real-provider-comparison/README.md)
+- [DeepSeek failure-mode diagnosis](docs/deepseek-failure-mode-diagnosis.md)
 - [Launch readiness](docs/launch-readiness.md)
 - [Product Hunt final package](docs/product-hunt-final-package.md)
 - [Resume positioning](docs/resume-positioning.md)

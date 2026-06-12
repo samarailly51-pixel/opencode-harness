@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DeepSeek Failure-Mode Case Study - OpenCode Harness</title>
+  <meta name="description" content="A DeepSeek-only diagnostic benchmark case study for OpenCode Harness: smoke, long-context, and repair failure modes.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="OpenCode Harness home">
+      <span class="brand-mark">OH</span>
+      <span>OpenCode Harness</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="index.html#features">Features</a>
+      <a href="index.html#video">Video</a>
+      <a href="deepseek-case-study.html">DeepSeek Case</a>
+      <a class="nav-cta" href="https://github.com/samarailly51-pixel/opencode-harness">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="case-hero" aria-label="DeepSeek benchmark case study">
+      <div class="case-hero-backdrop" role="img" aria-label="OpenCode Harness dashboard preview"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <p class="eyebrow">DeepSeek-only diagnostic benchmark</p>
+        <h1>Turning failed evals into an agent reliability map.</h1>
+        <p class="hero-copy">
+          OpenCode Harness ran DeepSeek through smoke, long-context, and repair suites.
+          The results are intentionally published with failures because the point is diagnosis,
+          not a polished leaderboard.
+        </p>
+        <div class="hero-actions" aria-label="Case study actions">
+          <a class="button primary" href="https://github.com/samarailly51-pixel/opencode-harness/blob/master/docs/deepseek-failure-mode-diagnosis.md">Read Diagnosis</a>
+          <a class="button secondary" href="https://github.com/samarailly51-pixel/opencode-harness/tree/master/model-labs/deepseek/reports">View Reports</a>
+        </div>
+      </div>
+      <a class="scroll-cue" href="#results">Results</a>
+    </section>
+
+    <section id="results" class="band intro-band">
+      <div class="content">
+        <p class="eyebrow">Benchmark snapshot</p>
+        <h2>Three suites, one provider, concrete failure modes.</h2>
+        <div class="result-grid" aria-label="DeepSeek benchmark results">
+          <article class="metric-panel">
+            <span class="metric-label">Smoke</span>
+            <strong>1/4</strong>
+            <span>25.0% pass rate</span>
+          </article>
+          <article class="metric-panel">
+            <span class="metric-label">Long Context</span>
+            <strong>1/4</strong>
+            <span>25.0% pass rate</span>
+          </article>
+          <article class="metric-panel">
+            <span class="metric-label">Repair</span>
+            <strong>0/2</strong>
+            <span>0.0% pass rate</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="content two-column">
+        <div>
+          <p class="eyebrow">What the harness exposed</p>
+          <h2>The score is less important than the failure signature.</h2>
+        </div>
+        <div class="diagnosis-list">
+          <article>
+            <h3>Marker-following drift</h3>
+            <p>Cases missed required completion markers such as <code>ZH_MODEL_SUMMARY</code> or reached the step limit before closing.</p>
+          </article>
+          <article>
+            <h3>Tool-loop overrun</h3>
+            <p>Several summaries ended with intent to inspect more files instead of finishing the requested answer.</p>
+          </article>
+          <article>
+            <h3>Long-context synthesis gap</h3>
+            <p>The focused safety explanation passed, while broader repository mapping and eval-flow synthesis were less stable.</p>
+          </article>
+          <article>
+            <h3>Repair finalization gap</h3>
+            <p>Repair cases did not reliably close with the expected markers after editing copied fixture workspaces.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band demo-band">
+      <div class="content">
+        <p class="eyebrow">Public evidence</p>
+        <h2>Reports are committed. Raw traces stay local.</h2>
+        <div class="case-table-wrap">
+          <table class="case-table">
+            <thead>
+              <tr>
+                <th>Suite</th>
+                <th>Passing Case</th>
+                <th>Main Failures</th>
+                <th>Report</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Smoke</td>
+                <td><code>patch-proposal-no-write</code></td>
+                <td><code>expectation_mismatch=3</code></td>
+                <td><a href="https://github.com/samarailly51-pixel/opencode-harness/blob/master/model-labs/deepseek/reports/provider-comparison.md">Smoke report</a></td>
+              </tr>
+              <tr>
+                <td>Long context</td>
+                <td><code>security-and-permissions-context</code></td>
+                <td><code>expectation_mismatch=2</code>, <code>max_steps=1</code></td>
+                <td><a href="https://github.com/samarailly51-pixel/opencode-harness/blob/master/model-labs/deepseek/reports/long-context-comparison.md">Long-context report</a></td>
+              </tr>
+              <tr>
+                <td>Repair</td>
+                <td>None</td>
+                <td><code>expectation_mismatch=2</code></td>
+                <td><a href="https://github.com/samarailly51-pixel/opencode-harness/blob/master/model-labs/deepseek/reports/repair-comparison.md">Repair report</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <pre class="command-block"><code>.\scripts\run-deepseek-benchmark.ps1 -SuiteSet all</code></pre>
+      </div>
+    </section>
+
+    <section class="band launch-band">
+      <div class="content two-column">
+        <div>
+          <p class="eyebrow">Next reliability work</p>
+          <h2>Use the diagnosis to improve the agent loop.</h2>
+        </div>
+        <div class="launch-copy">
+          <p>
+            The next iteration should add stronger finish-marker reminders, a final-step guard,
+            clearer repair verification feedback, and an automatic failure-mode diagnosis report.
+          </p>
+          <a class="button primary" href="https://github.com/samarailly51-pixel/opencode-harness/blob/master/docs/deepseek-failure-mode-diagnosis.md">Open Full Diagnosis</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="content footer-content">
+      <span>OpenCode Harness</span>
+      <span>Clean-room diagnostic benchmark. Not a model leaderboard.</span>
+    </div>
+  </footer>
+</body>
+</html>

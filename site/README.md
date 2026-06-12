@@ -6,6 +6,7 @@ Open locally:
 
 ```powershell
 Start-Process site/index.html
+Start-Process site/deepseek-case-study.html
 ```
 
 Deploy options:
@@ -30,3 +31,8 @@ Launch assets:
 - Product Hunt thumbnail: `assets/product-hunt-thumbnail.png`
 - Embedded demo video: `assets/opencode-harness-demo.mp4`
 - Demo video poster: `assets/opencode-harness-demo-thumbnail.png`
+
+Pages:
+
+- Landing page: `index.html`
+- DeepSeek diagnostic case study: `deepseek-case-study.html`

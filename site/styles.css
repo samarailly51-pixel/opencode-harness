@@ -101,6 +101,25 @@ nav a:hover,
   overflow: hidden;
 }
 
+.case-hero {
+  position: relative;
+  min-height: 84vh;
+  display: grid;
+  align-items: end;
+  padding: 116px clamp(18px, 6vw, 72px) 76px;
+  color: #ffffff;
+  overflow: hidden;
+}
+
+.case-hero-backdrop {
+  position: absolute;
+  inset: 0;
+  background-image: url("assets/trace-preview.png");
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.03);
+}
+
 .hero-backdrop,
 .hero-overlay {
   position: absolute;
@@ -227,6 +246,10 @@ h3 {
   background: #edf4ef;
 }
 
+.case-band {
+  background: #f3f7fb;
+}
+
 .video-band {
   background: #ffffff;
 }
@@ -273,6 +296,97 @@ h3 {
 .feature-grid p {
   margin: 0;
   color: var(--muted);
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.metric-panel {
+  display: grid;
+  gap: 6px;
+  min-height: 150px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: 0 1px 0 rgba(26, 36, 31, 0.04);
+}
+
+.metric-panel strong {
+  font-size: clamp(2.1rem, 5vw, 3.6rem);
+  line-height: 1;
+}
+
+.metric-label {
+  color: var(--teal);
+  font-weight: 780;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+
+.diagnosis-list {
+  display: grid;
+  gap: 14px;
+}
+
+.diagnosis-list article {
+  padding: 0 0 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.diagnosis-list p,
+.case-summary p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.case-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.case-table-wrap {
+  margin-top: 30px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.case-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.case-table th,
+.case-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.case-table th {
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+}
+
+.case-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.case-table code,
+.diagnosis-list code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 0.92em;
 }
 
 .media-grid {
@@ -375,7 +489,8 @@ footer {
   .two-column,
   .feature-grid,
   .media-grid,
-  .lab-row {
+  .lab-row,
+  .result-grid {
     grid-template-columns: 1fr;
   }
 
