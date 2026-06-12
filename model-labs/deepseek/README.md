@@ -9,6 +9,9 @@ Latest published smoke snapshot: DeepSeek `deepseek-chat` passed 2/4 cases on
 [reports/provider-comparison.md](reports/provider-comparison.md) and the public
 [real provider comparison package](../../benchmarks/real-provider-comparison/README.md).
 
+Current direction: DeepSeek-only depth before cross-provider breadth. Refresh
+the smoke result first, then add long-context and repair results.
+
 ## Scope
 
 - DeepSeek V4 / V4 Flash / V3.2 / R1 behavior comparison.
@@ -33,6 +36,15 @@ Use DeepSeek-compatible API:
 ```powershell
 $env:DEEPSEEK_API_KEY = "..."
 python -m opencode_harness eval model-labs/deepseek/deepseek-v4-suite.json --preset deepseek --max-steps 8
+```
+
+Run the DeepSeek-only benchmark helper:
+
+```powershell
+$env:DEEPSEEK_API_KEY = "..."
+.\scripts\run-deepseek-benchmark.ps1 -SuiteSet smoke
+.\scripts\run-deepseek-benchmark.ps1 -SuiteSet long-context
+.\scripts\run-deepseek-benchmark.ps1 -SuiteSet repair
 ```
 
 Run the long-context suite with a larger repository context budget:

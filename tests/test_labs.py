@@ -14,8 +14,9 @@ class LabTests(unittest.TestCase):
         name, cases = load_eval_suite(Path("model-labs/deepseek/deepseek-v4-suite.json"))
 
         self.assertEqual(name, "deepseek v4 coding-agent smoke")
-        self.assertIn("中文总结", cases[-1].task)
-        self.assertEqual(cases[-1].expect_contains, "模型")
+        self.assertIn("Simplified Chinese", cases[-1].task)
+        self.assertIn("ZH_MODEL_SUMMARY", cases[-1].task)
+        self.assertEqual(cases[-1].expect_contains, "ZH_MODEL_SUMMARY")
 
     def test_deepseek_long_context_suite_is_valid(self) -> None:
         name, cases = load_eval_suite(Path("model-labs/deepseek/deepseek-v4-long-context-suite.json"))

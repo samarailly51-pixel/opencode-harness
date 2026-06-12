@@ -18,7 +18,8 @@ OpenCode Harness is a clean-room, model-neutral evaluation harness for coding ag
 ```
 
 Do not position it as a proprietary-agent clone or as a full model leaderboard.
-The published real-provider result is currently one DeepSeek smoke run.
+The published real-provider result is currently one DeepSeek smoke run. The
+current benchmark direction is DeepSeek-only depth before cross-provider breadth.
 
 ## Live Assets
 
@@ -75,7 +76,8 @@ Still needed before a bigger launch:
 - [ ] Record or add voiceover for the 60-75 second demo video.
 - [ ] Upload the demo video to YouTube for Product Hunt.
 - [x] Publish at least one real provider comparison after provider API keys are available.
-- [ ] Run Qwen, OpenAI, Claude, and local provider comparisons on the same suite.
+- [ ] Refresh the DeepSeek smoke result with the stable marker-based suite.
+- [ ] Run DeepSeek long-context and repair suites.
 - [ ] Add a Product Hunt badge/link after Product Hunt is live.
 - [ ] Optionally connect a custom domain.
 
@@ -96,13 +98,10 @@ Still needed before a bigger launch:
 
 ## Next Best Work
 
-The next highest-value work is adding voiceover to the rendered demo video or running the same suite across Qwen, OpenAI, Claude, and local providers:
+The next highest-value work is adding voiceover to the rendered demo video or expanding the DeepSeek-only benchmark set:
 
 ```powershell
-python -m opencode_harness lab-compare `
-  model-labs/deepseek/deepseek-v4-suite.json `
-  --presets deepseek qwen openai claude `
-  --comparison-output model-labs/deepseek/reports/provider-comparison.md
+.\scripts\run-deepseek-benchmark.ps1 -SuiteSet all
 ```
 
 If API keys are unavailable, the next best work is recording the demo video from the existing no-key artifacts.

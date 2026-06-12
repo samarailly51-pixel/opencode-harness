@@ -21,7 +21,7 @@
     },
     {
       "id": "chinese-long-context-summary",
-      "task": "请使用 repo_map 或 context_pack 检查整个项目，并用中文说明这个 harness 的长上下文能力、工具调用链路、评测报告和 DeepSeek Lab 如何配合。最后必须包含精确标记 LONG_CONTEXT_ZH。",
+      "task": "Use repo_map or context_pack to inspect the whole project, then answer in Simplified Chinese. Explain the harness long-context capability, tool-call flow, eval reports, and how DeepSeek Lab fits in. Finish with the exact marker LONG_CONTEXT_ZH.",
       "workspace": "../..",
       "expect_contains": "LONG_CONTEXT_ZH"
     }

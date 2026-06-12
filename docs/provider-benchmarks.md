@@ -8,6 +8,27 @@ For a public no-key smoke benchmark, see [v0.1 mock smoke benchmark](../benchmar
 
 For the first real-provider snapshot, see [real provider comparison](../benchmarks/real-provider-comparison/README.md). The current published run is DeepSeek `deepseek-chat` on `model-labs/deepseek/deepseek-v4-suite.json`: 2/4 passed with two `expectation_mismatch` failures. Treat it as a diagnostic smoke run, not a leaderboard.
 
+## DeepSeek-Only Track
+
+Use this when the goal is to deepen the DeepSeek harness before adding other
+providers:
+
+```powershell
+$env:DEEPSEEK_API_KEY = "..."
+.\scripts\run-deepseek-benchmark.ps1 -SuiteSet smoke
+.\scripts\run-deepseek-benchmark.ps1 -SuiteSet long-context
+.\scripts\run-deepseek-benchmark.ps1 -SuiteSet repair
+```
+
+Run every DeepSeek suite in one pass:
+
+```powershell
+.\scripts\run-deepseek-benchmark.ps1 -SuiteSet all
+```
+
+The helper uses only the `deepseek` preset and writes public comparison files
+without committing raw `eval-runs/` traces.
+
 ## Presets
 
 | Preset | Required Env |

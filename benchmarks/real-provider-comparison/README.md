@@ -10,12 +10,20 @@ Run:
 .\scripts\run-real-provider-benchmark.ps1
 ```
 
-Default providers:
+Default providers for the generic runner:
 
 - `deepseek` using `DEEPSEEK_API_KEY`
 - `qwen` using `DASHSCOPE_API_KEY`
 - `openai` using `OPENAI_API_KEY`
 - `claude` using `ANTHROPIC_API_KEY`
+
+DeepSeek-only runner:
+
+```powershell
+.\scripts\run-deepseek-benchmark.ps1 -SuiteSet smoke
+.\scripts\run-deepseek-benchmark.ps1 -SuiteSet long-context
+.\scripts\run-deepseek-benchmark.ps1 -SuiteSet repair
+```
 
 Default suite:
 
@@ -56,8 +64,8 @@ Case matrix:
 | `tool-calling-stability` | FAIL: `expectation_mismatch` |
 
 This is a small coding-agent smoke benchmark, not a broad model leaderboard.
-The next useful comparisons are Qwen, OpenAI, Claude, and local providers on
-the same suite.
+The next useful DeepSeek-only work is refreshing the smoke run with the stable
+marker-based suite, then adding long-context and repair results.
 
 The public no-key smoke report is still useful for validating harness behavior
 without provider credentials:

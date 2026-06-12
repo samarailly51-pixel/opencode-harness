@@ -21,9 +21,9 @@
     },
     {
       "id": "chinese-coding-task",
-      "task": "请检查这个项目的结构，并用中文总结这个 harness 当前支持哪些模型、工具和评测能力。",
+      "task": "Inspect this project structure and answer in Simplified Chinese. Summarize which model providers, tools, and eval capabilities this harness currently supports. Finish with the exact marker ZH_MODEL_SUMMARY.",
       "workspace": "../..",
-      "expect_contains": "模型"
+      "expect_contains": "ZH_MODEL_SUMMARY"
     }
   ]
 }

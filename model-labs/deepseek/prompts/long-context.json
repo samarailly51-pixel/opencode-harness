@@ -18,7 +18,7 @@
     },
     {
       "id": "chinese-long-context",
-      "task": "请用中文总结这个 harness 的长上下文能力、工具调用链路、评测报告和 DeepSeek Lab 如何配合。",
+      "task": "Answer in Simplified Chinese. Summarize this harness long-context capability, tool-call flow, eval reports, and how DeepSeek Lab fits in.",
       "suite_case": "chinese-long-context-summary"
     }
   ]

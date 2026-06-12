@@ -354,6 +354,14 @@ python -m opencode_harness lab-compare `
   --comparison-output model-labs/deepseek/reports/provider-comparison.md
 ```
 
+Run the DeepSeek-only benchmark track:
+
+```powershell
+.\scripts\run-deepseek-benchmark.ps1 -SuiteSet smoke
+.\scripts\run-deepseek-benchmark.ps1 -SuiteSet long-context
+.\scripts\run-deepseek-benchmark.ps1 -SuiteSet repair
+```
+
 DeepSeek Lab also includes a long-context suite:
 
 ```powershell
