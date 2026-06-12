@@ -120,6 +120,21 @@ Also export:
 - Silent version with burned-in captions.
 - Thumbnail using `site/assets/product-hunt-gallery-1.png`.
 
+## Rendered Draft Video
+
+The repository includes a deterministic renderer for a silent captioned draft video:
+
+```powershell
+python -m pip install imageio imageio-ffmpeg pillow
+python scripts/render-demo-video.py
+```
+
+Output:
+
+- `media/demo-video/opencode-harness-demo.mp4`
+- `media/demo-video/opencode-harness-demo-thumbnail.png`
+- `media/demo-video/opencode-harness-demo-contact-sheet.png`
+
 ## Review Checklist
 
 - The first 3 seconds clearly show the product category.

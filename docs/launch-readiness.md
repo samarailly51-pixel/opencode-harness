@@ -25,6 +25,7 @@ Do not position it as a proprietary-agent clone or as a model leaderboard until 
 | v0.1.0 release | Ready | <https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0> |
 | Public demo report | Ready | [benchmarks/v0.1-mock-smoke](../benchmarks/v0.1-mock-smoke/README.md) |
 | Product Hunt kit | Ready | [launch-kit.md](launch-kit.md) |
+| Demo video draft | Ready | [media/demo-video](../media/demo-video/README.md) |
 | Video production kit | Ready | [video-production-kit.md](video-production-kit.md) |
 | Provider benchmark guide | Ready | [provider-benchmarks.md](provider-benchmarks.md) |
 
@@ -62,7 +63,8 @@ Ready:
 
 Still needed before a bigger launch:
 
-- [ ] Record and export the 60-75 second demo video.
+- [x] Render a silent 75-second demo video draft.
+- [ ] Record or add voiceover for the 60-75 second demo video.
 - [ ] Publish at least one real provider comparison if API keys are available.
 - [ ] Add a Product Hunt badge/link after Product Hunt is live.
 - [ ] Optionally connect a custom domain.
@@ -83,7 +85,7 @@ Still needed before a bigger launch:
 
 ## Next Best Work
 
-The next highest-value work is a real provider benchmark run:
+The next highest-value work is adding voiceover to the rendered demo video or running a real provider benchmark:
 
 ```powershell
 python -m opencode_harness lab-compare `

@@ -79,6 +79,8 @@ Prepared assets:
 - `site/assets/product-hunt-gallery-2.png`
 - `site/assets/product-hunt-logo.png`
 - `site/assets/product-hunt-thumbnail.png`
+- `media/demo-video/opencode-harness-demo.mp4`
+- `media/demo-video/opencode-harness-demo-thumbnail.png`
 
 Suggested ordering:
 
