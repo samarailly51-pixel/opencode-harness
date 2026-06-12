@@ -45,3 +45,5 @@ Any static host can serve the site. The required files are:
 - `site/styles.css`
 - `site/assets/`
 - `site/.nojekyll` for GitHub Pages
+
+The GitHub Pages site also serves the embedded demo video from `site/assets/opencode-harness-demo.mp4`.

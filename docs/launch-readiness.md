@@ -25,7 +25,7 @@ Do not position it as a proprietary-agent clone or as a model leaderboard until 
 | v0.1.0 release | Ready | <https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0> |
 | Public demo report | Ready | [benchmarks/v0.1-mock-smoke](../benchmarks/v0.1-mock-smoke/README.md) |
 | Product Hunt kit | Ready | [launch-kit.md](launch-kit.md) |
-| Demo video draft | Ready | [media/demo-video](../media/demo-video/README.md) |
+| Demo video draft | Ready | [media/demo-video](../media/demo-video/README.md), embedded in website |
 | Video production kit | Ready | [video-production-kit.md](video-production-kit.md) |
 | Provider benchmark guide | Ready | [provider-benchmarks.md](provider-benchmarks.md) |
 

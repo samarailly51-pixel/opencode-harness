@@ -28,3 +28,5 @@ Launch assets:
 - Product Hunt gallery image 2: `assets/product-hunt-gallery-2.png`
 - Square logo: `assets/product-hunt-logo.png`
 - Product Hunt thumbnail: `assets/product-hunt-thumbnail.png`
+- Embedded demo video: `assets/opencode-harness-demo.mp4`
+- Demo video poster: `assets/opencode-harness-demo-thumbnail.png`
