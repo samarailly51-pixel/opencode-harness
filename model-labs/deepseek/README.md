@@ -4,13 +4,21 @@ DeepSeek Lab is the first model-focused track for OpenCode Harness.
 
 It studies DeepSeek V4-class models as first-class backends for Claude Code-class coding agents. The goal is not to reverse engineer private implementation details. The goal is to evaluate public/provider behavior in a reproducible harness.
 
-Latest published smoke snapshot: DeepSeek `deepseek-chat` passed 2/4 cases on
-`deepseek-v4-suite.json`, with two `expectation_mismatch` failures. See
-[reports/provider-comparison.md](reports/provider-comparison.md) and the public
+Latest published DeepSeek-only snapshot:
+
+| Suite | Result | Main failure modes |
+| --- | ---: | --- |
+| Smoke | 1/4 passed | `expectation_mismatch` |
+| Long context | 1/4 passed | `expectation_mismatch`, `max_steps` |
+| Repair | 0/2 passed | `expectation_mismatch` |
+
+See [reports/provider-comparison.md](reports/provider-comparison.md),
+[reports/long-context-comparison.md](reports/long-context-comparison.md),
+[reports/repair-comparison.md](reports/repair-comparison.md), and the public
 [real provider comparison package](../../benchmarks/real-provider-comparison/README.md).
 
-Current direction: DeepSeek-only depth before cross-provider breadth. Refresh
-the smoke result first, then add long-context and repair results.
+Current direction: DeepSeek-only depth before cross-provider breadth. The next
+work is diagnosing the failure modes surfaced by the first full benchmark set.
 
 ## Scope
 

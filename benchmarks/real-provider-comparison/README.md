@@ -41,31 +41,46 @@ If API keys are missing, the comparison report records skipped providers instead
 
 ## Current Status
 
-Latest committed snapshot:
+Latest committed DeepSeek-only snapshot:
 
 | Field | Value |
 | --- | --- |
 | Run date | 2026-06-12, Asia/Shanghai |
-| Suite | `model-labs/deepseek/deepseek-v4-suite.json` |
 | Preset | `deepseek` |
 | Provider/model | `openai-compatible` / `deepseek-chat` |
-| Result | 2/4 passed, 50.0% pass rate |
-| Failures | `expectation_mismatch=2` |
-| Average steps | 6.25 |
-| Total seconds | 72.200 |
+| Smoke result | 1/4 passed, 25.0% pass rate |
+| Long-context result | 1/4 passed, 25.0% pass rate |
+| Repair result | 0/2 passed, 0.0% pass rate |
 
-Case matrix:
+Smoke case matrix:
 
 | Case | Result |
 | --- | --- |
-| `chinese-coding-task` | PASS |
+| `chinese-coding-task` | FAIL: `expectation_mismatch` |
 | `patch-proposal-no-write` | PASS |
 | `repo-map-orientation` | FAIL: `expectation_mismatch` |
 | `tool-calling-stability` | FAIL: `expectation_mismatch` |
 
-This is a small coding-agent smoke benchmark, not a broad model leaderboard.
-The next useful DeepSeek-only work is refreshing the smoke run with the stable
-marker-based suite, then adding long-context and repair results.
+Long-context case matrix:
+
+| Case | Result |
+| --- | --- |
+| `repo-wide-module-map` | FAIL: `expectation_mismatch` |
+| `cross-file-eval-flow` | FAIL: `expectation_mismatch` |
+| `security-and-permissions-context` | PASS |
+| `chinese-long-context-summary` | FAIL: `max_steps` |
+
+Repair case matrix:
+
+| Case | Result |
+| --- | --- |
+| `repair-calculator` | FAIL: `expectation_mismatch` |
+| `repair-text-utils` | FAIL: `expectation_mismatch` |
+
+These are small coding-agent diagnostic benchmarks, not a broad model
+leaderboard. They are useful because they expose concrete failure modes in
+marker following, tool-loop completion, long-context synthesis, and repair task
+finalization.
 
 The public no-key smoke report is still useful for validating harness behavior
 without provider credentials:

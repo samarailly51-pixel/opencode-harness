@@ -6,7 +6,7 @@ The benchmark is intentionally reproducible: every provider uses the same agent 
 
 For a public no-key smoke benchmark, see [v0.1 mock smoke benchmark](../benchmarks/v0.1-mock-smoke/README.md). That report validates the harness and artifact surfaces, but it is not a model-quality ranking.
 
-For the first real-provider snapshot, see [real provider comparison](../benchmarks/real-provider-comparison/README.md). The current published run is DeepSeek `deepseek-chat` on `model-labs/deepseek/deepseek-v4-suite.json`: 2/4 passed with two `expectation_mismatch` failures. Treat it as a diagnostic smoke run, not a leaderboard.
+For the first real-provider snapshot, see [real provider comparison](../benchmarks/real-provider-comparison/README.md). The current published DeepSeek-only set uses `deepseek-chat`: smoke 1/4, long-context 1/4, and repair 0/2. Treat it as a diagnostic benchmark set, not a leaderboard.
 
 ## DeepSeek-Only Track
 

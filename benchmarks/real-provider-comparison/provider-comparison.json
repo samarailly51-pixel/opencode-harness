@@ -1,7 +1,7 @@
 {
   "suite": "model-labs\\deepseek\\deepseek-v4-suite.json",
   "reports": [
-    "eval-runs\\real-provider-benchmark\\deepseek-v4-suite-deepseek-20260612-163325-099410-fce58ac5\\report.json"
+    "eval-runs\\deepseek-benchmark\\smoke\\deepseek-v4-suite-deepseek-20260612-233139-489833-5dc6ee6b\\report.json"
   ],
   "comparison": "benchmarks\\real-provider-comparison\\provider-comparison.md",
   "skipped": []

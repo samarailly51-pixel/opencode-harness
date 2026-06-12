@@ -2,13 +2,13 @@
 
 | Suite | Provider | Model | Passed | Pass Rate | Failures | Avg Steps | Total Seconds |
 | --- | --- | --- | ---: | ---: | --- | ---: | ---: |
-| deepseek v4 coding-agent smoke | openai-compatible | deepseek-chat | 2/4 | 50.0% | expectation_mismatch=2 | 6.25 | 72.200 |
+| deepseek v4 coding-agent smoke | openai-compatible | deepseek-chat | 1/4 | 25.0% | expectation_mismatch=3 | 5.50 | 67.418 |
 
 ## Case Matrix
 
 | Case | openai-compatible/deepseek-chat |
 | --- | --- |
-| chinese-coding-task | PASS (7 steps, 26.20s) |
-| patch-proposal-no-write | PASS (8 steps, 19.23s) |
-| repo-map-orientation | FAIL:expectation_mismatch (6 steps, 19.44s) |
-| tool-calling-stability | FAIL:expectation_mismatch (4 steps, 7.33s) |
+| chinese-coding-task | FAIL:expectation_mismatch (5 steps, 18.96s) |
+| patch-proposal-no-write | PASS (6 steps, 21.68s) |
+| repo-map-orientation | FAIL:expectation_mismatch (7 steps, 19.11s) |
+| tool-calling-stability | FAIL:expectation_mismatch (4 steps, 7.66s) |

@@ -1,0 +1,8 @@
+{
+  "suite": "model-labs\\deepseek\\deepseek-v4-long-context-suite.json",
+  "reports": [
+    "eval-runs\\deepseek-benchmark\\long-context\\deepseek-v4-long-context-suite-deepseek-20260612-233247-135375-7c34466f\\report.json"
+  ],
+  "comparison": "model-labs\\deepseek\\reports\\long-context-comparison.md",
+  "skipped": []
+}

@@ -84,8 +84,9 @@ OpenCode Harness is a clean-room, model-agnostic runtime for Claude Code-class c
 - [x] Launch readiness dashboard.
 - [ ] Recorded demo video.
 - [x] Real-provider benchmark report.
-- [ ] Refreshed DeepSeek smoke report with stable marker-based Chinese task.
-- [ ] DeepSeek long-context and repair reports.
+- [x] Refreshed DeepSeek smoke report with stable marker-based Chinese task.
+- [x] DeepSeek long-context and repair reports.
+- [ ] DeepSeek failure-mode diagnosis report.
 
 ## Principles
 

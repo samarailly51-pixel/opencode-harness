@@ -1,0 +1,8 @@
+{
+  "suite": "model-labs\\deepseek\\deepseek-v4-repair-suite.json",
+  "reports": [
+    "eval-runs\\deepseek-benchmark\\repair\\deepseek-v4-repair-suite-deepseek-20260612-233353-267543-d93ee98e\\report.json"
+  ],
+  "comparison": "model-labs\\deepseek\\reports\\repair-comparison.md",
+  "skipped": []
+}

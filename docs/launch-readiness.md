@@ -8,8 +8,8 @@ This page is the single launch control panel for OpenCode Harness.
 
 OpenCode Harness is ready for a soft public launch as an open-source v0.1 project.
 
-A first real-provider DeepSeek smoke run has been published. Treat it as a
-diagnostic harness result, not as a broad provider ranking.
+A first DeepSeek-only real-provider benchmark set has been published. Treat it
+as a diagnostic harness result, not as a broad provider ranking.
 
 Use the current positioning:
 
@@ -18,8 +18,9 @@ OpenCode Harness is a clean-room, model-neutral evaluation harness for coding ag
 ```
 
 Do not position it as a proprietary-agent clone or as a full model leaderboard.
-The published real-provider result is currently one DeepSeek smoke run. The
-current benchmark direction is DeepSeek-only depth before cross-provider breadth.
+The published real-provider results are currently DeepSeek-only smoke,
+long-context, and repair runs. The current benchmark direction is DeepSeek-only
+depth before cross-provider breadth.
 
 ## Live Assets
 
@@ -29,7 +30,7 @@ current benchmark direction is DeepSeek-only depth before cross-provider breadth
 | Website | Ready | <https://samarailly51-pixel.github.io/opencode-harness/> |
 | v0.1.0 release | Ready | <https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0> |
 | Public demo report | Ready | [benchmarks/v0.1-mock-smoke](../benchmarks/v0.1-mock-smoke/README.md) |
-| Real provider benchmark package | Ready, DeepSeek smoke run published | [real-provider-comparison](../benchmarks/real-provider-comparison/README.md) |
+| Real provider benchmark package | Ready, DeepSeek-only benchmark set published | [real-provider-comparison](../benchmarks/real-provider-comparison/README.md) |
 | Product Hunt kit | Ready | [launch-kit.md](launch-kit.md) |
 | Product Hunt final package | Ready | [product-hunt-final-package.md](product-hunt-final-package.md) |
 | Demo video draft | Ready | [media/demo-video](../media/demo-video/README.md), embedded in website |
@@ -48,7 +49,7 @@ current benchmark direction is DeepSeek-only depth before cross-provider breadth
 | Wheel asset | Published | `opencode_harness-0.1.0-py3-none-any.whl` |
 | Source asset | Published | `opencode_harness-0.1.0.tar.gz` |
 | Public benchmark | Published | harness smoke benchmark, not model ranking |
-| Real provider benchmark | Published | DeepSeek `deepseek-chat`, 2/4 pass rate on `deepseek-v4-suite` |
+| Real provider benchmark | Published | DeepSeek `deepseek-chat`: smoke 1/4, long-context 1/4, repair 0/2 |
 
 ## Launch Checklist
 
@@ -76,8 +77,9 @@ Still needed before a bigger launch:
 - [ ] Record or add voiceover for the 60-75 second demo video.
 - [ ] Upload the demo video to YouTube for Product Hunt.
 - [x] Publish at least one real provider comparison after provider API keys are available.
-- [ ] Refresh the DeepSeek smoke result with the stable marker-based suite.
-- [ ] Run DeepSeek long-context and repair suites.
+- [x] Refresh the DeepSeek smoke result with the stable marker-based suite.
+- [x] Run DeepSeek long-context and repair suites.
+- [ ] Diagnose and tighten DeepSeek failure modes surfaced by the benchmark set.
 - [ ] Add a Product Hunt badge/link after Product Hunt is live.
 - [ ] Optionally connect a custom domain.
 
@@ -92,7 +94,8 @@ Still needed before a bigger launch:
 ## Risk Notes
 
 - The public mock benchmark proves the harness artifact flow, not real model quality.
-- The DeepSeek real-provider smoke result is a small 4-case diagnostic run, not a model leaderboard.
+- The DeepSeek real-provider benchmark set is a small diagnostic run, not a model leaderboard.
+- Current DeepSeek results are intentionally published with failures; this is evidence that the harness can surface concrete coding-agent failure modes.
 - The project should avoid claims like "better than Claude Code" or "DeepSeek V4 reversed" unless backed by clean-room, reproducible, real-provider reports.
 - The safe framing is infrastructure: shared runtime, permissioned tools, traces, transcripts, reports, dashboards, and model-provider comparison workflow.
 
