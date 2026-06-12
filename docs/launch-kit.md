@@ -4,6 +4,8 @@ This kit turns OpenCode Harness from "a solid GitHub project" into a launchable 
 
 For the current go/no-go state, see [launch-readiness.md](launch-readiness.md).
 
+For the final copy/paste Product Hunt submission package, see [product-hunt-final-package.md](product-hunt-final-package.md).
+
 ## Product Hunt Listing
 
 Product name:
@@ -62,7 +64,7 @@ I would love feedback from people building agents, evaluating models, or running
 
 ## Gallery Assets
 
-Product Hunt preparation notes checked on 2026-06-11:
+Product Hunt preparation notes checked on 2026-06-12:
 
 - Tagline limit: 60 characters.
 - Description limit: 500 characters.
@@ -70,6 +72,7 @@ Product Hunt preparation notes checked on 2026-06-11:
 - Thumbnail recommendation: `240x240`, under 3 MB.
 - Gallery requirement: at least 2 images.
 - Gallery recommendation: `1270x760`.
+- Video support: YouTube links only.
 
 Keep the first gallery image readable at thumbnail size.
 
@@ -148,6 +151,7 @@ Pre-launch:
 - Deploy `site/` to a public URL.
 - Confirm the public demo report is linked from README.
 - Record the 75-second demo video.
+- Upload the demo video to YouTube for the Product Hunt video field.
 - Upload at least two Product Hunt gallery images.
 - Prepare maker comment and launch-day posts.
 - Make sure the Product Hunt maker account is complete well before launch day.

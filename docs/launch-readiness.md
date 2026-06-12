@@ -25,6 +25,7 @@ Do not position it as a proprietary-agent clone or as a model leaderboard until 
 | v0.1.0 release | Ready | <https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0> |
 | Public demo report | Ready | [benchmarks/v0.1-mock-smoke](../benchmarks/v0.1-mock-smoke/README.md) |
 | Product Hunt kit | Ready | [launch-kit.md](launch-kit.md) |
+| Product Hunt final package | Ready | [product-hunt-final-package.md](product-hunt-final-package.md) |
 | Demo video draft | Ready | [media/demo-video](../media/demo-video/README.md), embedded in website |
 | Video production kit | Ready | [video-production-kit.md](video-production-kit.md) |
 | Provider benchmark guide | Ready | [provider-benchmarks.md](provider-benchmarks.md) |
@@ -54,6 +55,7 @@ Ready:
 - [x] GitHub Pages website.
 - [x] README first-screen product positioning.
 - [x] Product Hunt listing copy.
+- [x] Product Hunt final copy/paste package.
 - [x] Product Hunt gallery assets.
 - [x] Product Hunt thumbnail.
 - [x] Promo video script.
@@ -65,6 +67,7 @@ Still needed before a bigger launch:
 
 - [x] Render a silent 75-second demo video draft.
 - [ ] Record or add voiceover for the 60-75 second demo video.
+- [ ] Upload the demo video to YouTube for Product Hunt.
 - [ ] Publish at least one real provider comparison if API keys are available.
 - [ ] Add a Product Hunt badge/link after Product Hunt is live.
 - [ ] Optionally connect a custom domain.

@@ -74,6 +74,7 @@ OpenCode Harness is a clean-room, model-agnostic runtime for Claude Code-class c
 - [x] Static website.
 - [x] GitHub Pages deployment workflow.
 - [x] Product Hunt launch kit.
+- [x] Product Hunt final submission package.
 - [x] Product Hunt gallery and thumbnail assets.
 - [x] Promo video script.
 - [x] Video production kit and captions.
