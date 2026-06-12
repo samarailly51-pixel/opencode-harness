@@ -2,16 +2,13 @@
 
 | Suite | Provider | Model | Passed | Pass Rate | Failures | Avg Steps | Total Seconds |
 | --- | --- | --- | ---: | ---: | --- | ---: | ---: |
-| deepseek lab mock smoke | mock | mock-coder | 1/1 | 100.0% | - | 2.00 | 0.296 |
+| deepseek v4 coding-agent smoke | openai-compatible | deepseek-chat | 2/4 | 50.0% | expectation_mismatch=2 | 6.25 | 72.200 |
 
 ## Case Matrix
 
-| Case | mock/mock-coder |
+| Case | openai-compatible/deepseek-chat |
 | --- | --- |
-| lab-loads | PASS (2 steps, 0.30s) |
-
-## Skipped Providers
-
-| Preset | Reason |
-| --- | --- |
-| deepseek | missing DEEPSEEK_API_KEY |
+| chinese-coding-task | PASS (7 steps, 26.20s) |
+| patch-proposal-no-write | PASS (8 steps, 19.23s) |
+| repo-map-orientation | FAIL:expectation_mismatch (6 steps, 19.44s) |
+| tool-calling-stability | FAIL:expectation_mismatch (4 steps, 7.33s) |

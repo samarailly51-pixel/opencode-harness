@@ -50,6 +50,7 @@ Additional links:
 GitHub: https://github.com/samarailly51-pixel/opencode-harness
 Release: https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0
 Demo report: https://github.com/samarailly51-pixel/opencode-harness/tree/master/benchmarks/v0.1-mock-smoke
+Real provider smoke: https://github.com/samarailly51-pixel/opencode-harness/tree/master/benchmarks/real-provider-comparison
 ```
 
 Video URL:
@@ -105,7 +106,7 @@ Most agent projects mix together a model, prompts, tools, traces, and evaluation
 
 OpenCode Harness is a clean-room runtime and eval layer for coding agents. It supports provider presets for DeepSeek, Qwen, Claude, OpenAI, local OpenAI-compatible endpoints, vLLM, SGLang, Ollama, and mock mode.
 
-It includes permissioned tools, MCP-compatible extension points, JSONL traces, provider transcripts, HTML reports, a terminal trace viewer, an eval dashboard, a public no-key demo report, and a 75-second demo video.
+It includes permissioned tools, MCP-compatible extension points, JSONL traces, provider transcripts, HTML reports, a terminal trace viewer, an eval dashboard, a public no-key demo report, a first DeepSeek real-provider smoke result, and a 75-second demo video.
 
 The goal is not to clone any proprietary agent. The goal is to create open infrastructure for testing, debugging, and comparing coding agents.
 
@@ -193,7 +194,7 @@ After launch:
 - Add Product Hunt URL to README and launch readiness.
 - Add Product Hunt badge if useful.
 - Create follow-up issues for repeated feedback.
-- Publish a real-provider benchmark when API keys are available.
+- Run more real-provider benchmarks when additional API keys are available.
 
 ## Compliance Checks
 
@@ -213,7 +214,7 @@ Project positioning checks:
 
 - Uses "clean-room" accurately.
 - Does not imply proprietary-source reuse.
-- Does not claim real provider ranking until real-provider results exist.
+- Does not claim broad provider ranking from a single DeepSeek smoke result.
 - Treats the mock benchmark as a harness smoke benchmark, not a model-quality benchmark.
 
 ## Official References

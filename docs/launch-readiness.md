@@ -8,13 +8,17 @@ This page is the single launch control panel for OpenCode Harness.
 
 OpenCode Harness is ready for a soft public launch as an open-source v0.1 project.
 
+A first real-provider DeepSeek smoke run has been published. Treat it as a
+diagnostic harness result, not as a broad provider ranking.
+
 Use the current positioning:
 
 ```text
 OpenCode Harness is a clean-room, model-neutral evaluation harness for coding agents across DeepSeek, Qwen, Claude, OpenAI, and local models.
 ```
 
-Do not position it as a proprietary-agent clone or as a model leaderboard until real provider runs have been published.
+Do not position it as a proprietary-agent clone or as a full model leaderboard.
+The published real-provider result is currently one DeepSeek smoke run.
 
 ## Live Assets
 
@@ -24,7 +28,7 @@ Do not position it as a proprietary-agent clone or as a model leaderboard until 
 | Website | Ready | <https://samarailly51-pixel.github.io/opencode-harness/> |
 | v0.1.0 release | Ready | <https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0> |
 | Public demo report | Ready | [benchmarks/v0.1-mock-smoke](../benchmarks/v0.1-mock-smoke/README.md) |
-| Real provider benchmark package | Ready, pending API keys | [real-provider-comparison](../benchmarks/real-provider-comparison/README.md) |
+| Real provider benchmark package | Ready, DeepSeek smoke run published | [real-provider-comparison](../benchmarks/real-provider-comparison/README.md) |
 | Product Hunt kit | Ready | [launch-kit.md](launch-kit.md) |
 | Product Hunt final package | Ready | [product-hunt-final-package.md](product-hunt-final-package.md) |
 | Demo video draft | Ready | [media/demo-video](../media/demo-video/README.md), embedded in website |
@@ -35,14 +39,15 @@ Do not position it as a proprietary-agent clone or as a model leaderboard until 
 
 | Check | Status | Evidence |
 | --- | --- | --- |
-| Last checked commit | Ready | `afd684e5d2dfaa04b453900b84a32b07207b49d8` |
-| Last checked CI | Passing | <https://github.com/samarailly51-pixel/opencode-harness/actions/runs/27359763808> |
+| Repository head | Ready | CI badge tracks current `master` |
+| CI workflow | Passing | <https://github.com/samarailly51-pixel/opencode-harness/actions/workflows/ci.yml> |
 | Website HTTP | Passing | `200`, title `OpenCode Harness - Evaluation Harness for Coding Agents` |
 | GitHub Pages | Passing | workflow deployment enabled |
 | Release | Published | `v0.1.0`, not draft, not prerelease |
 | Wheel asset | Published | `opencode_harness-0.1.0-py3-none-any.whl` |
 | Source asset | Published | `opencode_harness-0.1.0.tar.gz` |
 | Public benchmark | Published | harness smoke benchmark, not model ranking |
+| Real provider benchmark | Published | DeepSeek `deepseek-chat`, 2/4 pass rate on `deepseek-v4-suite` |
 
 ## Launch Checklist
 
@@ -69,7 +74,8 @@ Still needed before a bigger launch:
 - [x] Render a silent 75-second demo video draft.
 - [ ] Record or add voiceover for the 60-75 second demo video.
 - [ ] Upload the demo video to YouTube for Product Hunt.
-- [ ] Publish at least one real provider comparison after provider API keys are available.
+- [x] Publish at least one real provider comparison after provider API keys are available.
+- [ ] Run Qwen, OpenAI, Claude, and local provider comparisons on the same suite.
 - [ ] Add a Product Hunt badge/link after Product Hunt is live.
 - [ ] Optionally connect a custom domain.
 
@@ -83,13 +89,14 @@ Still needed before a bigger launch:
 
 ## Risk Notes
 
-- The public benchmark is a mock smoke benchmark. It proves the harness artifact flow, not real model quality.
+- The public mock benchmark proves the harness artifact flow, not real model quality.
+- The DeepSeek real-provider smoke result is a small 4-case diagnostic run, not a model leaderboard.
 - The project should avoid claims like "better than Claude Code" or "DeepSeek V4 reversed" unless backed by clean-room, reproducible, real-provider reports.
 - The safe framing is infrastructure: shared runtime, permissioned tools, traces, transcripts, reports, dashboards, and model-provider comparison workflow.
 
 ## Next Best Work
 
-The next highest-value work is adding voiceover to the rendered demo video or running a real provider benchmark:
+The next highest-value work is adding voiceover to the rendered demo video or running the same suite across Qwen, OpenAI, Claude, and local providers:
 
 ```powershell
 python -m opencode_harness lab-compare `

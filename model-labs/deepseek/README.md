@@ -4,6 +4,11 @@ DeepSeek Lab is the first model-focused track for OpenCode Harness.
 
 It studies DeepSeek V4-class models as first-class backends for Claude Code-class coding agents. The goal is not to reverse engineer private implementation details. The goal is to evaluate public/provider behavior in a reproducible harness.
 
+Latest published smoke snapshot: DeepSeek `deepseek-chat` passed 2/4 cases on
+`deepseek-v4-suite.json`, with two `expectation_mismatch` failures. See
+[reports/provider-comparison.md](reports/provider-comparison.md) and the public
+[real provider comparison package](../../benchmarks/real-provider-comparison/README.md).
+
 ## Scope
 
 - DeepSeek V4 / V4 Flash / V3.2 / R1 behavior comparison.

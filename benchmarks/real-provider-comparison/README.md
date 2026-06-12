@@ -1,6 +1,8 @@
 # Real Provider Comparison
 
-This directory is reserved for real provider benchmark outputs.
+This directory contains sanitized benchmark summaries for real provider runs.
+Detailed eval traces are written under `eval-runs/` and are intentionally not
+committed.
 
 Run:
 
@@ -31,8 +33,33 @@ If API keys are missing, the comparison report records skipped providers instead
 
 ## Current Status
 
-No real provider API keys are configured in the current local environment, so no real provider model run has been executed yet.
+Latest committed snapshot:
 
-Use the public no-key smoke report until real provider results are available:
+| Field | Value |
+| --- | --- |
+| Run date | 2026-06-12, Asia/Shanghai |
+| Suite | `model-labs/deepseek/deepseek-v4-suite.json` |
+| Preset | `deepseek` |
+| Provider/model | `openai-compatible` / `deepseek-chat` |
+| Result | 2/4 passed, 50.0% pass rate |
+| Failures | `expectation_mismatch=2` |
+| Average steps | 6.25 |
+| Total seconds | 72.200 |
+
+Case matrix:
+
+| Case | Result |
+| --- | --- |
+| `chinese-coding-task` | PASS |
+| `patch-proposal-no-write` | PASS |
+| `repo-map-orientation` | FAIL: `expectation_mismatch` |
+| `tool-calling-stability` | FAIL: `expectation_mismatch` |
+
+This is a small coding-agent smoke benchmark, not a broad model leaderboard.
+The next useful comparisons are Qwen, OpenAI, Claude, and local providers on
+the same suite.
+
+The public no-key smoke report is still useful for validating harness behavior
+without provider credentials:
 
 - [../v0.1-mock-smoke](../v0.1-mock-smoke/README.md)

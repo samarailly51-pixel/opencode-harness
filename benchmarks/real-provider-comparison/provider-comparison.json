@@ -1,23 +1,8 @@
 {
   "suite": "model-labs\\deepseek\\deepseek-v4-suite.json",
-  "reports": [],
+  "reports": [
+    "eval-runs\\real-provider-benchmark\\deepseek-v4-suite-deepseek-20260612-163325-099410-fce58ac5\\report.json"
+  ],
   "comparison": "benchmarks\\real-provider-comparison\\provider-comparison.md",
-  "skipped": [
-    {
-      "preset": "deepseek",
-      "reason": "missing DEEPSEEK_API_KEY"
-    },
-    {
-      "preset": "qwen",
-      "reason": "missing DASHSCOPE_API_KEY"
-    },
-    {
-      "preset": "openai",
-      "reason": "missing OPENAI_API_KEY"
-    },
-    {
-      "preset": "claude",
-      "reason": "missing ANTHROPIC_API_KEY"
-    }
-  ]
+  "skipped": []
 }

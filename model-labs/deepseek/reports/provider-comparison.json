@@ -1,13 +1,8 @@
 {
-  "suite": "model-labs\\deepseek\\mock-smoke-suite.json",
+  "suite": "model-labs\\deepseek\\deepseek-v4-suite.json",
   "reports": [
-    "eval-runs\\mock-smoke-suite-mock-20260607-121804\\report.json"
+    "eval-runs\\real-provider-benchmark\\deepseek-v4-suite-deepseek-20260612-163325-099410-fce58ac5\\report.json"
   ],
   "comparison": "model-labs\\deepseek\\reports\\provider-comparison.md",
-  "skipped": [
-    {
-      "preset": "deepseek",
-      "reason": "missing DEEPSEEK_API_KEY"
-    }
-  ]
+  "skipped": []
 }
