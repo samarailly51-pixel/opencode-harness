@@ -29,6 +29,7 @@ depth before cross-provider breadth.
 | GitHub repo | Ready | <https://github.com/samarailly51-pixel/opencode-harness> |
 | Website | Ready | <https://samarailly51-pixel.github.io/opencode-harness/> |
 | v0.1.0 release | Ready | <https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0> |
+| Chinese introduction | Ready | [zh-intro.md](zh-intro.md) |
 | Public demo report | Ready | [benchmarks/v0.1-mock-smoke](../benchmarks/v0.1-mock-smoke/README.md) |
 | Real provider benchmark package | Ready, DeepSeek-only benchmark set published | [real-provider-comparison](../benchmarks/real-provider-comparison/README.md) |
 | DeepSeek case study | Ready | [deepseek-failure-mode-diagnosis.md](deepseek-failure-mode-diagnosis.md), <https://samarailly51-pixel.github.io/opencode-harness/deepseek-case-study.html> |
@@ -63,6 +64,7 @@ Ready:
 - [x] CI passing.
 - [x] GitHub Pages website.
 - [x] README first-screen product positioning.
+- [x] Chinese project introduction.
 - [x] Product Hunt listing copy.
 - [x] Product Hunt final copy/paste package.
 - [x] Product Hunt gallery assets.

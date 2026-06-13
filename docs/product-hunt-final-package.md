@@ -49,6 +49,7 @@ Additional links:
 ```text
 GitHub: https://github.com/samarailly51-pixel/opencode-harness
 Release: https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0
+Chinese intro: https://github.com/samarailly51-pixel/opencode-harness/blob/master/docs/zh-intro.md
 Demo report: https://github.com/samarailly51-pixel/opencode-harness/tree/master/benchmarks/v0.1-mock-smoke
 DeepSeek diagnostic benchmark: https://github.com/samarailly51-pixel/opencode-harness/tree/master/benchmarks/real-provider-comparison
 DeepSeek case study: https://samarailly51-pixel.github.io/opencode-harness/deepseek-case-study.html

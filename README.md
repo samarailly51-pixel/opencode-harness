@@ -12,6 +12,7 @@ It runs the same coding-agent workflow across DeepSeek, Qwen, Claude, OpenAI, lo
 
 This project does not contain or derive from Claude Code source code. It is an independent implementation of a coding-agent harness.
 
+- **中文介绍:** [docs/zh-intro.md](docs/zh-intro.md)
 - **Website:** [samarailly51-pixel.github.io/opencode-harness](https://samarailly51-pixel.github.io/opencode-harness/)
 - **Release:** [v0.1.0](https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0)
 - **Demo report:** [v0.1 mock smoke benchmark](benchmarks/v0.1-mock-smoke/README.md)
@@ -22,6 +23,14 @@ This project does not contain or derive from Claude Code source code. It is an i
 - **Launch assets:** [Product Hunt final package](docs/product-hunt-final-package.md), [video production kit](docs/video-production-kit.md)
 
 ![OpenCode Harness dashboard preview](site/assets/dashboard-preview.png)
+
+## 中文概览
+
+OpenCode Harness 是一个开源的 coding agent 评测与运行框架。它不是 Claude Code clone，而是用 clean-room 的方式实现一套模型中立的 agent runtime：同一套任务、工具、权限、trace、eval suite 和报告系统，可以接 DeepSeek、Qwen、Claude、OpenAI、本地 OpenAI-compatible 服务、vLLM、SGLang、Ollama 等模型后端。
+
+项目重点做了 DeepSeek Lab，并用真实 DeepSeek API 跑了 smoke、long-context 和 repair 三类 benchmark。结果不是为了做排行榜，而是为了诊断 coding agent 的失败模式，例如 marker 遵循不稳定、工具循环收尾弱、长上下文综合不稳定、代码修复验证闭环不稳定。
+
+更完整的中文说明见 [docs/zh-intro.md](docs/zh-intro.md)，DeepSeek 案例见 [failure-mode diagnosis](docs/deepseek-failure-mode-diagnosis.md) 和 [网站案例页](https://samarailly51-pixel.github.io/opencode-harness/deepseek-case-study.html)。
 
 ## Quick Demo
 
@@ -462,6 +471,7 @@ The static landing page lives in [site](site/README.md). Launch materials live i
 ## Project Docs
 
 - [Architecture](docs/architecture.md)
+- [中文介绍](docs/zh-intro.md)
 - [v0.1 mock smoke benchmark](benchmarks/v0.1-mock-smoke/README.md)
 - [Real provider comparison package](benchmarks/real-provider-comparison/README.md)
 - [DeepSeek failure-mode diagnosis](docs/deepseek-failure-mode-diagnosis.md)
