@@ -6,33 +6,71 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
 
-OpenCode Harness is a clean-room, model-neutral runtime and evaluation harness for coding agents.
+OpenCode Harness is a clean-room, model-agnostic AI coding agent harness that standardizes how Claude Code / Codex-class coding agents execute tasks, call tools, produce traces, and generate evaluation reports.
 
-It runs the same coding-agent workflow across DeepSeek, Qwen, Claude, OpenAI, local OpenAI-compatible servers, vLLM, SGLang, Ollama, and future providers through one shared agent loop, tool layer, permission model, trace format, and eval surface.
+中文定位：OpenCode Harness 是一个面向 AI coding agent 的开源运行与评测框架，用统一的 agent loop、工具权限、trace、eval suite 和报告系统，把一次性的 coding demo 变成可复现、可追踪、可对比、可诊断的工程流程。
 
-This project does not contain or derive from Claude Code source code. It is an independent implementation of a coding-agent harness.
+This project does not contain or derive from Claude Code source code. It is an independent clean-room implementation of a coding-agent harness.
 
-- **中文介绍:** [docs/zh-intro.md](docs/zh-intro.md)
-- **Website:** [samarailly51-pixel.github.io/opencode-harness](https://samarailly51-pixel.github.io/opencode-harness/)
-- **Release:** [v0.1.0](https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0)
-- **Demo report:** [v0.1 mock smoke benchmark](benchmarks/v0.1-mock-smoke/README.md)
-- **Real benchmark:** [provider comparison package](benchmarks/real-provider-comparison/README.md)
-- **DeepSeek case study:** [failure-mode diagnosis](docs/deepseek-failure-mode-diagnosis.md), [website case page](https://samarailly51-pixel.github.io/opencode-harness/deepseek-case-study.html)
-- **Demo video:** [media/demo-video](media/demo-video/README.md)
-- **Launch status:** [readiness dashboard](docs/launch-readiness.md)
-- **Launch assets:** [Product Hunt final package](docs/product-hunt-final-package.md), [video production kit](docs/video-production-kit.md)
+## Links
+
+- Website: <https://samarailly51-pixel.github.io/opencode-harness/>
+- DeepSeek case study: <https://samarailly51-pixel.github.io/opencode-harness/deepseek-case-study.html>
+- Release: <https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0>
+- 中文介绍: [docs/zh-intro.md](docs/zh-intro.md)
+- Product positioning: [docs/product-positioning.md](docs/product-positioning.md)
+- Interview guide: [docs/interview-guide.md](docs/interview-guide.md)
+- DeepSeek diagnosis: [docs/deepseek-failure-mode-diagnosis.md](docs/deepseek-failure-mode-diagnosis.md)
+- Demo workflow: [examples/demo-workflow.md](examples/demo-workflow.md)
 
 ![OpenCode Harness dashboard preview](site/assets/dashboard-preview.png)
 
-## 中文概览
+## Target Users
 
-OpenCode Harness 是一个开源的 coding agent 评测与运行框架。它不是 Claude Code clone，而是用 clean-room 的方式实现一套模型中立的 agent runtime：同一套任务、工具、权限、trace、eval suite 和报告系统，可以接 DeepSeek、Qwen、Claude、OpenAI、本地 OpenAI-compatible 服务、vLLM、SGLang、Ollama 等模型后端。
+- AI 产品经理：需要解释 coding agent 的产品边界、用户价值、评测指标和失败模式。
+- AI Agent 应用开发者：需要把模型、工具、权限、trace 和评测流程组合成可运行系统。
+- 模型评测 / Agent 评测团队：需要用统一任务和报告比较不同 provider 或不同 agent loop。
+- 本地模型和开源模型使用者：需要在 DeepSeek、Qwen、OpenAI-compatible、本地推理服务之间复用同一套 workflow。
+- 面试展示场景：需要用真实项目说明自己理解 agent 产品化、评测闭环和工程落地。
 
-项目重点做了 DeepSeek Lab，并用真实 DeepSeek API 跑了 smoke、long-context 和 repair 三类 benchmark。结果不是为了做排行榜，而是为了诊断 coding agent 的失败模式，例如 marker 遵循不稳定、工具循环收尾弱、长上下文综合不稳定、代码修复验证闭环不稳定。
+## User Pain Points
 
-更完整的中文说明见 [docs/zh-intro.md](docs/zh-intro.md)，DeepSeek 案例见 [failure-mode diagnosis](docs/deepseek-failure-mode-diagnosis.md) 和 [网站案例页](https://samarailly51-pixel.github.io/opencode-harness/deepseek-case-study.html)。
+很多 AI coding assistant 看起来能写代码，但在真实产品化时会遇到几个问题：
 
-## Quick Demo
+- 执行流程不透明：不知道模型读了什么、调用了什么工具、为什么失败。
+- 难以复现：同一个任务换一次模型或换一次 prompt，结果很难横向比较。
+- 缺少权限边界：文件写入、shell 命令、网络访问和外部工具调用需要可控策略。
+- 缺少评测闭环：只有聊天结果，没有结构化 report、trace、dashboard 和 failure taxonomy。
+- 难以产品化讲清楚：无法把 agent 能力拆成输入、计划、执行、验证、报告这些用户可理解环节。
+
+## Core Features
+
+- Model-agnostic provider layer for DeepSeek, Qwen, Claude, OpenAI, local OpenAI-compatible endpoints, vLLM, SGLang, Ollama, and mock mode.
+- Permissioned tool system for file read/write, search, patch, shell, git diff, repo map, context pack, todo, and finish events.
+- MCP-compatible extension points for stdio tools, resources, prompts, per-server approvals, lifecycle diagnostics, and namespace collision handling.
+- Reproducible eval suites with `report.json`, `report.md`, `report.html`, comparison reports, and dashboards.
+- JSONL traces and provider transcripts for auditability, replay, debugging, and failure-mode diagnosis.
+- Model Labs for DeepSeek, Qwen, Claude, OpenAI, and local model workflows.
+
+## Architecture Flow
+
+```text
+Task Input
+  -> Planning
+  -> Tool Execution
+  -> Review
+  -> Report
+```
+
+| Stage | What Happens | Product Value |
+| --- | --- | --- |
+| Task Input | User or eval suite provides a coding task and workspace. | Makes tasks reproducible instead of ad hoc chat prompts. |
+| Planning | Agent creates or updates a plan with todo tools and repository context. | Shows how the agent decomposes work before executing. |
+| Tool Execution | Agent calls read/search/patch/shell/MCP tools under permission policy. | Keeps risky operations auditable and controllable. |
+| Review | Agent observes tool outputs, verifies results, and decides whether to continue. | Captures whether the loop can close, not only whether it can generate text. |
+| Report | Harness writes traces, transcripts, eval reports, comparison tables, and dashboards. | Turns agent behavior into evidence for debugging and product decisions. |
+
+## Quick Start
 
 Run the offline mock eval with no API key:
 
@@ -41,7 +79,7 @@ $env:PYTHONPATH='src'
 python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2 --context-chars 1000
 ```
 
-Inspect the run:
+Inspect the latest trace:
 
 ```powershell
 $trace = Get-ChildItem eval-runs -Recurse -Filter inspect-repo.jsonl | Sort-Object LastWriteTime -Descending | Select-Object -First 1
@@ -50,442 +88,101 @@ python -m opencode_harness trace-html $trace.FullName --output eval-runs/latest-
 python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html
 ```
 
-Or generate all recording/demo artifacts:
-
-```powershell
-.\scripts\recording-demo.ps1
-```
-
-## What You Get
-
-- Model-neutral provider presets for DeepSeek, Qwen, Claude, OpenAI, vLLM, SGLang, Ollama, local OpenAI-compatible endpoints, and mock mode.
-- Permissioned file, patch, shell, search, repo-map, context-pack, todo, and finish tools.
-- MCP-compatible extension points for stdio tools, resources, prompts, diagnostics, and per-server approvals.
-- JSONL traces, provider transcripts, terminal replay, HTML trace viewer, eval reports, comparison reports, and dashboards.
-- Model Labs for DeepSeek, Qwen, Claude, OpenAI, and local providers.
-
-## Why It Exists
-
-Most coding-agent demos are tied to one model, one provider, or one UI. OpenCode Harness focuses on the infrastructure layer: run the same coding-agent loop across multiple providers, preserve auditable traces, gate risky tools, and compare model behavior with reproducible evals.
-
-## v0.1 Status
-
-- Released: [v0.1.0](https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0)
-- Website: [OpenCode Harness](https://samarailly51-pixel.github.io/opencode-harness/)
-- Package artifacts: wheel and source distribution attached to the release.
-- CI: Python 3.11/3.12 tests and mock eval smoke.
-- Model Labs: DeepSeek, Qwen, Claude, OpenAI, and Local Model Labs.
-- Product surface: CLI, trace replay, terminal trace viewer, HTML trace viewer, eval dashboard, release workflow, and model-eval workflow example.
-
-## Core Capabilities
-
-- CLI for running a coding-agent task against a workspace.
-- Pluggable model interface.
-- OpenAI-compatible chat-completions adapter for DeepSeek, Qwen, OpenAI, vLLM, SGLang, Ollama bridges, and similar endpoints.
-- Built-in mock model for offline testing.
-- Tool layer for file reads, file search, patch application, shell commands, and git diff.
-- Repository map and context packing for larger codebases.
-- Native OpenAI-compatible and Anthropic tool schemas with JSON text fallback.
-- MCP-compatible external tool extension points.
-- Permission policy that defaults to conservative command execution.
-- JSONL trace files with provider transcripts for replay, evaluation, and debugging.
-
-## Showcase
-
-| Surface | Output |
-| --- | --- |
-| Website | <https://samarailly51-pixel.github.io/opencode-harness/> |
-| Release | <https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0> |
-| Public demo report | [benchmarks/v0.1-mock-smoke](benchmarks/v0.1-mock-smoke/README.md) |
-| Real provider benchmark package | [benchmarks/real-provider-comparison](benchmarks/real-provider-comparison/README.md) |
-| DeepSeek failure-mode case study | [docs/deepseek-failure-mode-diagnosis.md](docs/deepseek-failure-mode-diagnosis.md) |
-| Demo video | [media/demo-video](media/demo-video/README.md) |
-| Launch readiness | [docs/launch-readiness.md](docs/launch-readiness.md) |
-| Product Hunt final package | [docs/product-hunt-final-package.md](docs/product-hunt-final-package.md) |
-| Run offline demo | `python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2` |
-| Terminal trace viewer | `python -m opencode_harness tui runs/latest.jsonl` |
-| HTML trace viewer | `python -m opencode_harness trace-html runs/latest.jsonl --output runs/latest.html` |
-| Eval dashboard | `python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html` |
-| Launch kit | [docs/launch-kit.md](docs/launch-kit.md) |
-
-## Quick Start
-
-Run the offline mock agent:
-
-```powershell
-python -m opencode_harness chat --mock
-```
-
-Run a one-shot task with an OpenAI-compatible endpoint:
-
-```powershell
-$env:OCH_API_KEY = "..."
-python -m opencode_harness run "inspect this repository and suggest the first improvement" `
-  --provider openai-compatible `
-  --base-url "https://api.deepseek.com" `
-  --model "deepseek-chat"
-```
-
-Use a provider preset:
+Run DeepSeek-only benchmark after setting your local API key:
 
 ```powershell
 $env:DEEPSEEK_API_KEY = "..."
-python -m opencode_harness run "inspect this repository" --preset deepseek
-
-$env:DASHSCOPE_API_KEY = "..."
-python -m opencode_harness run "inspect this repository" --preset qwen
-
-$env:OPENAI_API_KEY = "..."
-python -m opencode_harness run "inspect this repository" --preset openai
-
-$env:ANTHROPIC_API_KEY = "..."
-python -m opencode_harness run "inspect this repository" --preset claude
-
-$env:LOCAL_MODEL_API_KEY = "dummy"
-python -m opencode_harness run "inspect this repository" --preset local-openai --model "your-local-model"
+.\scripts\run-deepseek-benchmark.ps1 -SuiteSet all
 ```
 
-Or use provider config examples:
+Run one task with a provider preset:
 
 ```powershell
-python -m opencode_harness run "inspect this repository" --config examples/providers/deepseek.toml
-python -m opencode_harness run "inspect this repository" --config examples/providers/qwen.toml
-python -m opencode_harness run "inspect this repository" --config examples/providers/local-openai-compatible.toml
+$env:DEEPSEEK_API_KEY = "..."
+python -m opencode_harness run "inspect this repository and suggest one improvement" --preset deepseek
 ```
 
-Allow file edits explicitly:
+## Demo Example
 
-```powershell
-python -m opencode_harness run "update the README title" --preset deepseek --allow-write
+Example task:
+
+```text
+Inspect this repository and propose one small documentation improvement.
+Do not edit files; finish with the proposed patch idea.
 ```
 
-Ask before running blocked shell commands, writes, or MCP tool calls:
+Expected harness flow:
 
-```powershell
-python -m opencode_harness run "fix the failing test" --preset deepseek --approval-mode ask
-```
+1. Task Input: eval suite loads the task and workspace.
+2. Planning: agent builds a short plan.
+3. Tool Execution: agent reads README and searches repository context.
+4. Review: agent checks whether enough evidence was collected.
+5. Report: harness writes trace files and a Markdown/HTML eval report.
 
-Shell commands are classified before execution. Common read-only inspection commands such as `git status`, `git diff`, `rg`, `ls`, `dir`, `pytest`, and `python -m unittest` are allowed by default. Compound commands, redirection, network commands, and write-like commands require approval or remain blocked.
+See the full walkthrough: [examples/demo-workflow.md](examples/demo-workflow.md).
 
-Save or resume a session:
+## Published Evidence
 
-```powershell
-python -m opencode_harness run "fix the failing test" --preset deepseek --session runs/fix.session.json
-python -m opencode_harness run "continue" --preset deepseek --session runs/fix.session.json --resume
-```
+| Surface | Link |
+| --- | --- |
+| Public website | <https://samarailly51-pixel.github.io/opencode-harness/> |
+| GitHub release | <https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0> |
+| Mock smoke benchmark | [benchmarks/v0.1-mock-smoke](benchmarks/v0.1-mock-smoke/README.md) |
+| Real provider benchmark | [benchmarks/real-provider-comparison](benchmarks/real-provider-comparison/README.md) |
+| DeepSeek failure-mode case study | [docs/deepseek-failure-mode-diagnosis.md](docs/deepseek-failure-mode-diagnosis.md) |
+| Website case page | <https://samarailly51-pixel.github.io/opencode-harness/deepseek-case-study.html> |
+| Product Hunt package | [docs/product-hunt-final-package.md](docs/product-hunt-final-package.md) |
 
-Create a sample config:
+## Highlights for AI PM / Agent Application Interviews
 
-```powershell
-python -m opencode_harness init
-```
+- Product framing: turns coding-agent behavior from an opaque chat interaction into a measurable workflow.
+- User-centered design: separates target users, user pain points, workflow stages, reports, and failure diagnosis.
+- Agent architecture: demonstrates provider abstraction, tool orchestration, permission policy, traces, and eval suites.
+- Evaluation mindset: includes real DeepSeek benchmark results and a failure-mode diagnosis rather than only success demos.
+- Launch readiness: includes CI, release artifacts, GitHub Pages, demo video assets, Product Hunt package, and bilingual documentation.
 
-## Configuration
+## DeepSeek Lab Snapshot
 
-`och.config.example.toml`:
+The first DeepSeek-only diagnostic benchmark set uses `deepseek-chat` through an OpenAI-compatible adapter:
 
-```toml
-[model]
-provider = "openai-compatible"
-base_url = "https://api.deepseek.com"
-model = "deepseek-chat"
-api_key_env = "OCH_API_KEY"
+| Suite | Result | Main Failure Modes |
+| --- | ---: | --- |
+| Smoke | 1/4 passed | marker drift, expectation mismatch |
+| Long context | 1/4 passed | expectation mismatch, max steps |
+| Repair | 0/2 passed | repair finalization gap |
 
-[agent]
-max_steps = 8
-context_chars = 6000
-
-[permissions]
-allow_write = false
-allow_shell = true
-allow_network = false
-approval_mode = "never"
-
-[[mcp_tools]]
-name = "mcp_lookup"
-description = "Example external MCP-compatible lookup tool."
-server = "docs"
-
-[mcp_tools.input_schema]
-type = "object"
-
-[[mcp_servers]]
-name = "docs"
-command = "python"
-args = ["path/to/mcp_server.py"]
-approval_mode = "inherit"
-```
-
-## Commands
-
-```powershell
-python -m opencode_harness run "fix the failing test"
-python -m opencode_harness version
-python -m opencode_harness chat --mock
-python -m opencode_harness trace runs/latest.jsonl
-python -m opencode_harness replay runs/latest.jsonl
-python -m opencode_harness tui runs/latest.jsonl
-python -m opencode_harness trace-html runs/latest.jsonl --output runs/latest.html
-python -m opencode_harness init
-python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2
-python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html
-```
-
-Provider presets:
-
-- `deepseek`: OpenAI-compatible, `https://api.deepseek.com`, `DEEPSEEK_API_KEY`
-- `qwen`: OpenAI-compatible DashScope mode, `DASHSCOPE_API_KEY`
-- `openai`: OpenAI API, `OPENAI_API_KEY`
-- `claude`: Anthropic Messages API, `ANTHROPIC_API_KEY`
-- `local-openai`: local OpenAI-compatible endpoint, `LOCAL_MODEL_API_KEY`
-- `vllm`: local vLLM OpenAI-compatible endpoint, `VLLM_API_KEY`
-- `sglang`: local SGLang OpenAI-compatible endpoint, `SGLANG_API_KEY`
-- `ollama`: local Ollama OpenAI-compatible endpoint, `OLLAMA_API_KEY`
-- `mock`: offline model for harness tests
-
-## Tool Protocol
-
-Models can request tools with provider-neutral JSON:
-
-```json
-{"tool": "todo_set", "args": {"items": [{"title": "inspect tests", "status": "in_progress"}]}}
-```
-
-```json
-{"tool": "apply_patch", "args": {"patch": "--- a/file.txt\n+++ b/file.txt\n@@ -1,1 +1,1 @@\n-old\n+new"}}
-```
-
-`apply_patch`, `write_file`, and `replace_text` require `--allow-write`, unless `--approval-mode ask` is enabled and the user approves the specific write.
-
-OpenAI-compatible and Anthropic providers also receive native tool schemas. If the provider returns `tool_calls` or Anthropic `tool_use` blocks, the agent uses them directly; otherwise it falls back to the JSON text protocol above.
-
-External MCP-compatible tools can be declared in config and are included in native tool schemas:
-
-```toml
-[[mcp_tools]]
-name = "mcp_lookup"
-description = "Lookup from an MCP server."
-server = "docs"
-
-[mcp_tools.input_schema]
-type = "object"
-```
-
-At runtime, external tools are dispatched through `ToolRegistry` handlers. If `approval_mode = "ask"` is enabled, each MCP-compatible external tool call is approved before dispatch. If a tool is declared but no client/handler is attached, the harness returns a clear tool error instead of pretending it ran.
-
-Stdio MCP servers can be configured with `[[mcp_servers]]`. The harness starts the process, sends `initialize`, reads `tools/list`, and dispatches calls through `tools/call`:
-
-```toml
-[[mcp_servers]]
-name = "docs"
-command = "python"
-args = ["path/to/mcp_server.py"]
-approval_mode = "inherit"
-```
-
-Discovered MCP tools are exposed to the model as native OpenAI-compatible or Anthropic tool schemas. If two servers expose the same tool name, later collisions are safely namespaced as `mcp_<server>_<tool>`.
-
-Each MCP server also receives utility tools:
-
-- `mcp_<server>_list_resources`
-- `mcp_<server>_read_resource`
-- `mcp_<server>_list_prompts`
-- `mcp_<server>_get_prompt`
-- `mcp_<server>_status`
-
-Set per-server `approval_mode` to `inherit`, `ask`, or `never`. `inherit` follows the global approval mode; `ask` requires approval for that server's MCP calls even if global approval is `never`.
-
-Repository context tools:
-
-```json
-{"tool": "repo_map", "args": {}}
-```
-
-```json
-{"tool": "context_pack", "args": {"query": "auth failing test"}}
-```
-
-The agent also injects an initial packed repository context into new sessions. Control its size with:
-
-```powershell
-python -m opencode_harness run "fix auth tests" --preset deepseek --context-chars 8000
-```
-
-## Eval Suites
-
-Eval suites are JSON files:
-
-```json
-{
-  "name": "repo smoke",
-  "cases": [
-    {
-      "id": "inspect-repo",
-      "task": "inspect this repo",
-      "workspace": ".",
-      "expect_contains": "summary text"
-    }
-  ]
-}
-```
-
-Run a suite:
-
-```powershell
-python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2
-```
-
-Each case writes its own trace and session under `eval-runs/`. The runner also writes `report.json`, `report.md`, and `report.html` with pass/fail status, failure type, timing, steps, summaries, and artifact paths.
-
-Failure types include `exception`, `tool_failure`, `max_steps`, `expectation_mismatch`, `verification_failure`, and `recovered_tool_failure`.
-
-Render an eval dashboard:
-
-```powershell
-python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html
-```
-
-Compare multiple eval reports:
-
-```powershell
-python -m opencode_harness compare `
-  eval-runs/deepseek-run/report.json `
-  eval-runs/qwen-run/report.json `
-  --output eval-runs/model-comparison.md
-```
-
-Comparisons include pass rate, failure breakdown, average steps, total seconds, and a per-case matrix.
-
-Run one eval suite across provider presets:
-
-```powershell
-python -m opencode_harness lab-compare `
-  model-labs/deepseek/deepseek-v4-suite.json `
-  --presets deepseek qwen openai claude `
-  --comparison-output model-labs/deepseek/reports/provider-comparison.md
-```
-
-Run the DeepSeek-only benchmark track:
-
-```powershell
-.\scripts\run-deepseek-benchmark.ps1 -SuiteSet smoke
-.\scripts\run-deepseek-benchmark.ps1 -SuiteSet long-context
-.\scripts\run-deepseek-benchmark.ps1 -SuiteSet repair
-```
-
-DeepSeek Lab also includes a long-context suite:
-
-```powershell
-python -m opencode_harness lab-compare `
-  model-labs/deepseek/deepseek-v4-long-context-suite.json `
-  --presets deepseek qwen openai claude `
-  --context-chars 24000 `
-  --comparison-output model-labs/deepseek/reports/long-context-comparison.md
-```
-
-Repair suites can copy fixture workspaces into an eval run, allow the agent to edit the copy, and verify the result with a command:
-
-```powershell
-python -m opencode_harness lab-compare `
-  model-labs/deepseek/deepseek-v4-repair-suite.json `
-  --presets deepseek qwen openai claude `
-  --allow-write `
-  --comparison-output model-labs/deepseek/reports/repair-comparison.md
-```
+These results are intentionally not presented as a leaderboard. They show that the harness can expose concrete coding-agent failure modes such as marker-following drift, tool-loop overrun, long-context synthesis gaps, and repair finalization gaps.
 
 ## Model Labs
 
-Model Labs are focused tracks for evaluating model families inside the same harness.
-
-- [DeepSeek Lab](model-labs/deepseek/README.md): DeepSeek V4-class behavior, provider comparison, tool-calling stability, coding-agent evals, and Chinese coding tasks.
-- [Qwen Lab](model-labs/qwen/README.md): Qwen provider behavior, Chinese coding tasks, tool-calling stability, JSON fallback discipline, and provider comparison.
+- [DeepSeek Lab](model-labs/deepseek/README.md): DeepSeek V4-class behavior, provider comparison, tool-calling stability, long-context tasks, repair tasks, and failure-mode diagnosis.
+- [Qwen Lab](model-labs/qwen/README.md): Qwen provider behavior, Chinese coding tasks, JSON fallback discipline, and provider comparison.
 - [Claude Lab](model-labs/claude/README.md): Anthropic native tool use, Claude provider behavior, repair readiness, context synthesis, and provider comparison.
 - [OpenAI Lab](model-labs/openai/README.md): OpenAI-compatible baseline behavior, native tool calls, transcript auditability, context synthesis, and provider comparison.
 - [Local Model Lab](model-labs/local/README.md): vLLM, SGLang, Ollama, and local OpenAI-compatible endpoint behavior, transcript auditability, and provider comparison.
 
-## Trace Replay
+## Repository Map
 
-Print a readable timeline:
-
-```powershell
-python -m opencode_harness replay runs/latest.jsonl
+```text
+src/opencode_harness/      Core runtime, models, tools, evals, traces
+model-labs/                DeepSeek, Qwen, Claude, OpenAI, local model labs
+benchmarks/                Public benchmark summaries
+docs/                      Product positioning, launch, diagnosis, interview docs
+examples/                  Demo suites and workflow examples
+site/                      Static website and DeepSeek case page
+scripts/                   Demo and benchmark runner scripts
+tests/                     Unit tests
 ```
-
-Print only summary stats:
-
-```powershell
-python -m opencode_harness replay runs/latest.jsonl --summary
-```
-
-Render a terminal timeline viewer:
-
-```powershell
-python -m opencode_harness tui runs/latest.jsonl
-```
-
-Render a standalone HTML trace viewer:
-
-```powershell
-python -m opencode_harness trace-html runs/latest.jsonl --output runs/latest.html
-```
-
-Show full model and tool content:
-
-```powershell
-python -m opencode_harness replay runs/latest.jsonl --show-content
-```
-
-Model response events include provider-specific transcripts for mock, OpenAI-compatible, and Anthropic adapters. These transcripts capture the provider request payload and raw response body, excluding API key headers, so eval runs can be audited and replay tooling can reconstruct exact provider calls.
-
-## Packaging
-
-The package exposes `och` and `opencode-harness` console scripts:
-
-```powershell
-python -m pip install .
-och version
-och --help
-```
-
-Build release artifacts locally:
-
-```powershell
-python -m pip install build
-python -m build
-```
-
-The repository includes a tag/manual release workflow that builds wheel and source distributions, plus a manual model-evals workflow example that uploads eval artifacts.
-
-Use the reproducible v0.1 demo flow in [examples/release-demo](examples/release-demo/README.md) to generate trace, report, and dashboard artifacts locally.
-
-The static landing page lives in [site](site/README.md). Launch materials live in [docs/launch-kit.md](docs/launch-kit.md), with the first promo video script in [docs/promo-video-script.md](docs/promo-video-script.md).
-
-## Design Principles
-
-- Clean-room implementation.
-- Model-neutral provider layer.
-- DeepSeek and Qwen are first-class targets through OpenAI-compatible APIs.
-- Trace everything that matters: prompt, provider payload, model response, tool call, command output, file edits, model parameters, and timing.
-- Prefer reproducibility and auditability over hidden automation.
 
 ## Project Docs
 
-- [Architecture](docs/architecture.md)
+- [Product positioning](docs/product-positioning.md)
+- [Interview guide](docs/interview-guide.md)
 - [中文介绍](docs/zh-intro.md)
-- [v0.1 mock smoke benchmark](benchmarks/v0.1-mock-smoke/README.md)
-- [Real provider comparison package](benchmarks/real-provider-comparison/README.md)
 - [DeepSeek failure-mode diagnosis](docs/deepseek-failure-mode-diagnosis.md)
-- [Launch readiness](docs/launch-readiness.md)
-- [Product Hunt final package](docs/product-hunt-final-package.md)
-- [Resume positioning](docs/resume-positioning.md)
-- [Launch kit](docs/launch-kit.md)
-- [Promo video script](docs/promo-video-script.md)
-- [Video production kit](docs/video-production-kit.md)
-- [Website deployment](docs/website-deployment.md)
 - [Provider benchmark guide](docs/provider-benchmarks.md)
-- [GitHub readiness checklist](docs/github-readiness.md)
-- [Release guide](docs/release.md)
-- [Changelog](CHANGELOG.md)
+- [Launch readiness](docs/launch-readiness.md)
+- [Architecture](docs/architecture.md)
 - [Roadmap](ROADMAP.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security](SECURITY.md)

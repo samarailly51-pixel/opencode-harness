@@ -30,6 +30,9 @@ depth before cross-provider breadth.
 | Website | Ready | <https://samarailly51-pixel.github.io/opencode-harness/> |
 | v0.1.0 release | Ready | <https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0> |
 | Chinese introduction | Ready | [zh-intro.md](zh-intro.md) |
+| Product positioning | Ready | [product-positioning.md](product-positioning.md) |
+| Interview guide | Ready | [interview-guide.md](interview-guide.md) |
+| Demo workflow | Ready | [examples/demo-workflow.md](../examples/demo-workflow.md) |
 | Public demo report | Ready | [benchmarks/v0.1-mock-smoke](../benchmarks/v0.1-mock-smoke/README.md) |
 | Real provider benchmark package | Ready, DeepSeek-only benchmark set published | [real-provider-comparison](../benchmarks/real-provider-comparison/README.md) |
 | DeepSeek case study | Ready | [deepseek-failure-mode-diagnosis.md](deepseek-failure-mode-diagnosis.md), <https://samarailly51-pixel.github.io/opencode-harness/deepseek-case-study.html> |
@@ -65,6 +68,9 @@ Ready:
 - [x] GitHub Pages website.
 - [x] README first-screen product positioning.
 - [x] Chinese project introduction.
+- [x] Product positioning document.
+- [x] Interview guide.
+- [x] Demo workflow example.
 - [x] Product Hunt listing copy.
 - [x] Product Hunt final copy/paste package.
 - [x] Product Hunt gallery assets.
