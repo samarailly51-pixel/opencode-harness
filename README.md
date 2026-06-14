@@ -19,7 +19,7 @@ This project does not contain or derive from Claude Code source code. It is an i
 - Release: <https://github.com/samarailly51-pixel/opencode-harness/releases/tag/v0.1.0>
 - 中文介绍: [docs/zh-intro.md](docs/zh-intro.md)
 - Product positioning: [docs/product-positioning.md](docs/product-positioning.md)
-- Interview guide: [docs/interview-guide.md](docs/interview-guide.md)
+- Presentation guide: [docs/presentation-guide.md](docs/presentation-guide.md)
 - DeepSeek diagnosis: [docs/deepseek-failure-mode-diagnosis.md](docs/deepseek-failure-mode-diagnosis.md)
 - Demo workflow: [examples/demo-workflow.md](examples/demo-workflow.md)
 
@@ -31,7 +31,7 @@ This project does not contain or derive from Claude Code source code. It is an i
 - AI Agent 应用开发者：需要把模型、工具、权限、trace 和评测流程组合成可运行系统。
 - 模型评测 / Agent 评测团队：需要用统一任务和报告比较不同 provider 或不同 agent loop。
 - 本地模型和开源模型使用者：需要在 DeepSeek、Qwen、OpenAI-compatible、本地推理服务之间复用同一套 workflow。
-- 面试展示场景：需要用真实项目说明自己理解 agent 产品化、评测闭环和工程落地。
+- 项目展示场景：需要用真实项目说明 agent 产品化、评测闭环和工程落地。
 
 ## User Pain Points
 
@@ -133,7 +133,7 @@ See the full walkthrough: [examples/demo-workflow.md](examples/demo-workflow.md)
 | Website case page | <https://samarailly51-pixel.github.io/opencode-harness/deepseek-case-study.html> |
 | Product Hunt package | [docs/product-hunt-final-package.md](docs/product-hunt-final-package.md) |
 
-## Highlights for AI PM / Agent Application Interviews
+## Highlights for AI PM / Agent Application Presentations
 
 - Product framing: turns coding-agent behavior from an opaque chat interaction into a measurable workflow.
 - User-centered design: separates target users, user pain points, workflow stages, reports, and failure diagnosis.
@@ -167,7 +167,7 @@ These results are intentionally not presented as a leaderboard. They show that t
 src/opencode_harness/      Core runtime, models, tools, evals, traces
 model-labs/                DeepSeek, Qwen, Claude, OpenAI, local model labs
 benchmarks/                Public benchmark summaries
-docs/                      Product positioning, launch, diagnosis, interview docs
+docs/                      Product positioning, launch, diagnosis, presentation docs
 examples/                  Demo suites and workflow examples
 site/                      Static website and DeepSeek case page
 scripts/                   Demo and benchmark runner scripts
@@ -177,7 +177,7 @@ tests/                     Unit tests
 ## Project Docs
 
 - [Product positioning](docs/product-positioning.md)
-- [Interview guide](docs/interview-guide.md)
+- [Presentation guide](docs/presentation-guide.md)
 - [中文介绍](docs/zh-intro.md)
 - [DeepSeek failure-mode diagnosis](docs/deepseek-failure-mode-diagnosis.md)
 - [Provider benchmark guide](docs/provider-benchmarks.md)

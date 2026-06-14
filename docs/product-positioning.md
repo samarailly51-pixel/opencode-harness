@@ -2,7 +2,7 @@
 
 OpenCode Harness is a clean-room, model-agnostic AI coding agent harness. It standardizes the execution loop for Claude Code / Codex-class coding agents: task input, planning, tool execution, review, and report generation.
 
-This document explains the product thinking behind the project for AI product manager and AI Agent application interviews.
+This document explains the product thinking behind the project for AI product manager reviews, AI Agent application discussions, and portfolio presentations.
 
 ## Problem
 
@@ -42,7 +42,7 @@ This makes the agent workflow measurable and debuggable.
 | AI Agent Engineer | Build and test a provider-neutral coding-agent runtime. |
 | Model Evaluation Team | Run the same coding tasks across providers and compare traces/reports. |
 | Local Model User | Test local OpenAI-compatible endpoints with a realistic coding-agent workflow. |
-| Interview Candidate | Demonstrate agent product thinking and engineering execution in one project. |
+| Project Presenter | Demonstrate agent product thinking and engineering execution in one project. |
 
 ## Difference From A Normal AI Coding Assistant
 
@@ -79,7 +79,7 @@ Task Input -> Planning -> Tool Execution -> Review -> Report
 - DeepSeek-only real API benchmark set.
 - DeepSeek failure-mode diagnosis case study.
 - Demo video draft and Product Hunt launch package.
-- Bilingual documentation for technical and interview contexts.
+- Bilingual documentation for technical and presentation contexts.
 
 ## Future Extensions
 
