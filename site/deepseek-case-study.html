@@ -128,7 +128,8 @@
             </tbody>
           </table>
         </div>
-        <pre class="command-block"><code>.\scripts\run-deepseek-benchmark.ps1 -SuiteSet all</code></pre>
+        <pre class="command-block"><code>.\scripts\run-deepseek-benchmark.ps1 -SuiteSet all
+python -m opencode_harness diagnose eval-runs/path-to-run/report.json --output eval-runs/deepseek-diagnosis.md</code></pre>
       </div>
     </section>
 
@@ -140,8 +141,9 @@
         </div>
         <div class="launch-copy">
           <p>
-            The next iteration should add stronger finish-marker reminders, a final-step guard,
-            clearer repair verification feedback, and an automatic failure-mode diagnosis report.
+            The harness now includes finish-marker reminders, a final-step guard, and automatic
+            failure-mode diagnosis. The next iteration should focus on clearer repair verification
+            feedback and before/after benchmark comparison.
           </p>
           <a class="button primary" href="https://github.com/samarailly51-pixel/opencode-harness/blob/master/docs/deepseek-failure-mode-diagnosis.md">Open Full Diagnosis</a>
         </div>

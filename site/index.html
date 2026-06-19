@@ -33,7 +33,8 @@
         <h1>Compare coding agents across DeepSeek, Qwen, Claude, OpenAI, and local models.</h1>
         <p class="hero-copy">
           OpenCode Harness runs the same coding-agent workflow through a shared agent loop,
-          permissioned tools, MCP extension points, JSONL traces, and reproducible eval suites.
+          permissioned tools, MCP extension points, JSONL traces, reproducible eval suites,
+          and automatic failure-mode diagnosis.
         </p>
         <div class="hero-actions" aria-label="Primary actions">
           <a class="button primary" href="https://github.com/samarailly51-pixel/opencode-harness">View on GitHub</a>
@@ -76,7 +77,7 @@
           </article>
           <article>
             <h3>Traceable evals</h3>
-            <p>JSONL traces, provider transcripts, replay summaries, Markdown/HTML reports, terminal trace viewer, and eval dashboard.</p>
+            <p>JSONL traces, provider transcripts, replay summaries, Markdown/HTML reports, diagnosis reports, terminal trace viewer, and eval dashboard.</p>
           </article>
         </div>
       </div>
@@ -117,7 +118,8 @@
         </div>
         <pre class="command-block"><code>python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2
 python -m opencode_harness tui runs/latest.jsonl
-python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html</code></pre>
+python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html
+python -m opencode_harness diagnose eval-runs/path-to-run/report.json --output eval-runs/diagnosis.md</code></pre>
       </div>
     </section>
 

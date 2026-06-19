@@ -38,7 +38,7 @@ This project does not contain or derive from Claude Code source code. It is an i
 很多 AI coding assistant 看起来能写代码，但在真实产品化时会遇到几个问题：
 
 - 执行流程不透明：不知道模型读了什么、调用了什么工具、为什么失败。
-- 难以复现：同一个任务换一次模型或换一次 prompt，结果很难横向比较。
+- 难以复现：同一个任务换一次模型或 prompt，结果很难横向比较。
 - 缺少权限边界：文件写入、shell 命令、网络访问和外部工具调用需要可控策略。
 - 缺少评测闭环：只有聊天结果，没有结构化 report、trace、dashboard 和 failure taxonomy。
 - 难以产品化讲清楚：无法把 agent 能力拆成输入、计划、执行、验证、报告这些用户可理解环节。
@@ -50,6 +50,7 @@ This project does not contain or derive from Claude Code source code. It is an i
 - MCP-compatible extension points for stdio tools, resources, prompts, per-server approvals, lifecycle diagnostics, and namespace collision handling.
 - Reproducible eval suites with `report.json`, `report.md`, `report.html`, comparison reports, and dashboards.
 - JSONL traces and provider transcripts for auditability, replay, debugging, and failure-mode diagnosis.
+- Automatic failure-mode diagnosis from eval reports, including failure grouping, pattern inference, and suggested next actions.
 - Model Labs for DeepSeek, Qwen, Claude, OpenAI, and local model workflows.
 
 ## Architecture Flow
@@ -68,7 +69,7 @@ Task Input
 | Planning | Agent creates or updates a plan with todo tools and repository context. | Shows how the agent decomposes work before executing. |
 | Tool Execution | Agent calls read/search/patch/shell/MCP tools under permission policy. | Keeps risky operations auditable and controllable. |
 | Review | Agent observes tool outputs, verifies results, and decides whether to continue. | Captures whether the loop can close, not only whether it can generate text. |
-| Report | Harness writes traces, transcripts, eval reports, comparison tables, and dashboards. | Turns agent behavior into evidence for debugging and product decisions. |
+| Report | Harness writes traces, transcripts, eval reports, comparison tables, dashboards, and diagnosis notes. | Turns agent behavior into evidence for debugging and product decisions. |
 
 ## Quick Start
 
@@ -86,6 +87,12 @@ $trace = Get-ChildItem eval-runs -Recurse -Filter inspect-repo.jsonl | Sort-Obje
 python -m opencode_harness tui $trace.FullName --width 88
 python -m opencode_harness trace-html $trace.FullName --output eval-runs/latest-trace.html
 python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html
+```
+
+Generate a failure-mode diagnosis from one or more eval reports:
+
+```powershell
+python -m opencode_harness diagnose eval-runs/path-to-run/report.json --output eval-runs/diagnosis.md
 ```
 
 Run DeepSeek-only benchmark after setting your local API key:

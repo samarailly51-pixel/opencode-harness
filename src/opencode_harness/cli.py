@@ -10,6 +10,7 @@ from . import __version__
 from .agent import Agent
 from .config import HarnessConfig, ModelConfig, PermissionConfig, load_config
 from .dashboard import discover_eval_reports, write_eval_dashboard
+from .diagnosis import diagnose_eval_reports
 from .eval import compare_eval_reports, load_eval_report, run_eval_suite
 from .labs import run_provider_comparison
 from .mcp_runtime import build_mcp_runtime
@@ -65,6 +66,10 @@ def main(argv: list[str] | None = None) -> int:
     compare_parser.add_argument("reports", nargs="+", type=Path, help="report.json files or eval run directories")
     compare_parser.add_argument("--output", type=Path, help="Write Markdown comparison to this path")
 
+    diagnose_parser = subparsers.add_parser("diagnose", help="Generate a failure-mode diagnosis from eval reports")
+    diagnose_parser.add_argument("reports", nargs="+", type=Path, help="report.json files or eval run directories")
+    diagnose_parser.add_argument("--output", type=Path, help="Write Markdown diagnosis to this path")
+
     dashboard_parser = subparsers.add_parser("dashboard", help="Render an HTML eval dashboard")
     dashboard_parser.add_argument("paths", nargs="*", type=Path, default=[Path("eval-runs")])
     dashboard_parser.add_argument("--output", type=Path, default=Path("eval-runs/dashboard.html"))
@@ -106,6 +111,8 @@ def main(argv: list[str] | None = None) -> int:
         return _run_eval(args.suite, config, args.output_dir)
     if args.command == "compare":
         return _compare_reports(args.reports, args.output)
+    if args.command == "diagnose":
+        return _diagnose_reports(args.reports, args.output)
     if args.command == "dashboard":
         return _dashboard(args.paths, args.output)
     if args.command == "lab-compare":
@@ -355,6 +362,18 @@ def _trace_html(path: Path, output: Path) -> int:
 def _compare_reports(paths: list[Path], output: Path | None) -> int:
     reports = [load_eval_report(path) for path in paths]
     markdown = compare_eval_reports(reports)
+    if output is not None:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(markdown, encoding="utf-8")
+        print(f"Wrote {output}")
+    else:
+        print(markdown)
+    return 0
+
+
+def _diagnose_reports(paths: list[Path], output: Path | None) -> int:
+    reports = [load_eval_report(path) for path in paths]
+    markdown = diagnose_eval_reports(reports)
     if output is not None:
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(markdown, encoding="utf-8")

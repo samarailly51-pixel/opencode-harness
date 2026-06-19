@@ -37,6 +37,7 @@ task
 - `replay.py`: trace reader, timeline renderer, and summary statistics.
 - `viewer.py`: terminal and HTML trace viewers.
 - `dashboard.py`: eval report discovery and HTML dashboard rendering.
+- `diagnosis.py`: eval failure-mode diagnosis from one or more `report.json` files.
 - `session.py`: resumable session state, messages, steps, status, and todos.
 - `eval.py`: JSON eval suite runner with per-case traces, sessions, and reports.
 - `cli.py`: command-line entrypoint.
@@ -150,9 +151,13 @@ Failed cases are assigned a first-class failure type such as `exception`, `tool_
 
 Eval cases can also use `workspace_template` to copy a fixture into the run directory and `verify_command` to validate model edits against the copied workspace.
 
+When a case defines `expect_contains`, the eval runner passes it into the agent as a finish marker. The agent repeats that completion requirement after tool observations and adds a final-step guard when only one model step remains.
+
 This is the first layer for comparing DeepSeek, Qwen, Claude, OpenAI, and local models on identical coding-agent tasks.
 
 `compare` loads multiple `report.json` files or eval run directories and renders a Markdown comparison table with pass rate, failure breakdown, average steps, total seconds, and per-case status.
+
+`diagnose` loads one or more `report.json` files or eval run directories and renders a Markdown failure-mode report with failure counts, inferred patterns, and suggested next actions.
 
 ## Trace Replay
 

@@ -324,6 +324,7 @@ def run_eval_suite(
                 context_chars=config.agent.context_chars,
                 session=session,
                 session_path=session_path,
+                finish_marker=case.expect_contains,
             )
             try:
                 agent_result = agent.run(case.task)

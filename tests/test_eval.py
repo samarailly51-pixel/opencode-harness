@@ -90,6 +90,13 @@ class EvalTests(unittest.TestCase):
             html = report_html.read_text(encoding="utf-8")
             self.assertIn("<title>Eval Report: smoke</title>", html)
             self.assertIn("Mock run completed", html)
+            trace_path = Path(report.results[0].trace)
+            events = [
+                json.loads(line)
+                for line in trace_path.read_text(encoding="utf-8").splitlines()
+            ]
+            task_start = next(event for event in events if event["type"] == "task.start")
+            self.assertEqual(task_start["data"]["finish_marker"], "Mock run completed")
 
     def test_run_eval_suite_uses_unique_dirs_within_same_second(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

@@ -72,7 +72,7 @@ From an AI product perspective, this project demonstrates product framing, user 
    Because the project value is diagnosis. Publishing failures proves the harness can surface real agent reliability issues instead of only showing cherry-picked demos.
 
 16. **What would you improve next?**
-   Add final-step guard, finish-marker reminder, better repair verification feedback, and an automatic failure-mode diagnosis report.
+   The final-step guard, finish-marker reminder, and diagnosis report are in place; next I would improve repair verification feedback and before/after benchmark comparison.
 
 17. **What product metrics would you track?**
    Pass rate, failure type distribution, average steps, total runtime, tool-call count, verification success, and repeated failure patterns.

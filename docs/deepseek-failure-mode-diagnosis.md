@@ -1,6 +1,6 @@
 # DeepSeek Failure-Mode Diagnosis
 
-Last updated: 2026-06-13, Asia/Shanghai.
+Last updated: 2026-06-19, Asia/Shanghai.
 
 This diagnosis turns the first DeepSeek-only benchmark set into product evidence
 for OpenCode Harness. The goal is not to rank DeepSeek broadly. The goal is to
@@ -64,13 +64,37 @@ This benchmark set proves four things about the harness:
 - It separates public summaries from sensitive raw traces under `eval-runs/`.
 - It gives a concrete next-work queue for improving agent reliability.
 
-## Next Fixes
+## Automated Diagnosis Command
+
+The harness now includes a report-level diagnosis command:
+
+```powershell
+python -m opencode_harness diagnose `
+  eval-runs/path-to-run/report.json `
+  --output eval-runs/deepseek-diagnosis.md
+```
+
+The command reads saved eval reports and produces a Markdown diagnosis with:
+
+- report snapshot
+- failure type breakdown
+- case-level inferred patterns
+- suggested next actions
+- recommended reliability fixes
+
+## Reliability Fixes
+
+Implemented:
 
 1. Add a finish-marker reminder after each tool result when an eval has `expect_contains`.
 2. Add a final-step guard that asks the model to stop inspecting and answer when only one step remains.
-3. Improve repair suite feedback by surfacing verification command output more explicitly.
-4. Add a diagnosis report generator that groups failures by case, failure type, step count, and final summary pattern.
-5. Re-run the DeepSeek-only suite after each loop or prompt change.
+3. Add a diagnosis report generator that groups failures by case, failure type, step count, and final summary pattern.
+
+Next:
+
+1. Improve repair suite feedback by surfacing verification command output more explicitly.
+2. Re-run the DeepSeek-only suite after each loop or prompt change.
+3. Compare before/after pass rates and failure modes across the same suites.
 
 ## Public Positioning
 

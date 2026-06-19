@@ -54,6 +54,21 @@ python -m opencode_harness eval examples/mock-suite.json --preset mock --max-ste
 python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html
 ```
 
+## Failure Diagnosis
+
+After any eval or provider comparison run, generate a Markdown diagnosis from
+the saved `report.json` files:
+
+```powershell
+python -m opencode_harness diagnose `
+  eval-runs/path-to-run/report.json `
+  --output eval-runs/diagnosis.md
+```
+
+The diagnosis groups failed cases by failure type, infers common patterns such
+as finish-marker drift, tool-loop overrun, long-context synthesis gaps, and
+repair finalization gaps, then suggests the next debugging action.
+
 ## Hosted Provider Comparison
 
 Run DeepSeek, Qwen, OpenAI, and Claude on the same suite:

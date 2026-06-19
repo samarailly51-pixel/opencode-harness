@@ -30,6 +30,7 @@ class Agent:
         context_chars: int = 6000,
         session: SessionState | None = None,
         session_path: Path | None = None,
+        finish_marker: str | None = None,
     ) -> None:
         self.model = model
         self.tools = tools
@@ -39,10 +40,14 @@ class Agent:
         self.context_chars = context_chars
         self.session = session
         self.session_path = session_path
+        self.finish_marker = finish_marker
 
     def run(self, task: str) -> AgentResult:
         messages = self._initial_messages(task)
-        self.trace.write("task.start", {"task": task, "max_steps": self.max_steps})
+        self.trace.write(
+            "task.start",
+            {"task": task, "max_steps": self.max_steps, "finish_marker": self.finish_marker},
+        )
         self._save_session(task, messages, 0, "running")
 
         for step in range(1, self.max_steps + 1):
@@ -84,7 +89,7 @@ class Agent:
                 return AgentResult(summary=result.content, steps=step, finished=True)
 
             messages.append(Message("assistant", _assistant_tool_message(response.content, tool_call)))
-            messages.append(Message("user", _format_observation(tool_call.name, result)))
+            messages.append(Message("user", self._format_observation(tool_call.name, result, step)))
             self._save_session(task, messages, step, "running")
 
         summary = f"Stopped after reaching max_steps={self.max_steps}."
@@ -117,12 +122,17 @@ class Agent:
         if self.session and self.session.messages:
             messages = self.session.messages[:]
             messages.append(Message("user", f"Continue task: {task}"))
+            if self.finish_marker:
+                messages.append(Message("user", _finish_marker_instruction(self.finish_marker)))
             return messages
-        return [
+        messages = [
             Message("system", SYSTEM_PROMPT),
             *self._repo_context_messages(task),
             Message("user", task),
         ]
+        if self.finish_marker:
+            messages.append(Message("user", _finish_marker_instruction(self.finish_marker)))
+        return messages
 
     def _repo_context_messages(self, task: str) -> list[Message]:
         if self.workspace is None or self.context_chars <= 0:
@@ -147,10 +157,32 @@ class Agent:
         self.session.status = status
         self.session.save(self.session_path)
 
+    def _format_observation(self, tool_name: str, result: ToolResult, step: int) -> str:
+        observation = _format_observation(tool_name, result)
+        reminders = []
+        if self.finish_marker:
+            reminders.append(_finish_marker_instruction(self.finish_marker))
+        if self.max_steps - step <= 1:
+            reminders.append(
+                "Final-step guard: only one model step remains. "
+                "Stop inspecting unless essential; call finish when you have enough evidence."
+            )
+        if not reminders:
+            return observation
+        return observation + "\n\n" + "\n".join(reminders)
+
 
 def _format_observation(tool_name: str, result: ToolResult) -> str:
     status = "ok" if result.ok else "error"
     return f"Observation from {tool_name} ({status}):\n{result.content}"
+
+
+def _finish_marker_instruction(finish_marker: str) -> str:
+    return (
+        "Eval completion requirement: final summary must include exact marker "
+        f"`{finish_marker}`. When enough evidence is collected, call finish with a concise summary "
+        "that includes that marker."
+    )
 
 
 def _assistant_tool_message(content: str, tool_call: ToolCall) -> str:
