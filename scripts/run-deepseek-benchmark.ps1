@@ -2,8 +2,10 @@ param(
   [ValidateSet("smoke", "long-context", "repair", "all")]
   [string]$SuiteSet = "smoke",
   [string]$OutputDir = "eval-runs/deepseek-benchmark",
+  [string]$DiagnosisDir = "model-labs/deepseek/reports",
   [string]$Python = "python",
-  [switch]$IncludeMissingKey
+  [switch]$IncludeMissingKey,
+  [switch]$SkipDiagnosis
 )
 
 $ErrorActionPreference = "Stop"
@@ -90,5 +92,30 @@ foreach ($run in $runs) {
   & $Python @argsList
 
   Write-Host ("Comparison output: {0}" -f $run.Comparison)
-  Write-Host ("Comparison JSON: {0}" -f ([System.IO.Path]::ChangeExtension($run.Comparison, ".json")))
+  $comparisonJson = [System.IO.Path]::ChangeExtension($run.Comparison, ".json")
+  Write-Host ("Comparison JSON: {0}" -f $comparisonJson)
+
+  if (-not $SkipDiagnosis) {
+    $comparisonData = Get-Content $comparisonJson -Raw | ConvertFrom-Json
+    $reportPaths = @($comparisonData.reports)
+    if ($reportPaths.Count -gt 0) {
+      $diagnosisOutput = Join-Path $DiagnosisDir ("{0}-diagnosis.md" -f $run.Name)
+      New-Item -ItemType Directory -Force -Path (Split-Path $diagnosisOutput -Parent) | Out-Null
+      $diagnoseArgs = @(
+        "-m",
+        "opencode_harness",
+        "diagnose"
+      )
+      $diagnoseArgs += $reportPaths
+      $diagnoseArgs += @(
+        "--output",
+        $diagnosisOutput
+      )
+      Write-Host "$Python $($diagnoseArgs -join ' ')"
+      & $Python @diagnoseArgs
+      Write-Host ("Diagnosis output: {0}" -f $diagnosisOutput)
+    } else {
+      Write-Host "No report paths found; skipping diagnosis."
+    }
+  }
 }

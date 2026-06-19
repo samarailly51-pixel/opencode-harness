@@ -16,6 +16,10 @@ See [reports/provider-comparison.md](reports/provider-comparison.md),
 [reports/long-context-comparison.md](reports/long-context-comparison.md),
 [reports/repair-comparison.md](reports/repair-comparison.md), and the public
 [real provider comparison package](../../benchmarks/real-provider-comparison/README.md).
+Generated diagnosis reports are available at
+[reports/smoke-diagnosis.md](reports/smoke-diagnosis.md),
+[reports/long-context-diagnosis.md](reports/long-context-diagnosis.md), and
+[reports/repair-diagnosis.md](reports/repair-diagnosis.md).
 
 Current direction: DeepSeek-only depth before cross-provider breadth. The next
 work is diagnosing the failure modes surfaced by the first full benchmark set.
@@ -54,6 +58,16 @@ $env:DEEPSEEK_API_KEY = "..."
 .\scripts\run-deepseek-benchmark.ps1 -SuiteSet long-context
 .\scripts\run-deepseek-benchmark.ps1 -SuiteSet repair
 ```
+
+The helper also generates per-suite diagnosis reports under
+`model-labs/deepseek/reports/`:
+
+- `smoke-diagnosis.md`
+- `long-context-diagnosis.md`
+- `repair-diagnosis.md`
+
+Disable diagnosis generation with `-SkipDiagnosis` when you only want raw
+comparison files.
 
 Run the long-context suite with a larger repository context budget:
 

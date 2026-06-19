@@ -27,7 +27,8 @@ Run every DeepSeek suite in one pass:
 ```
 
 The helper uses only the `deepseek` preset and writes public comparison files
-without committing raw `eval-runs/` traces.
+without committing raw `eval-runs/` traces. It also writes per-suite diagnosis
+reports under `model-labs/deepseek/reports/` unless `-SkipDiagnosis` is passed.
 
 ## Presets
 

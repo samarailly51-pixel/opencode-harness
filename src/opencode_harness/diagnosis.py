@@ -134,7 +134,9 @@ def _recommended_fixes_section(failures: list[tuple[EvalReport, EvalCaseResult]]
 
 def _infer_pattern(report: EvalReport, result: EvalCaseResult) -> str:
     failure_type = result.failure_type or "unknown"
-    text = f"{report.suite} {result.id} {result.summary}".lower()
+    suite_case = f"{report.suite} {result.id}".lower()
+    summary = result.summary.lower()
+    text = f"{suite_case} {summary}"
     if failure_type == "max_steps":
         return "Tool-loop overrun / missing finalization"
     if failure_type == "verification_failure":
@@ -146,9 +148,9 @@ def _infer_pattern(report: EvalReport, result: EvalCaseResult) -> str:
     if failure_type == "exception":
         return "Runtime exception"
     if failure_type == "expectation_mismatch":
-        if any(token in text for token in ["repair", "fix", "test", "patch"]):
+        if "repair" in suite_case or any(token in summary for token in ["fixed", "patched", "applied patch"]):
             return "Repair finalization gap"
-        if any(token in text for token in ["long", "context", "repo-wide", "synthesis"]):
+        if any(token in suite_case for token in ["long-context", "long context", "repo-wide", "cross-file"]):
             return "Long-context synthesis or marker drift"
         return "Finish-marker drift"
     return "Unclassified failure"

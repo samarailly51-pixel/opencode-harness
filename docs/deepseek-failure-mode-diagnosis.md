@@ -74,6 +74,13 @@ python -m opencode_harness diagnose `
   --output eval-runs/deepseek-diagnosis.md
 ```
 
+The DeepSeek benchmark helper runs this automatically after each suite:
+
+```powershell
+$env:DEEPSEEK_API_KEY = "..."
+.\scripts\run-deepseek-benchmark.ps1 -SuiteSet all
+```
+
 The command reads saved eval reports and produces a Markdown diagnosis with:
 
 - report snapshot
