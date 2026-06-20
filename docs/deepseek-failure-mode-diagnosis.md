@@ -105,6 +105,17 @@ python -m opencode_harness diagnose-compare `
 The comparison highlights pass-rate deltas, failure-type movement, trace-signal
 movement, and per-case fixes/regressions.
 
+For the common post-fix workflow, use the reliability iteration helper:
+
+```powershell
+$env:DEEPSEEK_API_KEY = "..."
+.\scripts\run-deepseek-reliability-iteration.ps1 -SuiteSet repair
+```
+
+It captures the latest existing report as the baseline, runs the selected
+DeepSeek suite, and writes before/after diagnosis output under
+`model-labs/deepseek/reports/`.
+
 ## Reliability Fixes
 
 Implemented:

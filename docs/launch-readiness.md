@@ -113,10 +113,11 @@ Still needed before a bigger launch:
 
 ## Next Best Work
 
-The next highest-value work is adding voiceover to the rendered demo video or tightening the DeepSeek failure modes:
+The next highest-value work is adding voiceover to the rendered demo video or publishing the DeepSeek reliability iteration:
 
 ```powershell
-.\scripts\run-deepseek-benchmark.ps1 -SuiteSet all
+$env:DEEPSEEK_API_KEY = "..."
+.\scripts\run-deepseek-reliability-iteration.ps1 -SuiteSet repair
 ```
 
 If API keys are unavailable, the next best work is recording the demo video from the existing no-key artifacts.

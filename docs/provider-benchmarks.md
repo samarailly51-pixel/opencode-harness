@@ -26,6 +26,15 @@ Run every DeepSeek suite in one pass:
 .\scripts\run-deepseek-benchmark.ps1 -SuiteSet all
 ```
 
+After an agent-loop or prompt reliability change, run the focused before/after
+helper. It records the latest existing report as the baseline, runs the selected
+suite, then writes `diagnose-compare` output under `model-labs/deepseek/reports/`:
+
+```powershell
+$env:DEEPSEEK_API_KEY = "..."
+.\scripts\run-deepseek-reliability-iteration.ps1 -SuiteSet repair
+```
+
 The helper uses only the `deepseek` preset and writes public comparison files
 without committing raw `eval-runs/` traces. It also writes per-suite diagnosis
 reports under `model-labs/deepseek/reports/` unless `-SkipDiagnosis` is passed.

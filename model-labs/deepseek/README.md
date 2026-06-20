@@ -59,6 +59,13 @@ $env:DEEPSEEK_API_KEY = "..."
 .\scripts\run-deepseek-benchmark.ps1 -SuiteSet repair
 ```
 
+Run the focused reliability iteration helper after repair-loop changes:
+
+```powershell
+$env:DEEPSEEK_API_KEY = "..."
+.\scripts\run-deepseek-reliability-iteration.ps1 -SuiteSet repair
+```
+
 The helper also generates per-suite trace-aware diagnosis reports under
 `model-labs/deepseek/reports/`:
 

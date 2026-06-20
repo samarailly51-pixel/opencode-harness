@@ -115,6 +115,13 @@ $env:DEEPSEEK_API_KEY = "..."
 .\scripts\run-deepseek-benchmark.ps1 -SuiteSet all
 ```
 
+Run the focused DeepSeek reliability iteration after an agent-loop change:
+
+```powershell
+$env:DEEPSEEK_API_KEY = "..."
+.\scripts\run-deepseek-reliability-iteration.ps1 -SuiteSet repair
+```
+
 Run one task with a provider preset:
 
 ```powershell
