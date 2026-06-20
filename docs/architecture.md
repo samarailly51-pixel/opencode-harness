@@ -37,7 +37,7 @@ task
 - `replay.py`: trace reader, timeline renderer, and summary statistics.
 - `viewer.py`: terminal and HTML trace viewers.
 - `dashboard.py`: eval report discovery and HTML dashboard rendering.
-- `diagnosis.py`: eval failure-mode diagnosis from one or more `report.json` files.
+- `diagnosis.py`: trace-aware eval failure-mode diagnosis from one or more `report.json` files and their linked JSONL traces.
 - `session.py`: resumable session state, messages, steps, status, and todos.
 - `eval.py`: JSON eval suite runner with per-case traces, sessions, and reports.
 - `cli.py`: command-line entrypoint.
@@ -157,7 +157,7 @@ This is the first layer for comparing DeepSeek, Qwen, Claude, OpenAI, and local 
 
 `compare` loads multiple `report.json` files or eval run directories and renders a Markdown comparison table with pass rate, failure breakdown, average steps, total seconds, and per-case status.
 
-`diagnose` loads one or more `report.json` files or eval run directories and renders a Markdown failure-mode report with failure counts, inferred patterns, and suggested next actions.
+`diagnose` loads one or more `report.json` files or eval run directories and renders a Markdown failure-mode report with failure counts, inferred patterns, trace signals, and suggested next actions. When linked trace files are available, it reports model/tool counts, failed tools, last tool calls, repeated tail tools, missing finish events, and finish-marker status.
 
 ## Trace Replay
 

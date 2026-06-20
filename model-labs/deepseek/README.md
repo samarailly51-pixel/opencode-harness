@@ -59,7 +59,7 @@ $env:DEEPSEEK_API_KEY = "..."
 .\scripts\run-deepseek-benchmark.ps1 -SuiteSet repair
 ```
 
-The helper also generates per-suite diagnosis reports under
+The helper also generates per-suite trace-aware diagnosis reports under
 `model-labs/deepseek/reports/`:
 
 - `smoke-diagnosis.md`

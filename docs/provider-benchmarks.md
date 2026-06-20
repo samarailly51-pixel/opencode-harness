@@ -66,9 +66,9 @@ python -m opencode_harness diagnose `
   --output eval-runs/diagnosis.md
 ```
 
-The diagnosis groups failed cases by failure type, infers common patterns such
-as finish-marker drift, tool-loop overrun, long-context synthesis gaps, and
-repair finalization gaps, then suggests the next debugging action.
+The diagnosis groups failed cases by failure type, reads linked JSONL traces
+when available, reports trace signals such as repeated tail tools and missing
+finish events, then suggests the next debugging action.
 
 ## Hosted Provider Comparison
 

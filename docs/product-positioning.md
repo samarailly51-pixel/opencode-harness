@@ -78,7 +78,7 @@ Task Input -> Planning -> Tool Execution -> Review -> Report
 - Offline mock benchmark for no-key reproducibility.
 - DeepSeek-only real API benchmark set.
 - DeepSeek failure-mode diagnosis case study.
-- Automatic failure-mode diagnosis CLI for eval reports.
+- Trace-aware failure-mode diagnosis CLI for eval reports and linked JSONL traces.
 - Demo video draft and Product Hunt launch package.
 - Bilingual documentation for technical and presentation contexts.
 
@@ -88,7 +88,7 @@ Task Input -> Planning -> Tool Execution -> Review -> Report
    Re-run the DeepSeek benchmark after the finish-marker reminder, final-step guard, and diagnosis report generator are in place.
 
 2. **Diagnosis report depth**
-   Add trace-aware diagnosis that can inspect tool sequences, verifier output, and provider transcript patterns.
+   Add verifier-output and provider-transcript pattern analysis on top of the current trace-aware tool sequence diagnosis.
 
 3. **Interactive web dashboard**
    Convert static reports into a web UI for filtering traces, cases, providers, and failure categories.

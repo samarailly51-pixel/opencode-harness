@@ -1,3 +1,6 @@
+from pathlib import Path
+import json
+import tempfile
 import unittest
 
 from opencode_harness.diagnosis import diagnose_eval_reports
@@ -47,3 +50,62 @@ class DiagnosisTests(unittest.TestCase):
         self.assertIn("Tool-loop overrun", markdown)
         self.assertIn("Repair finalization gap", markdown)
         self.assertIn("Recommended Fixes", markdown)
+
+    def test_diagnose_eval_reports_uses_trace_signals(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            trace_path = Path(temp_dir) / "case.jsonl"
+            events = [
+                {"time": "t0", "type": "task.start", "data": {"finish_marker": "DONE_MARKER"}},
+                {"time": "t1", "type": "model.response", "data": {"step": 1, "content": ""}},
+                {
+                    "time": "t2",
+                    "type": "tool.result",
+                    "data": {"step": 1, "tool": "read_file", "ok": True, "content": "one"},
+                },
+                {"time": "t3", "type": "model.response", "data": {"step": 2, "content": ""}},
+                {
+                    "time": "t4",
+                    "type": "tool.result",
+                    "data": {"step": 2, "tool": "read_file", "ok": True, "content": "two"},
+                },
+                {"time": "t5", "type": "model.response", "data": {"step": 3, "content": ""}},
+                {
+                    "time": "t6",
+                    "type": "tool.result",
+                    "data": {"step": 3, "tool": "read_file", "ok": True, "content": "three"},
+                },
+                {"time": "t7", "type": "task.finish", "data": {"step": 4, "summary": "done"}},
+            ]
+            trace_path.write_text(
+                "\n".join(json.dumps(event) for event in events),
+                encoding="utf-8",
+            )
+            report = EvalReport(
+                suite="trace-aware",
+                started_at="20260620-000000",
+                model_provider="mock",
+                model_name="mock-coder",
+                total=1,
+                passed=0,
+                results=[
+                    EvalCaseResult(
+                        id="case",
+                        ok=False,
+                        finished=True,
+                        steps=4,
+                        seconds=1.0,
+                        summary="done",
+                        trace=str(trace_path),
+                        session="case.session.json",
+                        failure_type="expectation_mismatch",
+                    )
+                ],
+            )
+
+            markdown = diagnose_eval_reports([report])
+
+            self.assertIn("Trace Signals", markdown)
+            self.assertIn("last_tools=read_file > read_file > read_file", markdown)
+            self.assertIn("repeated_tail=read_file", markdown)
+            self.assertIn("marker=missing", markdown)
+            self.assertIn("omitted the required finish marker", markdown)

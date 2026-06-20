@@ -50,7 +50,7 @@ This project does not contain or derive from Claude Code source code. It is an i
 - MCP-compatible extension points for stdio tools, resources, prompts, per-server approvals, lifecycle diagnostics, and namespace collision handling.
 - Reproducible eval suites with `report.json`, `report.md`, `report.html`, comparison reports, and dashboards.
 - JSONL traces and provider transcripts for auditability, replay, debugging, and failure-mode diagnosis.
-- Automatic failure-mode diagnosis from eval reports, including failure grouping, pattern inference, and suggested next actions.
+- Trace-aware failure-mode diagnosis from eval reports and JSONL traces, including failure grouping, repeated-tool detection, marker checks, and suggested next actions.
 - Model Labs for DeepSeek, Qwen, Claude, OpenAI, and local model workflows.
 
 ## Architecture Flow

@@ -66,7 +66,7 @@ This benchmark set proves four things about the harness:
 
 ## Automated Diagnosis Command
 
-The harness now includes a report-level diagnosis command:
+The harness now includes a trace-aware diagnosis command:
 
 ```powershell
 python -m opencode_harness diagnose `
@@ -81,11 +81,13 @@ $env:DEEPSEEK_API_KEY = "..."
 .\scripts\run-deepseek-benchmark.ps1 -SuiteSet all
 ```
 
-The command reads saved eval reports and produces a Markdown diagnosis with:
+The command reads saved eval reports and linked JSONL traces, then produces a
+Markdown diagnosis with:
 
 - report snapshot
 - failure type breakdown
 - case-level inferred patterns
+- trace signals such as repeated tail tools, missing finish events, and marker status
 - suggested next actions
 - recommended reliability fixes
 
@@ -95,7 +97,7 @@ Implemented:
 
 1. Add a finish-marker reminder after each tool result when an eval has `expect_contains`.
 2. Add a final-step guard that asks the model to stop inspecting and answer when only one step remains.
-3. Add a diagnosis report generator that groups failures by case, failure type, step count, and final summary pattern.
+3. Add a trace-aware diagnosis report generator that groups failures by case, failure type, step count, final summary pattern, and tool trace signals.
 
 Next:
 

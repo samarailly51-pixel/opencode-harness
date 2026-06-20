@@ -1,8 +1,21 @@
 from __future__ import annotations
 
 from collections import Counter
+from dataclasses import dataclass
+from pathlib import Path
 
 from .eval import EvalCaseResult, EvalReport
+from .replay import TraceEvent, load_trace, summarize_trace
+
+
+@dataclass(frozen=True)
+class TraceDiagnosis:
+    available: bool
+    summary: str
+    repeated_tool: str | None = None
+    marker_status: str | None = None
+    last_tools: tuple[str, ...] = ()
+    failed_tools: int = 0
 
 
 def diagnose_eval_reports(reports: list[EvalReport]) -> str:
@@ -70,12 +83,13 @@ def _case_diagnostics_section(failures: list[tuple[EvalReport, EvalCaseResult]])
     lines = [
         "## Case Diagnostics",
         "",
-        "| Suite | Case | Failure | Finished | Steps | Pattern | Suggested Next Action |",
-        "| --- | --- | --- | --- | ---: | --- | --- |",
+        "| Suite | Case | Failure | Finished | Steps | Pattern | Trace Signals | Suggested Next Action |",
+        "| --- | --- | --- | --- | ---: | --- | --- | --- |",
     ]
     for report, result in failures:
+        trace_diagnosis = _diagnose_trace(result)
         pattern = _infer_pattern(report, result)
-        action = _suggest_action(pattern, result)
+        action = _suggest_action(pattern, result, trace_diagnosis)
         lines.append(
             "| "
             + " | ".join(
@@ -86,6 +100,7 @@ def _case_diagnostics_section(failures: list[tuple[EvalReport, EvalCaseResult]])
                     str(result.finished),
                     str(result.steps),
                     _md_escape(pattern),
+                    _md_escape(trace_diagnosis.summary),
                     _md_escape(action),
                 ]
             )
@@ -98,6 +113,7 @@ def _case_diagnostics_section(failures: list[tuple[EvalReport, EvalCaseResult]])
 def _recommended_fixes_section(failures: list[tuple[EvalReport, EvalCaseResult]]) -> list[str]:
     failure_types = {result.failure_type or "unknown" for _, result in failures}
     patterns = {_infer_pattern(report, result) for report, result in failures}
+    trace_diagnoses = [_diagnose_trace(result) for _, result in failures]
     fixes = []
     if "expectation_mismatch" in failure_types:
         fixes.append(
@@ -121,6 +137,18 @@ def _recommended_fixes_section(failures: list[tuple[EvalReport, EvalCaseResult]]
     if any("Long-context" in pattern for pattern in patterns):
         fixes.append(
             "For long-context tasks, split evidence gathering from synthesis and reduce unrelated repository context."
+        )
+    if any(diagnosis.repeated_tool for diagnosis in trace_diagnoses):
+        fixes.append(
+            "Add loop-break rules for repeated tool calls when the last trace events show the same tool pattern."
+        )
+    if any(diagnosis.failed_tools for diagnosis in trace_diagnoses):
+        fixes.append(
+            "Inspect failed tool outputs and permission decisions before treating the result as a pure model failure."
+        )
+    if any(diagnosis.marker_status == "missing" for diagnosis in trace_diagnoses):
+        fixes.append(
+            "Treat marker-missing finished cases as finalization failures before changing the task assertions."
         )
     if not fixes:
         fixes.append("Open the trace and session files for each failed case, then add a narrower failure label if needed.")
@@ -156,7 +184,85 @@ def _infer_pattern(report: EvalReport, result: EvalCaseResult) -> str:
     return "Unclassified failure"
 
 
-def _suggest_action(pattern: str, result: EvalCaseResult) -> str:
+def _diagnose_trace(result: EvalCaseResult) -> TraceDiagnosis:
+    trace_path = Path(result.trace)
+    if not trace_path.exists():
+        return TraceDiagnosis(available=False, summary="trace unavailable")
+    try:
+        events = load_trace(trace_path)
+    except ValueError:
+        return TraceDiagnosis(available=False, summary="trace invalid")
+    summary = summarize_trace(events)
+    tool_names = _tool_names(events)
+    repeated_tool = _repeated_tail_tool(tool_names)
+    last_tools = tuple(tool_names[-3:])
+    marker_status = _marker_status(events, result.summary)
+
+    signals = [
+        f"events={summary.events}",
+        f"model_calls={summary.model_calls}",
+        f"tool_calls={summary.tool_calls}",
+    ]
+    if summary.failed_tools:
+        signals.append(f"failed_tools={summary.failed_tools}")
+    if last_tools:
+        signals.append("last_tools=" + " > ".join(last_tools))
+    if repeated_tool:
+        signals.append(f"repeated_tail={repeated_tool}")
+    if marker_status:
+        signals.append(f"marker={marker_status}")
+    if not summary.finished:
+        signals.append("no_finish_event")
+    return TraceDiagnosis(
+        available=True,
+        summary=", ".join(signals),
+        repeated_tool=repeated_tool,
+        marker_status=marker_status,
+        last_tools=last_tools,
+        failed_tools=summary.failed_tools,
+    )
+
+
+def _tool_names(events: list[TraceEvent]) -> list[str]:
+    names = []
+    for event in events:
+        if event.type != "tool.result":
+            continue
+        tool = event.data.get("tool")
+        if tool is not None:
+            names.append(str(tool))
+    return names
+
+
+def _repeated_tail_tool(tool_names: list[str]) -> str | None:
+    if len(tool_names) < 3:
+        return None
+    tail = tool_names[-3:]
+    if len(set(tail)) == 1:
+        return tail[-1]
+    return None
+
+
+def _marker_status(events: list[TraceEvent], summary: str) -> str | None:
+    marker = None
+    for event in events:
+        if event.type != "task.start":
+            continue
+        value = event.data.get("finish_marker")
+        if isinstance(value, str) and value:
+            marker = value
+    if not marker:
+        return None
+    return "present" if marker in summary else "missing"
+
+
+def _suggest_action(pattern: str, result: EvalCaseResult, trace_diagnosis: TraceDiagnosis) -> str:
+    if trace_diagnosis.marker_status == "missing":
+        return "Inspect whether the final answer satisfied the task but omitted the required finish marker."
+    if trace_diagnosis.repeated_tool:
+        return f"Review repeated `{trace_diagnosis.repeated_tool}` calls and add a loop-break or synthesis step."
+    if trace_diagnosis.failed_tools:
+        return "Inspect failed tool outputs before attributing the failure to the model."
     if pattern.startswith("Tool-loop"):
         return "Review the final trace events and add stronger finish pressure before raising step budget."
     if pattern.startswith("Verification"):
