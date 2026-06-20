@@ -1,6 +1,6 @@
 # DeepSeek Failure-Mode Diagnosis
 
-Last updated: 2026-06-19, Asia/Shanghai.
+Last updated: 2026-06-20, Asia/Shanghai.
 
 This diagnosis turns the first DeepSeek-only benchmark set into product evidence
 for OpenCode Harness. The goal is not to rank DeepSeek broadly. The goal is to
@@ -112,12 +112,13 @@ Implemented:
 1. Add a finish-marker reminder after each tool result when an eval has `expect_contains`.
 2. Add a final-step guard that asks the model to stop inspecting and answer when only one step remains.
 3. Add a trace-aware diagnosis report generator that groups failures by case, failure type, step count, final summary pattern, and tool trace signals.
+4. Feed failed `verify_command` output back into repair eval sessions with configurable `verify_feedback_attempts` and `verify.feedback` trace events.
 
 Next:
 
-1. Improve repair suite feedback by surfacing verification command output more explicitly.
-2. Re-run the DeepSeek-only suite after each loop or prompt change.
-3. Publish the generated before/after diagnosis comparison after each reliability run.
+1. Re-run the DeepSeek-only suite after each loop or prompt change.
+2. Publish the generated before/after diagnosis comparison after each reliability run.
+3. Inspect provider transcripts for verifier-aware repair behavior, especially whether the model reruns tests before finishing.
 
 ## Public Positioning
 

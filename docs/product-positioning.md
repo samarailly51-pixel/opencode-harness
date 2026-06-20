@@ -86,10 +86,10 @@ Task Input -> Planning -> Tool Execution -> Review -> Report
 ## Future Extensions
 
 1. **Before/after reliability fixes**
-   Re-run the DeepSeek benchmark and publish `diagnose-compare` output after the finish-marker reminder, final-step guard, and trace-aware diagnosis are in place.
+   Re-run the DeepSeek benchmark and publish `diagnose-compare` output after the finish-marker reminder, final-step guard, trace-aware diagnosis, and repair verifier feedback loop are in place.
 
 2. **Diagnosis report depth**
-   Add verifier-output and provider-transcript pattern analysis on top of the current trace-aware tool sequence diagnosis.
+   Add provider-transcript pattern analysis on top of the current trace-aware tool sequence and verifier-feedback diagnosis.
 
 3. **Interactive web dashboard**
    Convert static reports into a web UI for filtering traces, cases, providers, and failure categories.

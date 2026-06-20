@@ -151,6 +151,8 @@ Failed cases are assigned a first-class failure type such as `exception`, `tool_
 
 Eval cases can also use `workspace_template` to copy a fixture into the run directory and `verify_command` to validate model edits against the copied workspace.
 
+When `verify_command` fails, the runner can feed the verifier output back into the same agent session and let the model continue repairing. Configure this per case with `verify_feedback_attempts`; the default is `1`. Each feedback turn is recorded as a `verify.feedback` trace event. Before verifier execution, Python bytecode caches inside the copied workspace are cleared so rapid edit-test loops do not reuse stale `.pyc` files.
+
 When a case defines `expect_contains`, the eval runner passes it into the agent as a finish marker. The agent repeats that completion requirement after tool observations and adds a final-step guard when only one model step remains.
 
 This is the first layer for comparing DeepSeek, Qwen, Claude, OpenAI, and local models on identical coding-agent tasks.

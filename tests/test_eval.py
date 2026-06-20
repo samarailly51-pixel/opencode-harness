@@ -14,6 +14,28 @@ from opencode_harness.eval import (
     load_eval_suite,
     run_eval_suite,
 )
+from opencode_harness.messages import Message
+from opencode_harness.models import ChatModel, ModelResponse, ToolCall
+
+
+class VerificationRepairModel(ChatModel):
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def complete(self, messages: list[Message], tools: bool = False, extra_tools=None) -> ModelResponse:
+        self.calls += 1
+        text = "\n".join(message.content for message in messages)
+        if "Repair verification failed" in text and self.calls == 2:
+            return ModelResponse(
+                "",
+                tool_calls=[
+                    ToolCall(
+                        "replace_text",
+                        {"path": "broken.py", "old": "return 1", "new": "return 2"},
+                    )
+                ],
+            )
+        return ModelResponse("", tool_calls=[ToolCall("finish", {"summary": "REPAIR_DONE"})])
 
 
 class EvalTests(unittest.TestCase):
@@ -31,6 +53,7 @@ class EvalTests(unittest.TestCase):
                                 "expect_contains": "done",
                                 "workspace_template": "fixture",
                                 "verify_command": "python -m unittest",
+                                "verify_feedback_attempts": 2,
                             }
                         ],
                     }
@@ -45,6 +68,7 @@ class EvalTests(unittest.TestCase):
             self.assertEqual(cases[0].expect_contains, "done")
             self.assertEqual(cases[0].workspace_template, "fixture")
             self.assertEqual(cases[0].verify_command, "python -m unittest")
+            self.assertEqual(cases[0].verify_feedback_attempts, 2)
 
     def test_run_eval_suite_with_mock(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -291,6 +315,60 @@ class EvalTests(unittest.TestCase):
 
             self.assertEqual(report.passed, 0)
             self.assertEqual(report.results[0].failure_type, "verification_failure")
+
+    def test_run_eval_suite_feeds_verification_failure_back_to_agent(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            template = root / "fixture"
+            (template / "tests").mkdir(parents=True)
+            (template / "tests" / "__init__.py").write_text("", encoding="utf-8")
+            (template / "broken.py").write_text("def value():\n    return 1\n", encoding="utf-8")
+            (template / "tests" / "test_broken.py").write_text(
+                "import unittest\nfrom broken import value\n\n"
+                "class BrokenTests(unittest.TestCase):\n"
+                "    def test_value(self):\n"
+                "        self.assertEqual(value(), 2)\n",
+                encoding="utf-8",
+            )
+            suite = root / "suite.json"
+            suite.write_text(
+                json.dumps(
+                    {
+                        "name": "repair-feedback",
+                        "cases": [
+                            {
+                                "id": "fix-after-feedback",
+                                "task": "fix broken.py and finish with REPAIR_DONE",
+                                "workspace_template": "fixture",
+                                "expect_contains": "REPAIR_DONE",
+                                "verify_command": "python -m unittest discover -s tests -t .",
+                                "verify_feedback_attempts": 1,
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            config = HarnessConfig(
+                model=ModelConfig(provider="mock"),
+                agent=AgentConfig(max_steps=2, context_chars=0),
+                permissions=PermissionConfig(allow_write=True),
+            )
+
+            with patch("opencode_harness.eval.build_model", return_value=VerificationRepairModel()):
+                report = run_eval_suite(suite, config, root / "eval-runs")
+
+            self.assertEqual(report.passed, 1)
+            self.assertEqual(report.results[0].steps, 3)
+            trace_events = [
+                json.loads(line)
+                for line in Path(report.results[0].trace).read_text(encoding="utf-8").splitlines()
+            ]
+            self.assertTrue(any(event["type"] == "verify.feedback" for event in trace_events))
+            session_text = Path(report.results[0].session).read_text(encoding="utf-8")
+            self.assertIn("Repair verification failed", session_text)
+            copied = next((root / "eval-runs").glob("*/workspaces/fix-after-feedback/broken.py"))
+            self.assertIn("return 2", copied.read_text(encoding="utf-8"))
 
     def test_eval_report_markdown_escapes_table_cells(self) -> None:
         report = EvalReport(

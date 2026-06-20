@@ -6,14 +6,16 @@
       "task": "The copied workspace contains a small Python calculator module with failing tests. Inspect the files, run the tests, fix the implementation, rerun the tests, and finish with the exact marker REPAIR_CALCULATOR_PASS.",
       "workspace_template": "fixtures/repair-calculator",
       "expect_contains": "REPAIR_CALCULATOR_PASS",
-      "verify_command": "python -m unittest discover -s tests -t ."
+      "verify_command": "python -m unittest discover -s tests -t .",
+      "verify_feedback_attempts": 1
     },
     {
       "id": "repair-text-utils",
       "task": "The copied workspace contains Python text utility functions with failing tests. Inspect the files, run the tests, fix the implementation, rerun the tests, and finish with the exact marker REPAIR_TEXT_UTILS_PASS.",
       "workspace_template": "fixtures/repair-text-utils",
       "expect_contains": "REPAIR_TEXT_UTILS_PASS",
-      "verify_command": "python -m unittest discover -s tests -t ."
+      "verify_command": "python -m unittest discover -s tests -t .",
+      "verify_feedback_attempts": 1
     }
   ]
 }

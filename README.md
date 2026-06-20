@@ -52,6 +52,7 @@ This project does not contain or derive from Claude Code source code. It is an i
 - JSONL traces and provider transcripts for auditability, replay, debugging, and failure-mode diagnosis.
 - Trace-aware failure-mode diagnosis from eval reports and JSONL traces, including failure grouping, repeated-tool detection, marker checks, and suggested next actions.
 - Before/after diagnosis comparison for measuring reliability changes across agent-loop, prompt, tool-policy, or provider updates.
+- Repair evals can feed verifier output back into the agent loop with configurable `verify_feedback_attempts`.
 - Model Labs for DeepSeek, Qwen, Claude, OpenAI, and local model workflows.
 
 ## Architecture Flow
@@ -171,6 +172,8 @@ The first DeepSeek-only diagnostic benchmark set uses `deepseek-chat` through an
 | Repair | 0/2 passed | repair finalization gap |
 
 These results are intentionally not presented as a leaderboard. They show that the harness can expose concrete coding-agent failure modes such as marker-following drift, tool-loop overrun, long-context synthesis gaps, and repair finalization gaps.
+
+The repair loop has since been tightened so `verify_command` failures can be surfaced back into the same agent session for another repair attempt. The published DeepSeek snapshot above is kept as the first diagnostic baseline until the next real-provider rerun.
 
 ## Model Labs
 

@@ -13,6 +13,7 @@ from uuid import uuid4
 
 from .agent import Agent
 from .config import HarnessConfig
+from .messages import Message
 from .models import build_model
 from .mcp_runtime import build_mcp_runtime
 from .permissions import check_shell_permission
@@ -30,6 +31,7 @@ class EvalCase:
     expect_contains: str | None = None
     workspace_template: str | None = None
     verify_command: str | None = None
+    verify_feedback_attempts: int = 1
 
 
 @dataclass(frozen=True)
@@ -205,6 +207,7 @@ def load_eval_suite(path: Path) -> tuple[str, list[EvalCase]]:
             expect_contains=item.get("expect_contains"),
             workspace_template=item.get("workspace_template"),
             verify_command=item.get("verify_command"),
+            verify_feedback_attempts=int(item.get("verify_feedback_attempts", 1)),
         )
         for item in data.get("cases", [])
     ]
@@ -355,6 +358,53 @@ def run_eval_suite(
                 verify_error = None
                 if ok and case.verify_command:
                     verify_error = _run_verify_command(case.verify_command, workspace, config)
+                    verify_attempt = 0
+                    while verify_error and verify_attempt < case.verify_feedback_attempts:
+                        verify_attempt += 1
+                        trace.write(
+                            "verify.feedback",
+                            {
+                                "attempt": verify_attempt,
+                                "command": case.verify_command,
+                                "error": verify_error,
+                            },
+                        )
+                        session.messages.append(
+                            Message(
+                                "user",
+                                _verification_feedback_message(
+                                    case.verify_command,
+                                    verify_error,
+                                    case.expect_contains,
+                                    verify_attempt,
+                                ),
+                            )
+                        )
+                        session.status = "running"
+                        session.save(session_path)
+                        retry_agent = Agent(
+                            model=model,
+                            tools=tools,
+                            trace=trace,
+                            max_steps=config.agent.max_steps,
+                            workspace=workspace,
+                            context_chars=config.agent.context_chars,
+                            session=session,
+                            session_path=session_path,
+                            finish_marker=case.expect_contains,
+                        )
+                        retry_result = retry_agent.run(case.task)
+                        agent_result = AgentRunAggregate(
+                            summary=retry_result.summary,
+                            steps=agent_result.steps + retry_result.steps,
+                            finished=retry_result.finished,
+                        )
+                        ok = agent_result.finished
+                        if case.expect_contains:
+                            ok = ok and case.expect_contains in agent_result.summary
+                        if not ok:
+                            break
+                        verify_error = _run_verify_command(case.verify_command, workspace, config)
                     ok = verify_error is None
                     if verify_error:
                         error = verify_error
@@ -390,6 +440,13 @@ def run_eval_suite(
     return report
 
 
+@dataclass(frozen=True)
+class AgentRunAggregate:
+    summary: str
+    steps: int
+    finished: bool
+
+
 def _case_workspace(suite_path: Path, run_dir: Path, case: EvalCase) -> Path:
     if case.workspace_template is None:
         return (suite_path.parent / case.workspace).resolve()
@@ -405,6 +462,7 @@ def _run_verify_command(command: str, workspace: Path, config: HarnessConfig) ->
     decision = check_shell_permission(command, config.permissions)
     if not decision.allowed:
         return f"verify_command blocked by policy: {decision.reason}"
+    _clear_python_bytecode_cache(workspace)
     completed = subprocess.run(
         _runtime_command(command),
         cwd=workspace,
@@ -420,6 +478,33 @@ def _run_verify_command(command: str, workspace: Path, config: HarnessConfig) ->
         output += "\n[stderr]\n" + completed.stderr
     detail = output.strip() or f"exit code {completed.returncode}"
     return f"verify_command failed: {detail}"
+
+
+def _clear_python_bytecode_cache(workspace: Path) -> None:
+    for cache_dir in workspace.rglob("__pycache__"):
+        if cache_dir.is_dir():
+            shutil.rmtree(cache_dir, ignore_errors=True)
+    for bytecode in workspace.rglob("*.pyc"):
+        if bytecode.is_file():
+            bytecode.unlink(missing_ok=True)
+
+
+def _verification_feedback_message(
+    command: str,
+    error: str,
+    expect_contains: str | None,
+    attempt: int,
+) -> str:
+    marker = ""
+    if expect_contains:
+        marker = f"\nWhen the repair is complete, finish with the exact marker `{expect_contains}`."
+    return (
+        f"Repair verification failed after attempt {attempt}.\n"
+        f"Command: `{command}`\n"
+        f"Verifier output:\n{error}\n\n"
+        "Use the verifier output to inspect and fix the workspace, then rerun the tests before finishing."
+        f"{marker}"
+    )
 
 
 def _runtime_command(command: str) -> str:

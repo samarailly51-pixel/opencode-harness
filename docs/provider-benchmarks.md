@@ -30,6 +30,11 @@ The helper uses only the `deepseek` preset and writes public comparison files
 without committing raw `eval-runs/` traces. It also writes per-suite diagnosis
 reports under `model-labs/deepseek/reports/` unless `-SkipDiagnosis` is passed.
 
+Repair suites can set `verify_feedback_attempts` so failed `verify_command`
+output is added back to the agent session before the case is marked failed. This
+turns repair evals into a closer approximation of a coding-agent edit-test-fix
+loop instead of a single final verification.
+
 ## Presets
 
 | Preset | Required Env |

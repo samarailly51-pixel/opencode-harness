@@ -138,7 +138,7 @@ python -m opencode_harness lab-compare `
   --comparison-output model-labs/deepseek/reports/long-context-comparison.md
 ```
 
-For repair comparison, use the repair suite and enable writes. Each case copies its fixture into the eval run directory before the agent starts, so model edits do not modify the checked-in fixtures. The suite verifies repairs with `python -m unittest discover -s tests -t .` inside each copied workspace.
+For repair comparison, use the repair suite and enable writes. Each case copies its fixture into the eval run directory before the agent starts, so model edits do not modify the checked-in fixtures. The suite verifies repairs with `python -m unittest discover -s tests -t .` inside each copied workspace. If verification fails, `verify_feedback_attempts` lets the runner feed the test output back into the same agent session before final classification.
 
 ```powershell
 python -m opencode_harness lab-compare `
