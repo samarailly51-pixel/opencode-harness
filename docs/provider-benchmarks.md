@@ -70,6 +70,20 @@ The diagnosis groups failed cases by failure type, reads linked JSONL traces
 when available, reports trace signals such as repeated tail tools and missing
 finish events, then suggests the next debugging action.
 
+Compare before/after reliability changes after a prompt or agent-loop update:
+
+```powershell
+python -m opencode_harness diagnose-compare `
+  --before eval-runs/before/report.json `
+  --after eval-runs/after/report.json `
+  --before-label "Before guard" `
+  --after-label "After guard" `
+  --output eval-runs/before-after.md
+```
+
+The before/after report shows pass-rate deltas, failure-type deltas,
+trace-signal deltas, and per-case outcome changes.
+
 ## Hosted Provider Comparison
 
 Run DeepSeek, Qwen, OpenAI, and Claude on the same suite:

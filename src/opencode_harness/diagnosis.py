@@ -16,6 +16,21 @@ class TraceDiagnosis:
     marker_status: str | None = None
     last_tools: tuple[str, ...] = ()
     failed_tools: int = 0
+    no_finish_event: bool = False
+
+
+@dataclass(frozen=True)
+class DiagnosisMetrics:
+    label: str
+    reports: int
+    total: int
+    passed: int
+    failure_types: Counter[str]
+    patterns: Counter[str]
+    repeated_tail_cases: int
+    failed_tool_cases: int
+    marker_missing_cases: int
+    no_finish_cases: int
 
 
 def diagnose_eval_reports(reports: list[EvalReport]) -> str:
@@ -39,6 +54,29 @@ def diagnose_eval_reports(reports: list[EvalReport]) -> str:
     lines.extend(_failure_breakdown_section(failures))
     lines.extend(_case_diagnostics_section(failures))
     lines.extend(_recommended_fixes_section(failures))
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def compare_diagnosis_reports(
+    before_reports: list[EvalReport],
+    after_reports: list[EvalReport],
+    before_label: str = "Before",
+    after_label: str = "After",
+) -> str:
+    before = _diagnosis_metrics(before_label, before_reports)
+    after = _diagnosis_metrics(after_label, after_reports)
+    lines = [
+        "# Before/After Diagnosis Comparison",
+        "",
+        "This report compares two sets of OpenCode Harness eval reports and their linked traces.",
+        "Use it after an agent-loop, prompt, tool-policy, or provider change to see whether failure modes moved.",
+        "",
+    ]
+    lines.extend(_before_after_snapshot(before, after))
+    lines.extend(_counter_delta_section("Failure Type Delta", before.failure_types, after.failure_types))
+    lines.extend(_counter_delta_section("Pattern Delta", before.patterns, after.patterns))
+    lines.extend(_trace_signal_delta_section(before, after))
+    lines.extend(_case_change_section(before_reports, after_reports))
     return "\n".join(lines).rstrip() + "\n"
 
 
@@ -160,6 +198,168 @@ def _recommended_fixes_section(failures: list[tuple[EvalReport, EvalCaseResult]]
     return lines
 
 
+def _diagnosis_metrics(label: str, reports: list[EvalReport]) -> DiagnosisMetrics:
+    failures = [(report, result) for report in reports for result in report.results if not result.ok]
+    trace_diagnoses = [_diagnose_trace(result) for _, result in failures]
+    return DiagnosisMetrics(
+        label=label,
+        reports=len(reports),
+        total=sum(report.total for report in reports),
+        passed=sum(report.passed for report in reports),
+        failure_types=Counter(result.failure_type or "unknown" for _, result in failures),
+        patterns=Counter(_infer_pattern(report, result) for report, result in failures),
+        repeated_tail_cases=sum(1 for diagnosis in trace_diagnoses if diagnosis.repeated_tool),
+        failed_tool_cases=sum(1 for diagnosis in trace_diagnoses if diagnosis.failed_tools),
+        marker_missing_cases=sum(1 for diagnosis in trace_diagnoses if diagnosis.marker_status == "missing"),
+        no_finish_cases=sum(1 for diagnosis in trace_diagnoses if diagnosis.no_finish_event),
+    )
+
+
+def _before_after_snapshot(before: DiagnosisMetrics, after: DiagnosisMetrics) -> list[str]:
+    lines = [
+        "## Snapshot",
+        "",
+        "| Label | Reports | Passed | Pass Rate | Failed |",
+        "| --- | ---: | ---: | ---: | ---: |",
+    ]
+    for item in [before, after]:
+        failed = item.total - item.passed
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    _md_escape(item.label),
+                    str(item.reports),
+                    f"{item.passed}/{item.total}",
+                    _rate(item.passed, item.total),
+                    str(failed),
+                ]
+            )
+            + " |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Net Change",
+            "",
+            "| Metric | Before | After | Delta |",
+            "| --- | ---: | ---: | ---: |",
+            _delta_row("Passed", before.passed, after.passed),
+            _delta_row("Failed", before.total - before.passed, after.total - after.passed, lower_is_better=True),
+            _rate_delta_row("Pass Rate", _rate_value(before.passed, before.total), _rate_value(after.passed, after.total)),
+            "",
+        ]
+    )
+    return lines
+
+
+def _counter_delta_section(title: str, before: Counter[str], after: Counter[str]) -> list[str]:
+    keys = sorted(set(before) | set(after))
+    lines = [f"## {title}", ""]
+    if not keys:
+        lines.extend(["No failures in either report set.", ""])
+        return lines
+    lines.extend(["| Name | Before | After | Delta |", "| --- | ---: | ---: | ---: |"])
+    for key in keys:
+        lines.append(_delta_row(f"`{_md_escape(key)}`", before.get(key, 0), after.get(key, 0), lower_is_better=True))
+    lines.append("")
+    return lines
+
+
+def _trace_signal_delta_section(before: DiagnosisMetrics, after: DiagnosisMetrics) -> list[str]:
+    return [
+        "## Trace Signal Delta",
+        "",
+        "| Signal | Before | After | Delta |",
+        "| --- | ---: | ---: | ---: |",
+        _delta_row("Repeated tail tool cases", before.repeated_tail_cases, after.repeated_tail_cases, lower_is_better=True),
+        _delta_row("Failed-tool cases", before.failed_tool_cases, after.failed_tool_cases, lower_is_better=True),
+        _delta_row("Marker-missing cases", before.marker_missing_cases, after.marker_missing_cases, lower_is_better=True),
+        _delta_row("No-finish cases", before.no_finish_cases, after.no_finish_cases, lower_is_better=True),
+        "",
+    ]
+
+
+def _case_change_section(before_reports: list[EvalReport], after_reports: list[EvalReport]) -> list[str]:
+    before_cases = _case_index(before_reports)
+    after_cases = _case_index(after_reports)
+    case_ids = sorted(set(before_cases) | set(after_cases))
+    lines = [
+        "## Case Outcome Changes",
+        "",
+        "| Case | Before | After | Change |",
+        "| --- | --- | --- | --- |",
+    ]
+    for case_id in case_ids:
+        before_item = before_cases.get(case_id)
+        after_item = after_cases.get(case_id)
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    _md_escape(case_id),
+                    _md_escape(_case_status(before_item)),
+                    _md_escape(_case_status(after_item)),
+                    _md_escape(_case_change(before_item, after_item)),
+                ]
+            )
+            + " |"
+        )
+    lines.append("")
+    return lines
+
+
+def _case_index(reports: list[EvalReport]) -> dict[str, tuple[EvalReport, EvalCaseResult]]:
+    items = {}
+    for report in reports:
+        for result in report.results:
+            items[f"{report.suite}::{result.id}"] = (report, result)
+    return items
+
+
+def _case_status(item: tuple[EvalReport, EvalCaseResult] | None) -> str:
+    if item is None:
+        return "-"
+    report, result = item
+    if result.ok:
+        return f"PASS ({result.steps} steps)"
+    pattern = _infer_pattern(report, result)
+    trace = _diagnose_trace(result)
+    trace_hint = ""
+    if trace.repeated_tool:
+        trace_hint = f", repeated={trace.repeated_tool}"
+    elif trace.failed_tools:
+        trace_hint = f", failed_tools={trace.failed_tools}"
+    elif trace.no_finish_event:
+        trace_hint = ", no_finish"
+    return f"FAIL:{result.failure_type or 'unknown'} / {pattern} ({result.steps} steps{trace_hint})"
+
+
+def _case_change(
+    before_item: tuple[EvalReport, EvalCaseResult] | None,
+    after_item: tuple[EvalReport, EvalCaseResult] | None,
+) -> str:
+    if before_item is None:
+        return "added"
+    if after_item is None:
+        return "removed"
+    _, before = before_item
+    _, after = after_item
+    if not before.ok and after.ok:
+        return "fixed"
+    if before.ok and not after.ok:
+        return "regressed"
+    if before.ok and after.ok:
+        return "still passing"
+    if before.failure_type != after.failure_type:
+        return f"failure changed: {before.failure_type or 'unknown'} -> {after.failure_type or 'unknown'}"
+    if after.steps < before.steps:
+        return "same failure, fewer steps"
+    if after.steps > before.steps:
+        return "same failure, more steps"
+    return "unchanged failure"
+
+
 def _infer_pattern(report: EvalReport, result: EvalCaseResult) -> str:
     failure_type = result.failure_type or "unknown"
     suite_case = f"{report.suite} {result.id}".lower()
@@ -220,6 +420,7 @@ def _diagnose_trace(result: EvalCaseResult) -> TraceDiagnosis:
         marker_status=marker_status,
         last_tools=last_tools,
         failed_tools=summary.failed_tools,
+        no_finish_event=not summary.finished,
     )
 
 
@@ -284,3 +485,44 @@ def _suggest_action(pattern: str, result: EvalCaseResult, trace_diagnosis: Trace
 
 def _md_escape(text: str) -> str:
     return text.replace("|", "\\|").replace("\n", " ")
+
+
+def _rate(passed: int, total: int) -> str:
+    return f"{_rate_value(passed, total):.1f}%"
+
+
+def _rate_value(passed: int, total: int) -> float:
+    return 0.0 if total == 0 else (passed / total) * 100
+
+
+def _delta_row(label: str, before: int | float, after: int | float, lower_is_better: bool = False, suffix: str = "") -> str:
+    delta = after - before
+    sign = "+" if delta > 0 else ""
+    if isinstance(before, float) or isinstance(after, float):
+        before_text = f"{before:.1f}{suffix}"
+        after_text = f"{after:.1f}{suffix}"
+        delta_text = f"{sign}{delta:.1f}{suffix}"
+    else:
+        before_text = str(before)
+        after_text = str(after)
+        delta_text = f"{sign}{delta}"
+    if lower_is_better and delta < 0:
+        delta_text += " improved"
+    elif lower_is_better and delta > 0:
+        delta_text += " worse"
+    elif not lower_is_better and delta > 0:
+        delta_text += " improved"
+    elif not lower_is_better and delta < 0:
+        delta_text += " worse"
+    return f"| {label} | {before_text} | {after_text} | {delta_text} |"
+
+
+def _rate_delta_row(label: str, before: float, after: float) -> str:
+    delta = after - before
+    sign = "+" if delta > 0 else ""
+    delta_text = f"{sign}{delta:.1f}pp"
+    if delta > 0:
+        delta_text += " improved"
+    elif delta < 0:
+        delta_text += " worse"
+    return f"| {label} | {before:.1f}% | {after:.1f}% | {delta_text} |"

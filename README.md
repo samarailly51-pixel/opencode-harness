@@ -51,6 +51,7 @@ This project does not contain or derive from Claude Code source code. It is an i
 - Reproducible eval suites with `report.json`, `report.md`, `report.html`, comparison reports, and dashboards.
 - JSONL traces and provider transcripts for auditability, replay, debugging, and failure-mode diagnosis.
 - Trace-aware failure-mode diagnosis from eval reports and JSONL traces, including failure grouping, repeated-tool detection, marker checks, and suggested next actions.
+- Before/after diagnosis comparison for measuring reliability changes across agent-loop, prompt, tool-policy, or provider updates.
 - Model Labs for DeepSeek, Qwen, Claude, OpenAI, and local model workflows.
 
 ## Architecture Flow
@@ -69,7 +70,7 @@ Task Input
 | Planning | Agent creates or updates a plan with todo tools and repository context. | Shows how the agent decomposes work before executing. |
 | Tool Execution | Agent calls read/search/patch/shell/MCP tools under permission policy. | Keeps risky operations auditable and controllable. |
 | Review | Agent observes tool outputs, verifies results, and decides whether to continue. | Captures whether the loop can close, not only whether it can generate text. |
-| Report | Harness writes traces, transcripts, eval reports, comparison tables, dashboards, and diagnosis notes. | Turns agent behavior into evidence for debugging and product decisions. |
+| Report | Harness writes traces, transcripts, eval reports, comparison tables, dashboards, diagnosis notes, and before/after comparisons. | Turns agent behavior into evidence for debugging and product decisions. |
 
 ## Quick Start
 
@@ -89,10 +90,21 @@ python -m opencode_harness trace-html $trace.FullName --output eval-runs/latest-
 python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html
 ```
 
-Generate a failure-mode diagnosis from one or more eval reports:
+Generate a trace-aware failure diagnosis from one or more eval reports:
 
 ```powershell
 python -m opencode_harness diagnose eval-runs/path-to-run/report.json --output eval-runs/diagnosis.md
+```
+
+Compare before/after reliability changes:
+
+```powershell
+python -m opencode_harness diagnose-compare `
+  --before eval-runs/before/report.json `
+  --after eval-runs/after/report.json `
+  --before-label "Before guard" `
+  --after-label "After guard" `
+  --output eval-runs/before-after.md
 ```
 
 Run DeepSeek-only benchmark after setting your local API key:

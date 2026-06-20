@@ -3,7 +3,7 @@ import json
 import tempfile
 import unittest
 
-from opencode_harness.diagnosis import diagnose_eval_reports
+from opencode_harness.diagnosis import compare_diagnosis_reports, diagnose_eval_reports
 from opencode_harness.eval import EvalCaseResult, EvalReport
 
 
@@ -109,3 +109,48 @@ class DiagnosisTests(unittest.TestCase):
             self.assertIn("repeated_tail=read_file", markdown)
             self.assertIn("marker=missing", markdown)
             self.assertIn("omitted the required finish marker", markdown)
+
+    def test_compare_diagnosis_reports_shows_before_after_delta(self) -> None:
+        before = EvalReport(
+            suite="suite",
+            started_at="before",
+            model_provider="mock",
+            model_name="mock-coder",
+            total=2,
+            passed=1,
+            results=[
+                EvalCaseResult("case-a", True, True, 2, 1.0, "ok", "missing.jsonl", "a.session.json"),
+                EvalCaseResult(
+                    "case-b",
+                    False,
+                    False,
+                    5,
+                    2.0,
+                    "Stopped after reaching max_steps=5.",
+                    "missing.jsonl",
+                    "b.session.json",
+                    failure_type="max_steps",
+                ),
+            ],
+        )
+        after = EvalReport(
+            suite="suite",
+            started_at="after",
+            model_provider="mock",
+            model_name="mock-coder",
+            total=2,
+            passed=2,
+            results=[
+                EvalCaseResult("case-a", True, True, 2, 1.0, "ok", "missing.jsonl", "a.session.json"),
+                EvalCaseResult("case-b", True, True, 3, 1.5, "fixed", "missing.jsonl", "b.session.json"),
+            ],
+        )
+
+        markdown = compare_diagnosis_reports([before], [after], "Guard off", "Guard on")
+
+        self.assertIn("# Before/After Diagnosis Comparison", markdown)
+        self.assertIn("Guard off", markdown)
+        self.assertIn("Guard on", markdown)
+        self.assertIn("Pass Rate", markdown)
+        self.assertIn("`max_steps`", markdown)
+        self.assertIn("fixed", markdown)

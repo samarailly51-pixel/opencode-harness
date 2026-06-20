@@ -159,6 +159,8 @@ This is the first layer for comparing DeepSeek, Qwen, Claude, OpenAI, and local 
 
 `diagnose` loads one or more `report.json` files or eval run directories and renders a Markdown failure-mode report with failure counts, inferred patterns, trace signals, and suggested next actions. When linked trace files are available, it reports model/tool counts, failed tools, last tool calls, repeated tail tools, missing finish events, and finish-marker status.
 
+`diagnose-compare` compares before/after report sets and renders pass-rate deltas, failure-type deltas, inferred-pattern deltas, trace-signal deltas, and per-case outcome changes. This is the release surface for measuring whether an agent-loop or prompt reliability fix actually moved the failure modes.
+
 ## Trace Replay
 
 Trace replay does not call a model or execute tools. It reads JSONL trace events and renders:

@@ -34,7 +34,7 @@
         <p class="hero-copy">
           OpenCode Harness runs the same coding-agent workflow through a shared agent loop,
           permissioned tools, MCP extension points, JSONL traces, reproducible eval suites,
-          and trace-aware failure-mode diagnosis.
+          trace-aware failure-mode diagnosis, and before/after reliability comparison.
         </p>
         <div class="hero-actions" aria-label="Primary actions">
           <a class="button primary" href="https://github.com/samarailly51-pixel/opencode-harness">View on GitHub</a>
@@ -77,7 +77,7 @@
           </article>
           <article>
             <h3>Traceable evals</h3>
-            <p>JSONL traces, provider transcripts, replay summaries, Markdown/HTML reports, trace-aware diagnosis reports, terminal trace viewer, and eval dashboard.</p>
+            <p>JSONL traces, provider transcripts, replay summaries, Markdown/HTML reports, trace-aware diagnosis, before/after comparisons, terminal trace viewer, and eval dashboard.</p>
           </article>
         </div>
       </div>
@@ -119,7 +119,8 @@
         <pre class="command-block"><code>python -m opencode_harness eval examples/mock-suite.json --preset mock --max-steps 2
 python -m opencode_harness tui runs/latest.jsonl
 python -m opencode_harness dashboard eval-runs --output eval-runs/dashboard.html
-python -m opencode_harness diagnose eval-runs/path-to-run/report.json --output eval-runs/diagnosis.md</code></pre>
+python -m opencode_harness diagnose eval-runs/path-to-run/report.json --output eval-runs/diagnosis.md
+python -m opencode_harness diagnose-compare --before eval-runs/before/report.json --after eval-runs/after/report.json --output eval-runs/before-after.md</code></pre>
       </div>
     </section>
 

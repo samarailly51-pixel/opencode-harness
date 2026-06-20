@@ -10,7 +10,7 @@ from . import __version__
 from .agent import Agent
 from .config import HarnessConfig, ModelConfig, PermissionConfig, load_config
 from .dashboard import discover_eval_reports, write_eval_dashboard
-from .diagnosis import diagnose_eval_reports
+from .diagnosis import compare_diagnosis_reports, diagnose_eval_reports
 from .eval import compare_eval_reports, load_eval_report, run_eval_suite
 from .labs import run_provider_comparison
 from .mcp_runtime import build_mcp_runtime
@@ -70,6 +70,13 @@ def main(argv: list[str] | None = None) -> int:
     diagnose_parser.add_argument("reports", nargs="+", type=Path, help="report.json files or eval run directories")
     diagnose_parser.add_argument("--output", type=Path, help="Write Markdown diagnosis to this path")
 
+    diagnose_compare_parser = subparsers.add_parser("diagnose-compare", help="Compare before/after failure-mode diagnoses")
+    diagnose_compare_parser.add_argument("--before", nargs="+", type=Path, required=True, help="Before report.json files or eval run directories")
+    diagnose_compare_parser.add_argument("--after", nargs="+", type=Path, required=True, help="After report.json files or eval run directories")
+    diagnose_compare_parser.add_argument("--before-label", default="Before", help="Label for the before report set")
+    diagnose_compare_parser.add_argument("--after-label", default="After", help="Label for the after report set")
+    diagnose_compare_parser.add_argument("--output", type=Path, help="Write Markdown comparison to this path")
+
     dashboard_parser = subparsers.add_parser("dashboard", help="Render an HTML eval dashboard")
     dashboard_parser.add_argument("paths", nargs="*", type=Path, default=[Path("eval-runs")])
     dashboard_parser.add_argument("--output", type=Path, default=Path("eval-runs/dashboard.html"))
@@ -113,6 +120,14 @@ def main(argv: list[str] | None = None) -> int:
         return _compare_reports(args.reports, args.output)
     if args.command == "diagnose":
         return _diagnose_reports(args.reports, args.output)
+    if args.command == "diagnose-compare":
+        return _diagnose_compare(
+            args.before,
+            args.after,
+            args.before_label,
+            args.after_label,
+            args.output,
+        )
     if args.command == "dashboard":
         return _dashboard(args.paths, args.output)
     if args.command == "lab-compare":
@@ -374,6 +389,25 @@ def _compare_reports(paths: list[Path], output: Path | None) -> int:
 def _diagnose_reports(paths: list[Path], output: Path | None) -> int:
     reports = [load_eval_report(path) for path in paths]
     markdown = diagnose_eval_reports(reports)
+    if output is not None:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(markdown, encoding="utf-8")
+        print(f"Wrote {output}")
+    else:
+        print(markdown)
+    return 0
+
+
+def _diagnose_compare(
+    before_paths: list[Path],
+    after_paths: list[Path],
+    before_label: str,
+    after_label: str,
+    output: Path | None,
+) -> int:
+    before_reports = [load_eval_report(path) for path in before_paths]
+    after_reports = [load_eval_report(path) for path in after_paths]
+    markdown = compare_diagnosis_reports(before_reports, after_reports, before_label, after_label)
     if output is not None:
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(markdown, encoding="utf-8")

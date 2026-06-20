@@ -91,6 +91,20 @@ Markdown diagnosis with:
 - suggested next actions
 - recommended reliability fixes
 
+For reliability iterations, compare two report sets:
+
+```powershell
+python -m opencode_harness diagnose-compare `
+  --before eval-runs/deepseek-before/report.json `
+  --after eval-runs/deepseek-after/report.json `
+  --before-label "Before guard" `
+  --after-label "After guard" `
+  --output eval-runs/deepseek-before-after.md
+```
+
+The comparison highlights pass-rate deltas, failure-type movement, trace-signal
+movement, and per-case fixes/regressions.
+
 ## Reliability Fixes
 
 Implemented:
@@ -103,7 +117,7 @@ Next:
 
 1. Improve repair suite feedback by surfacing verification command output more explicitly.
 2. Re-run the DeepSeek-only suite after each loop or prompt change.
-3. Compare before/after pass rates and failure modes across the same suites.
+3. Publish the generated before/after diagnosis comparison after each reliability run.
 
 ## Public Positioning
 

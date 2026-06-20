@@ -49,7 +49,7 @@ This makes the agent workflow measurable and debuggable.
 | Dimension | Normal AI Coding Assistant | OpenCode Harness |
 | --- | --- | --- |
 | Primary goal | Help one user write code interactively | Standardize and evaluate coding-agent workflows |
-| Output | Chat answer or file edits | Trace, transcript, eval report, comparison report, dashboard, diagnosis report |
+| Output | Chat answer or file edits | Trace, transcript, eval report, comparison report, dashboard, diagnosis report, before/after diagnosis comparison |
 | Tooling | Usually hidden behind UI | Explicit file/search/patch/shell/MCP tools |
 | Permissions | Product-specific behavior | Configurable policy for write, shell, network, MCP calls |
 | Evaluation | Manual judgment | JSON eval suites and structured failure taxonomy |
@@ -70,7 +70,7 @@ Task Input -> Planning -> Tool Execution -> Review -> Report
 | Planning | Let the agent decompose work | todo tools and context packing |
 | Tool Execution | Let the model act through controlled tools | read/search/patch/shell/MCP tools |
 | Review | Verify whether the task is complete | tool outputs, verification command, final marker |
-| Report | Turn behavior into evidence | JSONL trace, Markdown/HTML report, dashboard, diagnosis report |
+| Report | Turn behavior into evidence | JSONL trace, Markdown/HTML report, dashboard, diagnosis report, before/after comparison |
 
 ## Current Product Evidence
 
@@ -79,13 +79,14 @@ Task Input -> Planning -> Tool Execution -> Review -> Report
 - DeepSeek-only real API benchmark set.
 - DeepSeek failure-mode diagnosis case study.
 - Trace-aware failure-mode diagnosis CLI for eval reports and linked JSONL traces.
+- Before/after diagnosis comparison for reliability iterations.
 - Demo video draft and Product Hunt launch package.
 - Bilingual documentation for technical and presentation contexts.
 
 ## Future Extensions
 
 1. **Before/after reliability fixes**
-   Re-run the DeepSeek benchmark after the finish-marker reminder, final-step guard, and diagnosis report generator are in place.
+   Re-run the DeepSeek benchmark and publish `diagnose-compare` output after the finish-marker reminder, final-step guard, and trace-aware diagnosis are in place.
 
 2. **Diagnosis report depth**
    Add verifier-output and provider-transcript pattern analysis on top of the current trace-aware tool sequence diagnosis.
